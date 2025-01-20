@@ -8,6 +8,7 @@ public class Warehouse extends SimState {
     int height = 100;
     int width = 100;
     public IntGrid2D map = new IntGrid2D(width, height);
+    public SparseGrid2D agents = new SparseGrid2D(width, height);
 
     public Warehouse(long seed) {
         super(seed);
@@ -17,6 +18,18 @@ public class Warehouse extends SimState {
                 map.set(x, y, v);
             }
         }
+    }
+
+    public boolean isWall(int x, int y) {
+        return map.get(x, y) == 1;
+    }
+
+    public boolean isAgentPresent(int x, int y) {
+        return agents.getObjectsAtLocation(x, y).size() > 0;
+    }
+
+    public boolean isOccupied(int x, int y) {
+        return isWall(x, y) || isAgentPresent(x, y);
     }
 
     public static void main(String[] args) {
