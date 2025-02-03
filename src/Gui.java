@@ -16,6 +16,7 @@ public class Gui extends GUIState {
     SparseGridPortrayal2D agentPortrayal = new SparseGridPortrayal2D();
     Color[] color;
     SimpleColorMap simpleColorMap;
+    Warehouse warehouse = (Warehouse) state;
 
     public static void main(String[] args) {
         Gui vid = new Gui();
@@ -34,7 +35,6 @@ public class Gui extends GUIState {
     }
 
     public void setupPortrayals() {
-        Warehouse warehouse = (Warehouse) state;
         // tell the portrayals what to portray and how to portray them
         warehousePortrayal.setField( warehouse.map );
         // set color map
