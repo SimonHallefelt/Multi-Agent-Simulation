@@ -7,7 +7,7 @@ import sim.field.grid.*;
 public class Warehouse extends SimState {
     int height = 100;
     int width = 100;
-    int num_agents = 3;
+    int num_agents = 100;
     public IntGrid2D map = new IntGrid2D(width, height);
     public SparseGrid2D agents = new SparseGrid2D(width, height);
 
@@ -44,7 +44,7 @@ public class Warehouse extends SimState {
         super.start();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                int v = random.nextDouble() < 0.5 ? 1 : 0;
+                int v = random.nextDouble() < 0.25 ? 1 : 0;
                 map.set(x, y, v);
             }
         }

@@ -39,8 +39,8 @@ public class Gui extends GUIState {
         warehousePortrayal.setField( warehouse.map );
         // set color map
         color = new Color[2];
-        color[0] = Color.RED;
-        color[1] = Color.BLUE;
+        color[0] = Color.WHITE;
+        color[1] = Color.BLACK;
         simpleColorMap = new SimpleColorMap(color);
         warehousePortrayal.setMap(simpleColorMap);
 
