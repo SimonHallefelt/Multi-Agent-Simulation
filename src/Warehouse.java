@@ -21,7 +21,10 @@ public class Warehouse extends SimState {
     }
 
     public boolean isAgentPresent(int x, int y) {
-        return agents.getObjectsAtLocation(x, y).size() > 0;
+        Bag bag = agents.getObjectsAtLocation(x, y);
+        if(bag == null) return false;
+        int bag_s = bag.size();
+        return  bag_s > 0;
     }
 
     public boolean isOccupied(int x, int y) {
