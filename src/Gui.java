@@ -1,6 +1,8 @@
 package src;
 
 import sim.portrayal.grid.ValueGridPortrayal2D;
+import sim.portrayal.grid.SparseGridPortrayal2D;
+import sim.portrayal.simple.*;
 import sim.engine.*;
 import sim.display.*;
 import javax.swing.*;
@@ -10,7 +12,8 @@ import sim.util.gui.SimpleColorMap;
 public class Gui extends GUIState {
     public Display2D display;
     public JFrame displayFrame;
-    ValueGridPortrayal2D warehousePortrayal = new ValueGridPortrayal2D("typ");
+    ValueGridPortrayal2D warehousePortrayal = new ValueGridPortrayal2D("floor_typ");
+    SparseGridPortrayal2D agentPortrayal = new SparseGridPortrayal2D();
     Color[] color;
     SimpleColorMap simpleColorMap;
 
@@ -40,6 +43,11 @@ public class Gui extends GUIState {
         color[1] = Color.BLUE;
         simpleColorMap = new SimpleColorMap(color);
         warehousePortrayal.setMap(simpleColorMap);
+
+        // agent portrayal
+        agentPortrayal.setField( warehouse.agents );
+        agentPortrayal.setPortrayalForAll( new OvalPortrayal2D() );
+
         // reschedule the displayer
         display.reset();
         display.setBackdrop(Color.white);
@@ -56,6 +64,7 @@ public class Gui extends GUIState {
         c.registerFrame(displayFrame); // so the frame appears in the "Display" list
         displayFrame.setVisible(true);
         display.attach( warehousePortrayal, "Warehouse" );
+        display.attach( agentPortrayal, "Agents" );
     }
 
     public void quit() {
