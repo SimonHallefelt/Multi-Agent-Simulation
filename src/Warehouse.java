@@ -56,7 +56,7 @@ public class Warehouse extends SimState {
     }
 
     public static void main(String[] args) {
-        doLoop(Agents.class, args);
+        doLoop(Warehouse.class, args);
         System.exit(0);
     }
 }
