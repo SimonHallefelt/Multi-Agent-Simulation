@@ -24,6 +24,7 @@ public class Warehouse extends SimState {
     int num_agents = 100;
     public IntGrid2D map = new IntGrid2D(width, height);
     public SparseGrid2D agents = new SparseGrid2D(width, height);
+    public AgentFactory factory = new AgentFactory();
 
     public Warehouse(long seed) {
         super(seed);
@@ -84,14 +85,19 @@ public class Warehouse extends SimState {
         }
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < jsonMap.get(y).size(); x++) {
-                switch (jsonMap.get(y).get(x)) {
+                String value = jsonMap.get(y).get(x);
+                String[] split = value.split("-");
+                if (split[0].chars().allMatch( Character::isDigit )) {
+                    Agent a = factory.createAgent(x, y, "yea");
+                    this.agents.setObjectLocation(a, x, y);
+                    schedule.scheduleRepeating(a);
+                }
+                if (split.length > 1) {
+                    value = split[1];
+                }
+                switch (value) {
                     case "#":
                         this.map.set(x, y, 1);
-                        break;
-                    case "1":
-                        Agent a = new Agent();
-                        this.agents.setObjectLocation(a, x, y);
-                        schedule.scheduleRepeating(a);
                         break;
                     default:
                         break;

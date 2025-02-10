@@ -13,6 +13,7 @@
         "c:\\Program Files\\Java\\mason\\portfolio.jar",
         "c:\\Program Files\\Java\\mason\\vecmath.jar",
         "c:\\Program Files\\Java\\libraries\\mason.22.jar",
-        "c:\\Program Files\\Java\\mason\\json-20250107.jar"
+        "c:\\Program Files\\Java\\mason\\json-20250107.jar",
+        "libraries/json-20250107.jar"
     ]
 }
