@@ -13,6 +13,7 @@ public class Agent implements Steppable {
         this.x = x;
         this.y = y;
     }
+    
     @Override
     public void step(SimState state) {
         Warehouse warehouse = (Warehouse) state;
