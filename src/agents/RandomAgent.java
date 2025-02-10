@@ -7,8 +7,8 @@ public class RandomAgent extends Agent{
     
     @Override
     public void pickDirection(Warehouse warehouse) {
-        pf.randomWalk(warehouse);
-        this.dx = pf.getDX();
-        this.dy = pf.getDY();
+        int[] directions = pf.randomWalk(warehouse);
+        this.dx = directions[0];
+        this.dy = directions[1];
     }
 }
