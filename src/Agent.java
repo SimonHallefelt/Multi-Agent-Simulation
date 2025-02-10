@@ -2,6 +2,7 @@ package src;
 
 import sim.engine.SimState;
 import sim.engine.Steppable;
+import sim.util.Int2D;
 
 public class Agent implements Steppable {
     int x;
@@ -34,6 +35,10 @@ public class Agent implements Steppable {
     public void setTarget(int y, int x) {
         this.target[0] = y;
         this.target[1] = x;
+    }
+
+    public void setTarget(Int2D i) {
+        setTarget(i.x, i.y);
     }
     
 }

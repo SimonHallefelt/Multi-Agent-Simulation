@@ -23,9 +23,14 @@ public class Warehouse extends SimState {
     int height = 100;
     int width = 100;
     int num_agents = 100;
-    public IntGrid2D map = new IntGrid2D(width, height);
-    public SparseGrid2D agents = new SparseGrid2D(width, height);
+    public IntGrid2D map; // = new IntGrid2D(width, height);
+    public SparseGrid2D agents; // = new SparseGrid2D(width, height);
+    private HashMap<Agent, Task> tasks; // = new HashMap<>();
+    private ArrayList<Int2D> starts;
+    private ArrayList<Int2D> goals;
+    private int score;
     public AgentFactory factory = new AgentFactory();
+
 
     public Warehouse(long seed) {
         super(seed);
@@ -53,7 +58,27 @@ public class Warehouse extends SimState {
         int y = loc.y + dy;
         if (isOccupied(x, y)) return false;
         agents.setObjectLocation(a, x, y);
+        Task goal = tasks.get(a);
+        if (goal != null) {
+            if (goal.reached(x,y)) {
+                score++;
+                assignTask(a);
+            }
+        }
         return true;
+    }
+
+    public void assignTask(Agent a) {
+        Task current = tasks.get(a);
+        if (current == null || current.progress()) {
+            int startsize = starts.size();
+            int goalsize = goals.size();
+            Int2D start = starts.get(random.nextInt(startsize));
+            Int2D goal = goals.get(random.nextInt(goalsize));
+            current = new Task(start, goal);
+            tasks.put(a, current);
+        }
+        a.setTarget(current.getGoal());
     }
 
     public void readJson(String path) {
@@ -78,8 +103,13 @@ public class Warehouse extends SimState {
 
         this.map = new IntGrid2D(width, height);
         this.agents = new SparseGrid2D(width, height);
+        this.tasks = new HashMap<>();
+        this.starts = new ArrayList<>();
+        this.goals = new ArrayList<>();
+        this.score = 0;
 
         HashMap<String, JSONObject> agentTypes = new HashMap<>();
+        ArrayList<Agent> AgentList = new ArrayList<>();
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < jsonMap.get(y).size(); x++) {
@@ -107,6 +137,7 @@ public class Warehouse extends SimState {
                     Agent a = factory.createAgent(x, y, algo);
                     this.agents.setObjectLocation(a, x, y);
                     schedule.scheduleRepeating(a);
+                    AgentList.add(a);
                 }
                 if (split.length > 1) {
                     value = split[1];
@@ -115,10 +146,19 @@ public class Warehouse extends SimState {
                     case "#":
                         this.map.set(x, y, 1);
                         break;
+                    case "E":
+                        starts.add(new Int2D(x,y));
+                        break;
+                    case "D":
+                        goals.add(new Int2D(x,y));
+                        break;
                     default:
                         break;
                 }
             }
+        }
+        for (Agent a: AgentList) {
+            assignTask(a);
         }
     }
 
@@ -130,5 +170,30 @@ public class Warehouse extends SimState {
     public static void main(String[] args) {
         doLoop(Warehouse.class, args);
         System.exit(0);
+    }
+
+    private class Task {
+        Int2D start, finish;
+        boolean started = false;
+        public Task(Int2D start, Int2D finish) {
+            this.start = start;
+            this.finish = finish;
+        }
+
+        public Int2D getGoal() {
+            if (started) return finish;
+            else return start;
+        }
+
+        public boolean reached(int x, int y) {
+            if (started) return finish.x == x && finish.y == y;
+            else return start.x == x && start.y == y;
+        }
+
+        public boolean progress() {
+            if (started) return true;
+            started = true;
+            return false;
+        }
     }
 }
