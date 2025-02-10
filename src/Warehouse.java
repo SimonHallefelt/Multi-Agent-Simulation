@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 // import org.json.simple.JSONArray; 
@@ -78,12 +79,32 @@ public class Warehouse extends SimState {
         this.map = new IntGrid2D(width, height);
         this.agents = new SparseGrid2D(width, height);
 
+        HashMap<String, JSONObject> agentTypes = new HashMap<>();
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < jsonMap.get(y).size(); x++) {
                 String value = jsonMap.get(y).get(x);
                 String[] split = value.split("-");
-                if (split[0].chars().allMatch( Character::isDigit )) {
-                    Agent a = factory.createAgent(x, y, "yea");
+                if (split[0].chars().allMatch( Character::isDigit )) { // if it is numberic, create an agent here
+                    JSONObject o = agentTypes.get(split[0]);
+                    if (o == null) {
+                        o = obj.getJSONObject(split[0]);
+                        if (o != null) {
+                            agentTypes.put(split[0], o);
+                        }
+                    }
+                    String algo; //, size, delay;
+                    if (o != null) {
+                        algo = o.has("algo") ? o.getString("algo") : "none";
+                        //size = o.has("size") ? o.getString("size") : "1";
+                        //delay = o.has("delay") ? o.getString("delay") : "0";
+                    }
+                    else {
+                        algo = "none";
+                        //size = "1";
+                        //delay = "0";
+                    }
+                    Agent a = factory.createAgent(x, y, algo);
                     this.agents.setObjectLocation(a, x, y);
                     schedule.scheduleRepeating(a);
                 }
