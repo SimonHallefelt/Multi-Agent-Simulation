@@ -1,5 +1,7 @@
 package src;
 
+import src.agents.*;
+
 public class AgentFactory {
 
     
@@ -14,10 +16,13 @@ public class AgentFactory {
                 a = new Agent();
                 break;
             case "pacman":
-                a = new Agent();
+                a = new PacmanAgent();
                 break;
+            case "randomWalk":
+            a =  new RandomAgent();
+            break;
             default:
-                a =  new Agent();
+                a =  new RandomAgent();
                 break;
         }
         a.updatePosition(x, y);
