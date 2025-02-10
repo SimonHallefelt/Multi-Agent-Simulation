@@ -79,11 +79,6 @@ public class Warehouse extends SimState {
         this.agents = new SparseGrid2D(width, height);
 
         for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                map.set(x, y, 0);
-            }
-        }
-        for (int y = 0; y < height; y++) {
             for (int x = 0; x < jsonMap.get(y).size(); x++) {
                 String value = jsonMap.get(y).get(x);
                 String[] split = value.split("-");

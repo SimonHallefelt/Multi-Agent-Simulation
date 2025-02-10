@@ -8,6 +8,8 @@ public class Agent implements Steppable {
     int y;
     int dx = 1;
     int dy = 0;
+    int[] target = new int[2];
+    PathFinding pf = new PathFinding();
 
     public void updatePosition(int x, int y) {
         this.x = x;
@@ -24,16 +26,14 @@ public class Agent implements Steppable {
 
 
     public void pickDirection(Warehouse warehouse) {
-        double d = warehouse.random.nextDouble();
-        boolean vert = (dx == 0);
-        if (d < 0.25) {
-            if (vert) { dx = 1; dy = 0; }
-            else      { dx = 0; dy = 1; }
-        }
-        else if (d < 0.5) {
-            if (vert) { dx = -1; dy = 0; }
-            else      { dx = 0; dy = -1; }
-        }
+        pf.pickDirection(warehouse);
+        this.dx = pf.getDX();
+        this.dy = pf.getDY();
+    }
+
+    public void setTarget(int y, int x) {
+        this.target[0] = y;
+        this.target[1] = x;
     }
     
 }
