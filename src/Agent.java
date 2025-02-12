@@ -56,23 +56,23 @@ public class Agent implements Steppable {
     }
     
     public class Trail {
-        int ttimeToCompletedMovement;
-        Int2D tpos;
-        Agent ta;
+        int timeToCompletedMovement;
+        Int2D trailPos;
+        Agent agent;
         
-        public Trail(Agent a, int timeToCompletedMovement, Int2D pos) {
-            this.ttimeToCompletedMovement = timeToCompletedMovement;
-            this.tpos = pos;
-            this.ta = a;
+        public Trail(Agent a, int ttcm, Int2D pos) {
+            timeToCompletedMovement = ttcm;
+            trailPos = pos;
+            agent = a;
         }
 
         public int TimeToCompletedMovement() {
-            return this.ttimeToCompletedMovement--;
+            return this.timeToCompletedMovement--;
         }
 
         public Int2D delate() {
-            ta.moveComplet();
-            return this.tpos;
+            agent.moveComplet();
+            return this.trailPos;
         }
     }
 }
