@@ -9,7 +9,7 @@ public class AgentFactory {
 
     }
 
-    public Agent createAgent(int x, int y, String algo) {
+    public Agent createAgent(int x, int y, String algo, int moveTime) {
         Agent a;
         switch (algo) {
             case "astar":
@@ -26,6 +26,7 @@ public class AgentFactory {
                 break;
         }
         a.updatePosition(x, y);
+        a.setMoveTime(moveTime);
         return a;
     }
 }

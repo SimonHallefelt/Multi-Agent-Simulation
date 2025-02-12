@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Stack;
 
 // import org.json.simple.JSONArray; 
 // import org.json.simple.JSONObject; 
@@ -31,10 +32,35 @@ public class Warehouse extends SimState {
     private ArrayList<Int2D> goals;
     private int score;
     public AgentFactory factory = new AgentFactory();
+    Stack<Agent.Trail> trails = new Stack<>();
 
 
     public Warehouse(long seed) {
         super(seed);
+    }
+
+    public void setOccupied(Agent.Trail t, int x, int y) {
+        agents.setObjectLocation(t, x, y);
+        trails.push(t);
+    }
+
+    public void clearTrails() {
+        Stack<Agent.Trail> newTrails = new Stack<>();
+        System.out.println("number of trails: " + trails.size());
+        while(!trails.empty()){
+            Agent.Trail t = trails.pop();
+            if (t.TimeToCompletedMovement() > 0) {
+                newTrails.push(t);
+            } else {
+                Int2D pos = t.delate();
+                freeOccupied(pos.x, pos.y);
+            }
+        }
+        trails = newTrails;
+    }
+
+    public void freeOccupied(int x, int y) {
+        agents.removeObjectsAtLocation(x, y);
     }
 
     public boolean isWall(int x, int y) {
@@ -125,18 +151,18 @@ public class Warehouse extends SimState {
                             agentTypes.put(split[0], o);
                         }
                     }
-                    String algo; //, size, delay;
+                    String algo; //, size;
+                    int moveTime;
                     if (o != null) {
                         algo = o.has("algo") ? o.getString("algo") : "none";
                         //size = o.has("size") ? o.getString("size") : "1";
-                        //delay = o.has("delay") ? o.getString("delay") : "0";
-                    }
-                    else {
+                        moveTime = o.has("moveTime") ? o.getInt("moveTime") : 0;
+                    } else {
                         algo = "none";
                         //size = "1";
-                        //delay = "0";
+                        moveTime = 0;
                     }
-                    Agent a = factory.createAgent(x, y, algo);
+                    Agent a = factory.createAgent(x, y, algo, moveTime);
                     this.agents.setObjectLocation(a, x, y);
                     schedule.scheduleRepeating(a);
                     AgentList.add(a);
@@ -162,11 +188,13 @@ public class Warehouse extends SimState {
         for (Agent a: AgentList) {
             assignTask(a);
         }
+        schedule.scheduleRepeating(new AfterEveryStep(), 100, 1);
     }
 
     public void start() {
         super.start();
-        this.readJson("test_files\\warehouse_1_no_fun_allowed.json");
+        this.readJson("test_files\\warehouse_1.json");
+        // this.readJson("test_files\\warehouse_simple.json");
     }
 
     public void finish() {

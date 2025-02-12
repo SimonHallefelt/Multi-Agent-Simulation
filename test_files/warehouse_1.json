@@ -15,11 +15,11 @@
     "1" : {
         "algo" : "pacman",
         "size" : "1",
-        "delay" : "3"
+        "moveTime" : "1"
     },
     "2" : {
         "algo" : "RandomWalk",
         "size" : "1",
-        "delay" : "3"
+        "moveTime" : "2"
     }
 }
