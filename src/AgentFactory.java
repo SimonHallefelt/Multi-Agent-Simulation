@@ -19,8 +19,8 @@ public class AgentFactory {
                 a = new PacmanAgent();
                 break;
             case "randomWalk":
-            a =  new RandomAgent();
-            break;
+                a =  new RandomAgent();
+                break;
             default:
                 a =  new RandomAgent();
                 break;

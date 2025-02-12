@@ -1,14 +1,14 @@
 package src.agents;
 
+import sim.util.Int2D;
 import src.Agent;
+import src.PathFinding;
 import src.Warehouse;
 
 public class PacmanAgent extends Agent {
     
     @Override
-    public void pickDirection(Warehouse warehouse) {
-        int[] directions = pf.pacman(warehouse, this.targetx, this.targety, this.posx, this.posy);
-        this.dx = directions[0];
-        this.dy = directions[1];
+    public Int2D pickDirection(Warehouse warehouse) {
+        return PathFinding.pacman(warehouse, this);
     }
 }

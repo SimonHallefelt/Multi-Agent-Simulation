@@ -1,61 +1,52 @@
 package src;
 
+import sim.util.Int2D;
+
 public class PathFinding {
-    int[] dir = {1, 0};
 
-
-    public int[] randomWalk(Warehouse warehouse) {
+    public static Int2D randomWalk(Warehouse warehouse, Agent a) {
         double d = warehouse.random.nextDouble();
-        boolean vert = (dir[0] == 0);
+        Int2D dir = a.delta;
+        boolean vert = (dir.x == 0);
         if (d < 0.25) {
-            if (vert) { dir[0] = 1; dir[1] = 0; }
-            else      { dir[0] = 0; dir[1] = 1; }
+            if (vert) dir = new Int2D(1,0); 
+            else      dir = new Int2D(0,1);
         }
         else if (d < 0.5) {
-            if (vert) { dir[0] = -1; dir[1] = 0; }
-            else      { dir[0] = 0; dir[1] = -1; }
+            if (vert) dir = new Int2D(-1,0); 
+            else      dir = new Int2D(0,-1);
         }
         return dir;
     }
 
-    public int[] pacman(Warehouse warehouse, int targetx, int targety, int x, int y) {
-        int disx = Math.abs(targetx-x);
-        int disy = Math.abs(targety-y);
-        int tempx = dir[0];
-        if ((!warehouse.isOccupied(x+dir[0], y+dir[1])) && 
-        ((Math.abs(targetx-(x+dir[0])) < disx) || 
-        (Math.abs(targety-(y+dir[1])) < disy))) {
+    public static Int2D pacman(Warehouse warehouse, Agent a) { //int target.x, int target.y, int x, int y) {
+        Int2D target, pos, dir;
+        target = a.target;
+        pos = a.pos;
+        dir = a.delta;
+        int disx = Math.abs(target.x-pos.x);
+        int disy = Math.abs(target.y-pos.y);
+        int tempx = dir.x;
+        if ((!warehouse.isOccupied(pos.x+dir.x, pos.y+dir.y)) && 
+        ((Math.abs(target.x-(pos.x+dir.x)) < disx) || 
+        (Math.abs(target.y-(pos.y+dir.y)) < disy))) {
             return dir;
-        } else if ((!warehouse.isOccupied(x+dir[1], y+dir[0])) && 
-        ((Math.abs(targetx-(x+dir[1])) < disx) || 
-        (Math.abs(targety-(y+dir[0])) < disy))) {
-            dir[0] = dir[1];
-            dir[1] = tempx;
-        } else if ((!warehouse.isOccupied(x-dir[1], y-dir[0])) && 
-        ((Math.abs(targetx-(x-dir[1])) < disx) || 
-        (Math.abs(targety-(y-dir[0])) < disy))) {
-            dir[0] = -dir[1];
-            dir[1] = -tempx;
-        } else if (!warehouse.isOccupied(x+dir[0], y+dir[1])) {
+        } else if ((!warehouse.isOccupied(pos.x+dir.y, pos.y+dir.x)) && 
+        ((Math.abs(target.x-(pos.x+dir.y)) < disx) || 
+        (Math.abs(target.y-(pos.y+dir.x)) < disy))) {
+            return new Int2D(dir.y,tempx);
+        } else if ((!warehouse.isOccupied(pos.x-dir.y, pos.y-dir.x)) && 
+        ((Math.abs(target.x-(pos.x-dir.y)) < disx) || 
+        (Math.abs(target.y-(pos.y-dir.x)) < disy))) {
+            return new Int2D(-dir.y,-tempx);
+        } else if (!warehouse.isOccupied(pos.x+dir.x, pos.y+dir.y)) {
             return dir;
-        } else if (!warehouse.isOccupied(x+dir[1], y+dir[0])) {
-            dir[0] = dir[1];
-            dir[1] = tempx;
-        } else if (!warehouse.isOccupied(x-dir[1], y-dir[0])) {
-            dir[0] = -dir[1];
-            dir[1] = -tempx;
+        } else if (!warehouse.isOccupied(pos.x+dir.y, pos.y+dir.x)) {
+            return new Int2D(dir.y,tempx);
+        } else if (!warehouse.isOccupied(pos.x-dir.y, pos.y-dir.x)) {
+            return new Int2D(-dir.y,-tempx);
         } else {
-            dir[0] = -dir[0];
-            dir[1] = -dir[1];
+            return new Int2D(-dir.x,-dir.y);
         }
-        return dir;
-    }
-
-    public int getDX() {
-        return this.dir[0];
-    }
-
-    public int getDY() {
-        return this.dir[1];
     }
 }

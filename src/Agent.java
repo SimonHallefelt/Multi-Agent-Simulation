@@ -5,41 +5,33 @@ import sim.engine.Steppable;
 import sim.util.Int2D;
 
 public class Agent implements Steppable {
-    protected int posx;
-    protected int posy;
-    protected int dx = 1;
-    protected int dy = 0;
-    protected int targetx = 0;
-    protected int targety = 0;
-    protected PathFinding pf = new PathFinding();
+    public int score = 0;
+    public Int2D pos = new Int2D(0,0);
+    public Int2D delta = new Int2D(1,0);
+    public Int2D target = new Int2D(0,0);
 
     public void updatePosition(int x, int y) {
-        this.posx = x;
-        this.posy = y;
+        this.pos = new Int2D(x,y);
     }
     
     @Override
     public void step(SimState state) {
         Warehouse warehouse = (Warehouse) state;
-        pickDirection(warehouse);
-        if (warehouse.move(this, dx, dy)) {
-            this.posx += this.dx;
-            this.posy += this.dy;
+        delta = pickDirection(warehouse);
+        //System.out.println ("pos: " + pos + " delta: " + delta + " target: " + target);
+        if (warehouse.move(this, delta)) {
+            pos = pos.add(delta);
         }
     }
 
 
 
-    public void pickDirection(Warehouse warehouse) {
-        pf.randomWalk(warehouse);
-        // pf.pacman(warehouse, this.targetx, this.targety, this.posx, this.posy);
-        this.dx = pf.getDX();
-        this.dy = pf.getDY();
+    public Int2D pickDirection(Warehouse warehouse) {
+        return PathFinding.randomWalk(warehouse, this);
     }
 
     public void setTarget(int x, int y) {
-        this.targetx = x;
-        this.targety = y;
+        this.target = new Int2D(x,y);
     }
 
     public void setTarget(Int2D i) {

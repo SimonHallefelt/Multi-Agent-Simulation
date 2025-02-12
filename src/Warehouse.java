@@ -26,6 +26,7 @@ public class Warehouse extends SimState {
     public IntGrid2D map; // = new IntGrid2D(width, height);
     public SparseGrid2D agents; // = new SparseGrid2D(width, height);
     private HashMap<Agent, Task> tasks; // = new HashMap<>();
+    ArrayList<Agent> AgentList;
     private ArrayList<Int2D> starts;
     private ArrayList<Int2D> goals;
     private int score;
@@ -52,15 +53,16 @@ public class Warehouse extends SimState {
         return isWall(x, y) || isAgentPresent(x, y);
     }
 
-    public boolean move(Agent a, int dx, int dy) {
+    public boolean move(Agent a, Int2D delta) {
         Int2D loc = agents.getObjectLocation(a);
-        int x = loc.x + dx;
-        int y = loc.y + dy;
+        int x = loc.x + delta.x;
+        int y = loc.y + delta.y;
         if (isOccupied(x, y)) return false;
         agents.setObjectLocation(a, x, y);
         Task goal = tasks.get(a);
         if (goal != null) {
             if (goal.reached(x,y)) {
+                a.score++;
                 score++;
                 assignTask(a);
             }
@@ -109,7 +111,7 @@ public class Warehouse extends SimState {
         this.score = 0;
 
         HashMap<String, JSONObject> agentTypes = new HashMap<>();
-        ArrayList<Agent> AgentList = new ArrayList<>();
+        this.AgentList = new ArrayList<>();
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < jsonMap.get(y).size(); x++) {
@@ -164,7 +166,15 @@ public class Warehouse extends SimState {
 
     public void start() {
         super.start();
-        this.readJson("test_files\\warehouse_1.json");
+        this.readJson("test_files\\warehouse_1_no_fun_allowed.json");
+    }
+
+    public void finish() {
+        for (Agent a: AgentList) {
+            System.out.print(a.score + ", ");
+            System.out.println ("pos: " + a.pos + " delta: " + a.delta + " target: " + a.target);
+        }
+        System.out.println("Final score: " + score);
     }
 
     public static void main(String[] args) {
