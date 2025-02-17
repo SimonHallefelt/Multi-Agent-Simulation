@@ -26,6 +26,7 @@ public class Warehouse extends SimState {
     int num_agents = 100;
     public IntGrid2D map; // = new IntGrid2D(width, height);
     public SparseGrid2D agents; // = new SparseGrid2D(width, height);
+    public SparseGrid2D agentTrail; // = new SparseGrid2D(width, height);
     private HashMap<Agent, Task> tasks; // = new HashMap<>();
     ArrayList<Agent> AgentList;
     private ArrayList<Int2D> starts;
@@ -40,7 +41,7 @@ public class Warehouse extends SimState {
     }
 
     public void setOccupied(Agent.Trail t, int x, int y) {
-        agents.setObjectLocation(t, x, y);
+        agentTrail.setObjectLocation(t, x, y);
         trails.push(t);
     }
 
@@ -53,14 +54,14 @@ public class Warehouse extends SimState {
                 newTrails.push(t);
             } else {
                 Int2D pos = t.delate();
-                freeOccupied(pos.x, pos.y);
+                freeOccupiedTrail(pos.x, pos.y);
             }
         }
         trails = newTrails;
     }
 
-    public void freeOccupied(int x, int y) {
-        agents.removeObjectsAtLocation(x, y);
+    public void freeOccupiedTrail(int x, int y) {
+        agentTrail.removeObjectsAtLocation(x, y);
     }
 
     public boolean isWall(int x, int y) {
@@ -70,9 +71,9 @@ public class Warehouse extends SimState {
 
     public boolean isAgentPresent(int x, int y) {
         Bag bag = agents.getObjectsAtLocation(x, y);
-        if(bag == null) return false;
-        int bag_s = bag.size();
-        return  bag_s > 0;
+        Bag bagTrail = agentTrail.getObjectsAtLocation(x, y);
+        return !((bag == null || bag.size() == 0) && (bagTrail == null || bagTrail.size() == 0));
+        // return  bag.size() > 0;
     }
 
     public boolean isOccupied(int x, int y) {
@@ -131,6 +132,7 @@ public class Warehouse extends SimState {
 
         this.map = new IntGrid2D(width, height);
         this.agents = new SparseGrid2D(width, height);
+        this.agentTrail = new SparseGrid2D(width, height);
         this.tasks = new HashMap<>();
         this.starts = new ArrayList<>();
         this.goals = new ArrayList<>();
