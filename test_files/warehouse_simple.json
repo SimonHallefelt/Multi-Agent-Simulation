@@ -8,7 +8,7 @@
     ],
     "1" : {
         "algo" : "RandomWalk",
-        "size" : "1",
+        "size" : "1,1",
         "moveTime" : "1"
     }
 }

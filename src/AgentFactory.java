@@ -1,5 +1,6 @@
 package src;
 
+import sim.util.Int2D;
 import src.agents.*;
 
 public class AgentFactory {
@@ -9,7 +10,7 @@ public class AgentFactory {
 
     }
 
-    public Agent createAgent(int x, int y, String algo, int moveTime) {
+    public Agent createAgent(int x, int y, String algo, int moveTime, Int2D size) {
         Agent a;
         switch (algo) {
             case "astar":

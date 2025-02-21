@@ -19,6 +19,8 @@ import java.util.Stack;
 // import org.json.simple.parser.*; 
 import org.json.*;
 
+import bsh.Parser;
+
 
 public class Warehouse extends SimState {
     int height = 100;
@@ -153,18 +155,32 @@ public class Warehouse extends SimState {
                             agentTypes.put(split[0], o);
                         }
                     }
-                    String algo; //, size;
+                    String algo;
+                    String[] sizeString = {""};
                     int moveTime;
                     if (o != null) {
                         algo = o.has("algo") ? o.getString("algo") : "none";
-                        //size = o.has("size") ? o.getString("size") : "1";
+                        sizeString[0] = o.has("size") ? o.getString("size") : "1,1";
                         moveTime = o.has("moveTime") ? o.getInt("moveTime") : 0;
                     } else {
                         algo = "none";
-                        //size = "1";
+                        sizeString[0] = "1,1";
                         moveTime = 0;
                     }
-                    Agent a = factory.createAgent(x, y, algo, moveTime);
+                    sizeString = sizeString[0].split(",");
+                    Int2D size = new Int2D(Integer.parseInt(sizeString[0]), Integer.parseInt(sizeString[1]));
+                    for (int yy = y; yy < y + size.y; yy++){ // make sure the agent size is correct and stop duplicates
+                        for (int xx = x; xx < x + size.x; xx++){
+                            if (xx == x && yy == y) continue;
+                            String value2 = jsonMap.get(yy).get(xx);
+                            String[] split2 = value2.split("-");
+                            if (!split[0].chars().allMatch( Character::isDigit )) {
+                                throw new IllegalArgumentException("should have been an agent at this position (" + xx + ", " + yy + ")");
+                            }
+                            jsonMap.get(yy).set(xx, split2.length > 1 ? split2[1] : ".");
+                        }
+                    }
+                    Agent a = factory.createAgent(x, y, algo, moveTime, size);
                     this.agents.setObjectLocation(a, x, y);
                     schedule.scheduleRepeating(a);
                     AgentList.add(a);
@@ -195,7 +211,8 @@ public class Warehouse extends SimState {
 
     public void start() {
         super.start();
-        this.readJson("test_files\\warehouse_1.json");
+        // this.readJson("test_files\\warehouse_1.json");
+        this.readJson("test_files\\warehouse_1_size_test.json");
         // this.readJson("test_files\\warehouse_simple.json");
     }
 
