@@ -120,7 +120,7 @@ public class Warehouse extends SimState {
         }
         Task goal = tasks.get(a);
         if (goal != null) {
-            if (goal.reached(x,y)) {
+            if (goal.reached(x,y,agentSize)) {
                 a.score++;
                 score++;
                 assignTask(a);
@@ -244,7 +244,8 @@ public class Warehouse extends SimState {
     public void start() {
         super.start();
         // this.readJson("test_files\\warehouse_1.json");
-        this.readJson("test_files\\warehouse_1_size_test.json");
+        //this.readJson("test_files\\warehouse_1_size_test.json");
+        this.readJson("test_files\\warehouse_1_lonely.json");
         // this.readJson("test_files\\warehouse_simple.json");
     }
 
@@ -274,9 +275,9 @@ public class Warehouse extends SimState {
             else return start;
         }
 
-        public boolean reached(int x, int y) {
-            if (started) return finish.x == x && finish.y == y;
-            else return start.x == x && start.y == y;
+        public boolean reached(int x, int y, Int2D size) {
+            if (started) return finish.x >= x && finish.x < x + size.x && finish.y >= y && finish.y < y + size.y;
+            else return start.x >= x && start.x < x + size.x && start.y >= y && start.y < y + size.y;
         }
 
         public boolean progress() {
