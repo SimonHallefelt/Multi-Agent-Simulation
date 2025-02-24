@@ -74,6 +74,10 @@ public class Agent implements Steppable {
             agent.moveComplet();
             return this.trailPos;
         }
+
+        public Agent getAgent() {
+            return agent;
+        }
     }
 }
 
