@@ -42,10 +42,14 @@ public class Agent implements Steppable {
             oldPos = pos;
             pos = pos.add(delta);
             isMoving = true;
-            warehouse.setOccupied(new Trail(this, this.moveTime, oldPos), oldPos.x, oldPos.y);
+            makeTrail(warehouse, oldPos);
+            // warehouse.setOccupiedTrail(new Trail(this, this.moveTime, oldPos), oldPos.x, oldPos.y);
         }
     }
 
+    public void makeTrail(Warehouse warehouse, Int2D pos) {
+        warehouse.setOccupiedTrail(new Trail(this, this.moveTime, pos), pos.x, pos.y);
+    }
 
     public Int2D pickDirection(Warehouse warehouse) {
         return PathFinding.randomWalk(warehouse, this);
@@ -110,6 +114,10 @@ public class Agent implements Steppable {
 
         public AgentClone(Agent agent) {
             this.agent = agent;
+        }
+
+        public void makeTrail(Warehouse warehouse, Int2D pos) {
+            agent.makeTrail(warehouse, pos);
         }
 
         public Agent getAgent() {

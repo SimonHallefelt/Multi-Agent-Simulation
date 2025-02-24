@@ -2,6 +2,7 @@ package src;
 
 import sim.engine.*;
 import sim.util.*;
+import src.Agent.AgentClone;
 import sim.field.grid.*;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class Warehouse extends SimState {
         super(seed);
     }
 
-    public void setOccupied(Agent.Trail t, int x, int y) {
+    public void setOccupiedTrail(Agent.Trail t, int x, int y) {
         agentTrail.setObjectLocation(t, x, y);
         trails.push(t);
     }
@@ -111,7 +112,9 @@ public class Warehouse extends SimState {
                 if (xx == 0 && yy == 0) {
                     agents.setObjectLocation(a, x, y);
                 } else {
-                    agents.setObjectLocation(agentClones.get(xx + yy*agentSize.x - 1), x+xx, y+yy);
+                    AgentClone ac = agentClones.get(xx + yy*agentSize.x - 1);
+                    agentClones.get(xx + yy*agentSize.x - 1).makeTrail(this, agents.getObjectLocation(ac));
+                    agents.setObjectLocation(ac, x+xx, y+yy);
                 }
             }
         }

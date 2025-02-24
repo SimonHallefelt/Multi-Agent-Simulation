@@ -45,13 +45,13 @@ public class Gui extends GUIState {
         simpleColorMap = new SimpleColorMap(color);
         warehousePortrayal.setMap(simpleColorMap);
 
-        // agent portrayal
-        agentPortrayal.setField( warehouse.agents );
-        agentPortrayal.setPortrayalForAll( new OvalPortrayal2D(Color.GRAY) );
-
         // agent trail portrayal
         agentTrailPortrayal.setField( warehouse.agentTrail );
         agentTrailPortrayal.setPortrayalForAll( new OvalPortrayal2D(Color.LIGHT_GRAY) );
+
+        // agent portrayal
+        agentPortrayal.setField( warehouse.agents );
+        agentPortrayal.setPortrayalForAll( new OvalPortrayal2D(Color.GRAY) );
 
         // reschedule the displayer
         display.reset();
@@ -69,8 +69,8 @@ public class Gui extends GUIState {
         c.registerFrame(displayFrame); // so the frame appears in the "Display" list
         displayFrame.setVisible(true);
         display.attach( warehousePortrayal, "Warehouse" );
-        display.attach( agentPortrayal, "Agents" );
         display.attach( agentTrailPortrayal, "AgentTrail" );
+        display.attach( agentPortrayal, "Agents" );
     }
 
     public void quit() {
