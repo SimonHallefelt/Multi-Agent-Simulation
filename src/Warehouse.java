@@ -19,8 +19,6 @@ import java.util.Stack;
 // import org.json.simple.parser.*; 
 import org.json.*;
 
-import bsh.Parser;
-
 
 public class Warehouse extends SimState {
     int height = 100;
@@ -72,10 +70,9 @@ public class Warehouse extends SimState {
     }
 
     public boolean isAgentPresent(int x, int y) {
-        Bag bag = agents.getObjectsAtLocation(x, y);
-        Bag bagTrail = agentTrail.getObjectsAtLocation(x, y);
-        return !((bag == null || bag.size() == 0) && (bagTrail == null || bagTrail.size() == 0));
-        // return  bag.size() > 0;
+        int numOfAgents = agents.numObjectsAtLocation(x, y);
+        int numOfTrails = agentTrail.numObjectsAtLocation(x, y);
+        return numOfAgents + numOfTrails > 0;
     }
 
     public boolean isOccupied(int x, int y) {
