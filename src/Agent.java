@@ -1,5 +1,7 @@
 package src;
 
+import java.util.ArrayList;
+
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.util.Int2D;
@@ -13,6 +15,8 @@ public class Agent implements Steppable {
     protected Int2D oldPos;
     protected PathFinding pf = new PathFinding();
     protected Boolean isMoving = false;
+    protected ArrayList<AgentClone> agentClones = new ArrayList<>();
+    protected Int2D size = new Int2D(1,1);
 
 
     public void updatePosition(int x, int y) {
@@ -22,6 +26,10 @@ public class Agent implements Steppable {
     public void setMoveTime(int moveTime) {
         this.moveTime = moveTime -1;
     }
+
+    public void setSize(Int2D size) {
+        this.size = size;
+    }
     
     @Override
     public void step(SimState state) {
@@ -30,7 +38,7 @@ public class Agent implements Steppable {
         System.out.println ("pos: " + pos + " delta: " + delta + " target: " + target);
         
         pickDirection(warehouse);
-        if (!isMoving && warehouse.move(this, delta)) {
+        if (!isMoving && warehouse.move(this, delta, size)) {
             oldPos = pos;
             pos = pos.add(delta);
             isMoving = true;
@@ -54,6 +62,23 @@ public class Agent implements Steppable {
     public void moveComplet() {
         this.isMoving = false;
     }
+
+    public AgentClone makeAgentClone() {
+        AgentClone ag = new AgentClone(this);
+        agentClones.add(ag);
+        return ag;
+    }
+    
+    public ArrayList<AgentClone> getAgentClones() {
+        return this.agentClones;
+    }
+
+    public Int2D getAgentSize() {
+        return size;
+    }
+    public Int2D getTarget() {
+        return target;
+    }
     
     public class Trail {
         int timeToCompletedMovement;
@@ -73,6 +98,18 @@ public class Agent implements Steppable {
         public Int2D delate() {
             agent.moveComplet();
             return this.trailPos;
+        }
+
+        public Agent getAgent() {
+            return agent;
+        }
+    }
+
+    public class AgentClone {
+        Agent agent;
+
+        public AgentClone(Agent agent) {
+            this.agent = agent;
         }
 
         public Agent getAgent() {

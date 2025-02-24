@@ -28,6 +28,7 @@ public class AgentFactory {
         }
         a.updatePosition(x, y);
         a.setMoveTime(moveTime);
+        a.setSize(size);
         return a;
     }
 }
