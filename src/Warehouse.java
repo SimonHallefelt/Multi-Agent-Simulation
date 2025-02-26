@@ -36,10 +36,11 @@ public class Warehouse extends SimState {
     private int score;
     public AgentFactory factory = new AgentFactory();
     Stack<Agent.Trail> trails = new Stack<>();
+    long startTime;
 
-    String file_path = "test_files\\warehouse_1.json";
-    //String file_path = "test_files\\warehouse_1_size_test.json";
-    //String file_path = "test_files\\warehouse_1_lonely.json";
+    // String file_path = "test_files\\warehouse_1.json";
+    String file_path = "test_files\\warehouse_1_size_test.json";
+    // String file_path = "test_files\\warehouse_1_lonely.json";
 
 
     public Warehouse(long seed) {
@@ -54,7 +55,6 @@ public class Warehouse extends SimState {
 
     public void clearTrails() {
         Stack<Agent.Trail> newTrails = new Stack<>();
-        System.out.println("number of trails: " + trails.size());
         while(!trails.empty()){
             Agent.Trail t = trails.pop();
             if (t.TimeToCompletedMovement() > 0) {
@@ -267,15 +267,18 @@ public class Warehouse extends SimState {
     public void start() {
         super.start();
         this.readJson(file_path);
+        startTime = System.currentTimeMillis();
         // this.readJson("test_files\\warehouse_simple.json");
     }
 
     public void finish() {
         for (Agent a: AgentList) {
-            System.out.print(a.score + ", ");
-            System.out.println ("pos: " + a.pos + " delta: " + a.delta + " target: " + a.target);
+            System.out.println("agent: " + a + ", score " + a.score);
+            // System.out.println ("pos: " + a.pos + ", delta: " + a.delta + ", target: " + a.target + "\n");
         }
-        System.out.println("Final score: " + score);
+        System.out.println("\nFinal score: " + score);
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        System.out.println("Elapsed time in milliseconds: " + elapsedTime);
     }
 
     public static void main(String[] args) {
