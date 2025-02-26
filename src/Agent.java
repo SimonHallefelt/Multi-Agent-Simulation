@@ -13,7 +13,6 @@ public class Agent implements Steppable {
     public Int2D target = new Int2D(0,0);
     protected int moveTime = 0;
     protected Int2D oldPos;
-    protected PathFinding pf = new PathFinding();
     protected Boolean isMoving = false;
     protected ArrayList<AgentClone> agentClones = new ArrayList<>();
     protected Int2D size = new Int2D(1,1);

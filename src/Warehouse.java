@@ -134,6 +134,15 @@ public class Warehouse extends SimState {
         return true;
     }
 
+    public Boolean taskReached(int x, int y, Agent a) {
+        Task goal = tasks.get(a);
+        if (goal != null) {
+            return goal.reached(x, y, a.getAgentSize());
+        } else {
+            return false;
+        }
+    }
+
     public void assignTask(Agent a) {
         Task current = tasks.get(a);
         if (current == null || current.progress()) {
