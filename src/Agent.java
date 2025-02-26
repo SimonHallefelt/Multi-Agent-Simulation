@@ -1,12 +1,13 @@
 package src;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.util.Int2D;
 
-public class Agent implements Steppable {
+public class Agent implements Steppable, Colorable {
     public int score = 0;
     public Int2D pos = new Int2D(0,0);
     public Int2D delta = new Int2D(1,0);
@@ -16,7 +17,11 @@ public class Agent implements Steppable {
     protected Boolean isMoving = false;
     protected ArrayList<AgentClone> agentClones = new ArrayList<>();
     protected Int2D size = new Int2D(1,1);
+    protected Color color = Color.GRAY;
 
+    public void setColor(Color c) {
+        color = c;
+    }
 
     public void updatePosition(int x, int y) {
         this.pos = new Int2D(x,y);
@@ -83,7 +88,7 @@ public class Agent implements Steppable {
         return target;
     }
     
-    public class Trail {
+    public class Trail implements Colorable {
         int timeToCompletedMovement;
         Int2D trailPos;
         Agent agent;
@@ -106,9 +111,13 @@ public class Agent implements Steppable {
         public Agent getAgent() {
             return agent;
         }
+
+        public Color getColor() {
+            return Color.LIGHT_GRAY;
+        }
     }
 
-    public class AgentClone {
+    public class AgentClone implements Colorable {
         Agent agent;
 
         public AgentClone(Agent agent) {
@@ -122,6 +131,16 @@ public class Agent implements Steppable {
         public Agent getAgent() {
             return agent;
         }
+
+        @Override
+        public Color getColor() {
+            return agent.getColor();
+        }
+    }
+
+    @Override
+    public Color getColor() {
+        return color;
     }
 }
 

@@ -13,7 +13,7 @@
         "# # # E E # # # E E # # # E E # # #"
     ],
     "1" : {
-        "algo" : "astar",
+        "algo" : "pacman",
         "size" : "2,2",
         "moveTime" : "1"
     }

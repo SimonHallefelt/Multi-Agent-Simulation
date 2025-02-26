@@ -5,6 +5,7 @@ import sim.util.*;
 import src.Agent.AgentClone;
 import sim.field.grid.*;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -201,19 +202,27 @@ public class Warehouse extends SimState {
                     }
                     String algo;
                     String[] sizeString = {""};
+                    String[] colorString = {""};
                     int moveTime;
                     if (o != null) {
                         algo = o.has("algo") ? o.getString("algo") : "none";
                         sizeString[0] = o.has("size") ? o.getString("size") : "1,1";
                         moveTime = o.has("moveTime") ? o.getInt("moveTime") : 0;
+                        colorString[0] = o.has("color") ? o.getString("color") : "128,128,128";
+
                     } else {
                         algo = "none";
                         sizeString[0] = "1,1";
                         moveTime = 0;
+                        colorString[0] = "128,128,128";
+
                     }
                     sizeString = sizeString[0].split(",");
+                    colorString = colorString[0].split(",");
                     Int2D size = new Int2D(Integer.parseInt(sizeString[0]), Integer.parseInt(sizeString[1]));
+                    Color color = new Color(Integer.parseInt(colorString[0]), Integer.parseInt(colorString[1]), Integer.parseInt(colorString[2]));
                     Agent a = factory.createAgent(x, y, algo, moveTime, size);
+                    a.setColor(color);
                     this.agents.setObjectLocation(a, x, y);
                     for (int yy = y; yy < y + size.y; yy++){ // make sure the agent size is correct and stop duplicates
                         for (int xx = x; xx < x + size.x; xx++){

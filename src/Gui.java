@@ -1,12 +1,15 @@
 package src;
 
 import sim.portrayal.grid.ValueGridPortrayal2D;
+import sim.portrayal.DrawInfo2D;
 import sim.portrayal.grid.SparseGridPortrayal2D;
 import sim.portrayal.simple.*;
 import sim.engine.*;
 import sim.display.*;
 import javax.swing.*;
 import java.awt.Color;
+import java.awt.Graphics2D;
+
 import sim.util.gui.SimpleColorMap;
 
 public class Gui extends GUIState {
@@ -52,7 +55,13 @@ public class Gui extends GUIState {
 
         // agent portrayal
         agentPortrayal.setField( warehouse.agents );
-        agentPortrayal.setPortrayalForAll( new RectanglePortrayal2D(Color.GRAY) );
+        agentPortrayal.setPortrayalForAll( new RectanglePortrayal2D() {
+            public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
+                Colorable agent = (Colorable) object;
+                paint = agent.getColor();
+                super.draw(object, graphics, info);
+                }
+        });
 
         // reschedule the displayer
         display.reset();
