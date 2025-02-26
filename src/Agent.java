@@ -34,7 +34,7 @@ public class Agent implements Steppable {
     public void step(SimState state) {
         Warehouse warehouse = (Warehouse) state;
         delta = pickDirection(warehouse);
-        System.out.println ("pos: " + pos + " delta: " + delta + " target: " + target);
+        // System.out.println ("pos: " + pos + " delta: " + delta + " target: " + target);
         
         pickDirection(warehouse);
         if (!isMoving && warehouse.move(this, delta, size)) {
