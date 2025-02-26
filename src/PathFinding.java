@@ -3,7 +3,6 @@ package src;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.PriorityQueue;
 
 import sim.util.Int2D;
@@ -57,7 +56,7 @@ public class PathFinding {
     }
 
     public static Int2D aStar(Warehouse warehouse, Agent a) {
-        Int2D target, startPos, endPos;
+        Int2D target,startPos, endPos;
         target = a.getTarget();
         startPos = a.pos;
         endPos = startPos;
@@ -73,7 +72,6 @@ public class PathFinding {
             Int2D pos = node.pos;
             if (!reached.containsKey(pos)) {
                 reached.put(pos, node.oldPos);
-                // if (pos.equals(target)) {
                 if (warehouse.taskReached(pos.x, pos.y, a)) {
                     endPos = pos;
                     break;
@@ -83,7 +81,8 @@ public class PathFinding {
                     Int2D newPos = pos.add(dir);
                     if (warehouse.canMove(newPos.x, newPos.y, dir, a.getAgentSize()) && 
                             !reached.containsKey(newPos)) {
-                        AStarNode newNode = new AStarNode(node.cost+1, node.cost, pos, newPos);
+                        int dist = Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
+                        AStarNode newNode = new AStarNode(dist + node.previousCost+1, node.previousCost+1, pos, newPos);
                         pq.add(newNode);
                     }
                 }
