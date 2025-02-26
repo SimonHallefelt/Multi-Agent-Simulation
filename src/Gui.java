@@ -20,7 +20,8 @@ public class Gui extends GUIState {
     Warehouse warehouse = (Warehouse) state;
 
     public static void main(String[] args) {
-        Gui vid = new Gui();
+        Warehouse warehouse = new Warehouse(System.currentTimeMillis());
+        Gui vid = new Gui(warehouse);
         Console c = new Console(vid);
         c.setVisible(true);
     }
@@ -47,11 +48,11 @@ public class Gui extends GUIState {
 
         // agent trail portrayal
         agentTrailPortrayal.setField( warehouse.agentTrail );
-        agentTrailPortrayal.setPortrayalForAll( new OvalPortrayal2D(Color.LIGHT_GRAY) );
+        agentTrailPortrayal.setPortrayalForAll( new RectanglePortrayal2D(Color.LIGHT_GRAY) );
 
         // agent portrayal
         agentPortrayal.setField( warehouse.agents );
-        agentPortrayal.setPortrayalForAll( new OvalPortrayal2D(Color.GRAY) );
+        agentPortrayal.setPortrayalForAll( new RectanglePortrayal2D(Color.GRAY) );
 
         // reschedule the displayer
         display.reset();
@@ -62,7 +63,7 @@ public class Gui extends GUIState {
     
     public void init(Controller c) {
         super.init(c);
-        display = new Display2D(600,600,this);
+        display = new Display2D(warehouse.width * 32, warehouse.height * 32,this);
         display.setClipping(false);
         displayFrame = display.createFrame();
         displayFrame.setTitle("Warehouse Display");
@@ -88,6 +89,6 @@ public class Gui extends GUIState {
         super(state); 
     }
     public static String getName() { 
-        return "Student Schoolyard Cliques"; 
+        return "Heterogeneous Agents"; 
     }
 }

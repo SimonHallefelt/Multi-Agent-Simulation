@@ -22,9 +22,9 @@ import org.json.*;
 
 
 public class Warehouse extends SimState {
-    int height = 100;
-    int width = 100;
-    int num_agents = 100;
+    public int height;
+    public int width;
+    public int num_agents;
     public IntGrid2D map; // = new IntGrid2D(width, height);
     public SparseGrid2D agents; // = new SparseGrid2D(width, height);
     public SparseGrid2D agentTrail; // = new SparseGrid2D(width, height);
@@ -36,9 +36,14 @@ public class Warehouse extends SimState {
     public AgentFactory factory = new AgentFactory();
     Stack<Agent.Trail> trails = new Stack<>();
 
+    String file_path = "test_files\\warehouse_1.json";
+    //String file_path = "test_files\\warehouse_1_size_test.json";
+    //String file_path = "test_files\\warehouse_1_lonely.json";
+
 
     public Warehouse(long seed) {
         super(seed);
+        this.readJson(file_path);
     }
 
     public void setOccupiedTrail(Agent.Trail t, int x, int y) {
@@ -243,9 +248,7 @@ public class Warehouse extends SimState {
 
     public void start() {
         super.start();
-        // this.readJson("test_files\\warehouse_1.json");
-        //this.readJson("test_files\\warehouse_1_size_test.json");
-        this.readJson("test_files\\warehouse_1_lonely.json");
+        this.readJson(file_path);
         // this.readJson("test_files\\warehouse_simple.json");
     }
 
