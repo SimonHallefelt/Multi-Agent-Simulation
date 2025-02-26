@@ -14,7 +14,7 @@ public class AgentFactory {
         Agent a;
         switch (algo) {
             case "astar":
-                a = new Agent();
+                a = new AStarAgent();
                 break;
             case "pacman":
                 a = new PacmanAgent();
