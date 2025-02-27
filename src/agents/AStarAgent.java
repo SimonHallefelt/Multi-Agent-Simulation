@@ -9,6 +9,6 @@ public class AStarAgent extends Agent {
     
     @Override
     public Int2D pickDirection(Warehouse warehouse) {
-        return PathFinding.aStar(warehouse, this);
+        return PathFinding.aStar(warehouse, this.target, this.pos, this.size);
     }
 }

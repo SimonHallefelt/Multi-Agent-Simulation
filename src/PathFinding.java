@@ -9,9 +9,9 @@ import sim.util.Int2D;
 
 public class PathFinding {
 
-    public static Int2D randomWalk(Warehouse warehouse, Agent a) {
+    public static Int2D randomWalk(Warehouse warehouse, Int2D dir) {
         double d = warehouse.random.nextDouble();
-        Int2D dir = a.delta;
+        // Int2D dir = a.delta;
         boolean vert = (dir.x == 0);
         if (d < 0.25) {
             if (vert) dir = new Int2D(1,0); 
@@ -24,15 +24,10 @@ public class PathFinding {
         return dir;
     }
 
-    public static Int2D pacman(Warehouse warehouse, Agent a) {
-        Int2D target, pos, delta, size;
-        target = a.getTarget();
-        size = a.getAgentSize();
-        pos = a.pos;
-        delta = a.delta;
+    public static Int2D pacman(Warehouse warehouse, Int2D direction, Int2D target, Int2D pos, Int2D size) {
         double dist = target.distance(pos);
         ArrayList<Int2D> dirs = new ArrayList<>(
-            Arrays.asList(delta, new Int2D(delta.y, delta.x), new Int2D(-delta.y, -delta.x))
+            Arrays.asList(direction, new Int2D(direction.y, direction.x), new Int2D(-direction.y, -direction.x))
         );
 
         for (Int2D dir : dirs) {
@@ -45,14 +40,11 @@ public class PathFinding {
                 return dir;
             }
         }
-        return new Int2D(-delta.x,-delta.y);
+        return new Int2D(-direction.x,-direction.y);
     }
 
-    public static Int2D aStar(Warehouse warehouse, Agent a) {
-        Int2D target,startPos, endPos;
-        target = a.getTarget();
-        startPos = a.pos;
-        endPos = startPos;
+    public static Int2D aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size) {
+        Int2D endPos = startPos;
         ArrayList<Int2D> dirs = new ArrayList<>(
             Arrays.asList(new Int2D(1,0),new Int2D(-1,0),new Int2D(0,1),new Int2D(0,-1))
         );
@@ -66,14 +58,14 @@ public class PathFinding {
             Int2D pos = node.pos;
             if (!reached.containsKey(pos)) {
                 reached.put(pos, node.oldPos);
-                if (warehouse.taskReached(pos.x, pos.y, a)) {
+                if (targetReached(pos, size, target)) {
                     endPos = pos;
                     break;
                 }
 
                 for (Int2D dir : dirs) {
                     Int2D newPos = pos.add(dir);
-                    if (warehouse.canMove(newPos, dir, a.getAgentSize()) && 
+                    if (warehouse.canMove(newPos, dir, size) && 
                     !reached.containsKey(newPos)) {
                         int dist = Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
                         AStarNode newNode = new AStarNode(dist + node.previousCost+1, node.previousCost+1, pos, newPos);
@@ -111,6 +103,10 @@ public class PathFinding {
         public int compareTo(AStarNode other) {
             return Integer.compare(this.cost, other.cost);
         }
+    }
 
+    public static boolean targetReached(Int2D pos, Int2D size, Int2D target) {
+        Int2D diff = target.subtract(pos);
+        return diff.x < size.x && diff.y < size.y && diff.x >= 0 && diff.y >= 0;
     }
 }
