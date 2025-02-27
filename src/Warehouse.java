@@ -48,8 +48,8 @@ public class Warehouse extends SimState {
         this.readJson(file_path);
     }
 
-    public void setOccupiedTrail(Agent.Trail t, int x, int y) {
-        agentTrail.setObjectLocation(t, x, y);
+    public void setOccupiedTrail(Agent.Trail t, Int2D pos) {
+        agentTrail.setObjectLocation(t, pos.x, pos.y);
         trails.push(t);
     }
 
@@ -61,47 +61,47 @@ public class Warehouse extends SimState {
                 newTrails.push(t);
             } else {
                 Int2D pos = t.delate();
-                freeOccupiedTrail(pos.x, pos.y);
+                freeOccupiedTrail(pos);
             }
         }
         trails = newTrails;
     }
 
-    public void freeOccupiedTrail(int x, int y) {
-        agentTrail.removeObjectsAtLocation(x, y);
+    public void freeOccupiedTrail(Int2D pos) {
+        agentTrail.removeObjectsAtLocation(pos);
     }
 
-    public boolean isWall(int x, int y) {
-        if (x < 0 || x >= width || y < 0 || y >= height) return true;
-        return map.get(x, y) == 1;
+    public boolean isWall(Int2D pos) {
+        if (pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height) return true;
+        return map.get(pos.x, pos.y) == 1;
     }
 
-    public boolean isAgentPresent(int x, int y) {
-        int numOfAgents = agents.numObjectsAtLocation(x, y);
-        int numOfTrails = agentTrail.numObjectsAtLocation(x, y);
+    public boolean isAgentPresent(Int2D pos) {
+        int numOfAgents = agents.numObjectsAtLocation(pos);
+        int numOfTrails = agentTrail.numObjectsAtLocation(pos);
         return numOfAgents + numOfTrails > 0;
     }
 
-    public boolean isOccupied(int x, int y) {
-        return isWall(x, y) || isAgentPresent(x, y);
+    public boolean isOccupied(Int2D pos) {
+        return isWall(pos) || isAgentPresent(pos);
     }
 
     public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize) {
         if (delta.x < 0) {
             for (int d = 0; d < agentSize.y; d++) {
-                if (isOccupied(pos.x, pos.y+d)) return false;
+                if (isOccupied(pos.add(0, d))) return false;
             }
         } else if (delta.x > 0) {
             for (int d = 0; d < agentSize.y; d++) {
-                if (isOccupied(pos.x+agentSize.x-1, pos.y+d)) return false;
+                if (isOccupied(pos.add(agentSize.x-1, d))) return false;
             }
         } else if (delta.y < 0) {
             for (int d = 0; d < agentSize.x; d++) {
-                if (isOccupied(pos.x+d, pos.y)) return false;
+                if (isOccupied(pos.add(d, 0))) return false;
             }
         } else {
             for (int d = 0; d < agentSize.x; d++) {
-                if (isOccupied(pos.x+d, pos.y+agentSize.y-1)) return false;
+                if (isOccupied(pos.add(d, d+agentSize.y-1))) return false;
             }
         }
         return true;
@@ -146,10 +146,10 @@ public class Warehouse extends SimState {
     public void assignTask(Agent a) {
         Task current = tasks.get(a);
         if (current == null || current.progress()) {
-            int startsize = starts.size();
-            int goalsize = goals.size();
-            Int2D start = starts.get(random.nextInt(startsize));
-            Int2D goal = goals.get(random.nextInt(goalsize));
+            int startSize = starts.size();
+            int goalSize = goals.size();
+            Int2D start = starts.get(random.nextInt(startSize));
+            Int2D goal = goals.get(random.nextInt(goalSize));
             current = new Task(start, goal);
             tasks.put(a, current);
         }
