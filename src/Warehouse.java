@@ -38,6 +38,10 @@ public class Warehouse extends SimState {
     Stack<Agent.Trail> trails = new Stack<>();
     long startTime;
 
+    private Color[] defaultColors = new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.ORANGE, Color.PINK, Color.GRAY, Color.DARK_GRAY};
+    private int colorIndex = 0;
+    private HashMap<String, Color> defaultColorIndex = new HashMap<>();
+
     // String file_path = "test_files\\warehouse_1.json";
     String file_path = "test_files\\warehouse_1_size_test.json";
     // String file_path = "test_files\\warehouse_1_lonely.json";
@@ -208,21 +212,27 @@ public class Warehouse extends SimState {
                         algo = o.has("algo") ? o.getString("algo") : "none";
                         sizeString[0] = o.has("size") ? o.getString("size") : "1,1";
                         moveTime = o.has("moveTime") ? o.getInt("moveTime") : 0;
-                        colorString[0] = o.has("color") ? o.getString("color") : "128,128,128";
+                        colorString[0] = o.has("color") ? o.getString("color") : "default";
 
                     } else {
                         algo = "none";
                         sizeString[0] = "1,1";
                         moveTime = 0;
-                        colorString[0] = "128,128,128";
+                        colorString[0] = "default";
 
                     }
                     sizeString = sizeString[0].split(",");
-                    colorString = colorString[0].split(",");
                     Int2D size = new Int2D(Integer.parseInt(sizeString[0]), Integer.parseInt(sizeString[1]));
-                    Color color = new Color(Integer.parseInt(colorString[0]), Integer.parseInt(colorString[1]), Integer.parseInt(colorString[2]));
                     Agent a = factory.createAgent(x, y, algo, moveTime, size);
-                    a.setColor(color);
+                    if (colorString[0].equals("default")) {
+                        Color color = getDefaultColor(split[0]);
+                        a.setColor(color);
+                    }
+                    else {
+                        colorString = colorString[0].split(",");
+                        Color color = new Color(Integer.parseInt(colorString[0]), Integer.parseInt(colorString[1]), Integer.parseInt(colorString[2]));
+                        a.setColor(color);
+                    }
                     this.agents.setObjectLocation(a, x, y);
                     for (int yy = y; yy < y + size.y; yy++){ // make sure the agent size is correct and stop duplicates
                         for (int xx = x; xx < x + size.x; xx++){
@@ -266,9 +276,21 @@ public class Warehouse extends SimState {
 
     public void start() {
         super.start();
+        defaultColorIndex = new HashMap<>();
+        colorIndex = 0;
         this.readJson(file_path);
         startTime = System.currentTimeMillis();
         // this.readJson("test_files\\warehouse_simple.json");
+    }
+
+    private Color getDefaultColor(String id) {
+        if (defaultColorIndex.containsKey(id)) return defaultColorIndex.get(id);
+        else {
+            defaultColorIndex.put(id, defaultColors[colorIndex]);
+            colorIndex++;
+            if (colorIndex >= defaultColors.length) colorIndex = 0;
+            return defaultColorIndex.get(id);
+        }
     }
 
     public void finish() {
