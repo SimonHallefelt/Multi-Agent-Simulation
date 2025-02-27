@@ -10,7 +10,7 @@ import sim.util.Int2D;
 public class Agent implements Steppable, Colorable {
     public int score = 0;
     public Int2D pos = new Int2D(0,0);
-    public Int2D delta = new Int2D(1,0);
+    public Int2D dir = new Int2D(1,0);
     public Int2D target = new Int2D(0,0);
     protected int moveTime = 0;
     protected Int2D oldPos;
@@ -38,13 +38,13 @@ public class Agent implements Steppable, Colorable {
     @Override
     public void step(SimState state) {
         Warehouse warehouse = (Warehouse) state;
-        delta = pickDirection(warehouse);
-        // System.out.println ("pos: " + pos + " delta: " + delta + " target: " + target);
+        dir = pickDirection(warehouse);
+        // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
         
         pickDirection(warehouse);
-        if (!isMoving && warehouse.move(this, delta, size)) {
+        if (!isMoving && warehouse.move(this, dir, size)) {
             oldPos = pos;
-            pos = pos.add(delta);
+            pos = pos.add(dir);
             isMoving = true;
             makeTrail(warehouse, oldPos);
         }
@@ -55,7 +55,7 @@ public class Agent implements Steppable, Colorable {
     }
 
     public Int2D pickDirection(Warehouse warehouse) {
-        return PathFinding.randomWalk(warehouse, this);
+        return PathFinding.randomWalk(warehouse, dir);
     }
 
     public void setTarget(int x, int y) {
