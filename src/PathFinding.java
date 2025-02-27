@@ -113,4 +113,12 @@ public class PathFinding {
         }
 
     }
+
+    public static int getDistance(Int2D start, Int2D finish, Int2D size) {
+        int dx = start.x - finish.x;
+        int dy = start.y - finish.y;
+        if (dx < 0) dx = Math.min(dx + size.x - 1,0);
+        if (dy < 0) dy = Math.min(dy + size.y - 1,0);
+        return Math.abs(dx) + Math.abs(dy);
+    }
 }
