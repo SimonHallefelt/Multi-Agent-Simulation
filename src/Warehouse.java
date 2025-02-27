@@ -86,22 +86,22 @@ public class Warehouse extends SimState {
         return isWall(x, y) || isAgentPresent(x, y);
     }
 
-    public boolean canMove(int x, int y, Int2D delta, Int2D agentSize) {
+    public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize) {
         if (delta.x < 0) {
             for (int d = 0; d < agentSize.y; d++) {
-                if (isOccupied(x, y+d)) return false;
+                if (isOccupied(pos.x, pos.y+d)) return false;
             }
         } else if (delta.x > 0) {
             for (int d = 0; d < agentSize.y; d++) {
-                if (isOccupied(x+agentSize.x-1, y+d)) return false;
+                if (isOccupied(pos.x+agentSize.x-1, pos.y+d)) return false;
             }
         } else if (delta.y < 0) {
             for (int d = 0; d < agentSize.x; d++) {
-                if (isOccupied(x+d, y)) return false;
+                if (isOccupied(pos.x+d, pos.y)) return false;
             }
-        }else {
+        } else {
             for (int d = 0; d < agentSize.x; d++) {
-                if (isOccupied(x+d, y+agentSize.y-1)) return false;
+                if (isOccupied(pos.x+d, pos.y+agentSize.y-1)) return false;
             }
         }
         return true;
@@ -109,24 +109,23 @@ public class Warehouse extends SimState {
 
     public boolean move(Agent a, Int2D delta, Int2D agentSize) {
         Int2D loc = agents.getObjectLocation(a);
-        int x = loc.x + delta.x;
-        int y = loc.y + delta.y;
-        if (!canMove(x, y, delta, agentSize)) return false;
+        Int2D pos = loc.add(delta);
+        if (!canMove(pos, delta, agentSize)) return false;
         ArrayList<Agent.AgentClone> agentClones = a.getAgentClones();
-        for (int xx = 0; xx < agentSize.x; xx++) {
-            for (int yy = 0; yy < agentSize.y; yy++) {
-                if (xx == 0 && yy == 0) {
-                    agents.setObjectLocation(a, x, y);
+        for (int x = 0; x < agentSize.x; x++) {
+            for (int y = 0; y < agentSize.y; y++) {
+                if (x == 0 && y == 0) {
+                    agents.setObjectLocation(a, pos.x, pos.y);
                 } else {
-                    AgentClone ac = agentClones.get(xx + yy*agentSize.x - 1);
-                    agentClones.get(xx + yy*agentSize.x - 1).makeTrail(this, agents.getObjectLocation(ac));
-                    agents.setObjectLocation(ac, x+xx, y+yy);
+                    AgentClone ac = agentClones.get(x + y * agentSize.x - 1);
+                    agentClones.get(x + y*agentSize.x - 1).makeTrail(this, agents.getObjectLocation(ac));
+                    agents.setObjectLocation(ac, pos.x + x, pos.y + y);
                 }
             }
         }
         Task goal = tasks.get(a);
         if (goal != null) {
-            if (goal.reached(x,y,agentSize)) {
+            if (goal.reached(pos.x, pos.y ,agentSize)) {
                 a.score++;
                 score++;
                 assignTask(a);
@@ -229,7 +228,7 @@ public class Warehouse extends SimState {
                             if (xx == x && yy == y) continue;
                             String value2 = jsonMap.get(yy).get(xx);
                             String[] split2 = value2.split("-");
-                            if (!split[0].chars().allMatch( Character::isDigit )) {
+                            if (!split2[0].chars().allMatch( Character::isDigit )) {
                                 throw new IllegalArgumentException("should have been an agent at this position (" + xx + ", " + yy + ")");
                             }
                             Agent.AgentClone ag = a.makeAgentClone();
