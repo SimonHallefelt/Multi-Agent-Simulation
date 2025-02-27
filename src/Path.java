@@ -16,7 +16,7 @@ public class Path {
 
     public boolean addStep (Int2D dir) {
         Int2D target = tail.add(dir);
-        if (!warehouse.isWall(target.x, target.y)) {
+        if (!warehouse.isWall(target)) {
             steps.add(dir);
             tail = target;
             return true;
