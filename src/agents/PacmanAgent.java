@@ -9,6 +9,6 @@ public class PacmanAgent extends Agent {
     
     @Override
     public Int2D pickDirection(Warehouse warehouse) {
-        return PathFinding.pacman(warehouse, this.dir, this.target, this.pos, this.size);
+        return PathFinding.pacman(warehouse, this.pos, this.target, this.dir, this.size);
     }
 }

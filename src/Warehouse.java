@@ -43,8 +43,8 @@ public class Warehouse extends SimState {
     private HashMap<String, Color> defaultColorIndex = new HashMap<>();
 
     // String file_path = "test_files\\warehouse_1.json";
-    String file_path = "test_files\\warehouse_1_size_test.json";
-    // String file_path = "test_files\\warehouse_1_lonely.json";
+    //String file_path = "test_files\\warehouse_1_size_test.json";
+    String file_path = "test_files\\warehouse_1_lonely.json";
 
 
     public Warehouse(long seed) {
@@ -105,7 +105,7 @@ public class Warehouse extends SimState {
             }
         } else {
             for (int d = 0; d < agentSize.x; d++) {
-                if (isOccupied(pos.add(d, d+agentSize.y-1))) return false;
+                if (isOccupied(pos.add(d, agentSize.y-1))) return false;
             }
         }
         return true;

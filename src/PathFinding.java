@@ -24,22 +24,20 @@ public class PathFinding {
         return dir;
     }
 
-    public static Int2D pacman(Warehouse warehouse, Int2D direction, Int2D target, Int2D pos, Int2D size) {
-        double dist = target.distance(pos);
+    public static Int2D pacman(Warehouse warehouse, Int2D pos, Int2D target, Int2D direction, Int2D size) {
+        double dist = getDistance(pos, target, size);//target.distance(pos);
         ArrayList<Int2D> dirs = new ArrayList<>(
             Arrays.asList(direction, new Int2D(direction.y, direction.x), new Int2D(-direction.y, -direction.x))
         );
 
-        for (Int2D dir : dirs) {
-            if (target.distance(pos.add(dir)) < dist && warehouse.canMove(pos.add(dir), dir, size)) {
-                return dir;
-            }
-        }
+        dirs.sort((d,o) -> getDistance(pos.add(d), target, size) - getDistance(pos.add(o), target, size));
+
         for (Int2D dir : dirs) {
             if (warehouse.canMove(pos.add(dir), dir, size)) {
                 return dir;
             }
         }
+
         return new Int2D(-direction.x,-direction.y);
     }
 
