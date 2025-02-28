@@ -184,7 +184,8 @@ public class Warehouse extends SimState {
         ArrayList<Agent> viableAgents = (ArrayList<Agent>) AgentList.clone();
         viableAgents.removeIf(a -> !canPerform(a, t));
         viableAgents.sort((a,b) -> timeToReach(a, t) - timeToReach(b, t));
-        System.out.println(start + " " + goal);
+        //System.out.println(start + " " + goal);
+        if (viableAgents.size() == 0) return;
         Agent a = viableAgents.get(0);
         ArrayList<Task> assigned = tasks.get(a);
         if (assigned != null) {
@@ -196,7 +197,7 @@ public class Warehouse extends SimState {
             tasks.put(a, assigned);
             a.setTarget(t.getGoal());
         }
-        System.out.println("Assigned task to " + a + ", fitness: " + timeToReach(a, t));
+        //System.out.println("Assigned task to " + a + ", fitness: " + timeToReach(a, t));
     }
 
     public void readJson(String path) {
