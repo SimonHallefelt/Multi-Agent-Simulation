@@ -11,7 +11,6 @@ public class PathFinding {
 
     public static Int2D randomWalk(Warehouse warehouse, Int2D dir) {
         double d = warehouse.random.nextDouble();
-        // Int2D dir = a.delta;
         boolean vert = (dir.x == 0);
         if (d < 0.25) {
             if (vert) dir = new Int2D(1,0); 
@@ -82,6 +81,9 @@ public class PathFinding {
         }
 
         return new Int2D(pos.x - startPos.x, pos.y - startPos.y);
+    }
+    public static Int2D aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size) {
+        return aStar(warehouse, target, startPos, size, false);
     }
 
     private static class AStarNode implements Comparable<AStarNode> {

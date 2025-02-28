@@ -95,13 +95,13 @@ public class Warehouse extends SimState {
 
     public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize, boolean noAgents) {
         int size = delta.x == 0 ? agentSize.y : agentSize.x;
-        int x = delta.x > 0 ? size-1 : 0;
-        int y = delta.y > 0 ? size-1 : 0;
         if (delta.x != 0) {
+            int x = delta.x > 0 ? size-1 : 0;
             for (int d = 0; d < size; d++) {
                 if (isOccupied(pos.add(x, d), noAgents)) return false;
             }
         } else {
+            int y = delta.y > 0 ? size-1 : 0;
             for (int d = 0; d < size; d++) {
                 if (isOccupied(pos.add(d, y), noAgents)) return false;
             }
