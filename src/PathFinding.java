@@ -25,7 +25,6 @@ public class PathFinding {
     }
 
     public static Int2D pacman(Warehouse warehouse, Int2D pos, Int2D target, Int2D direction, Int2D size) {
-        double dist = getDistance(pos, target, size);//target.distance(pos);
         ArrayList<Int2D> dirs = new ArrayList<>(
             Arrays.asList(direction, new Int2D(direction.y, direction.x), new Int2D(-direction.y, -direction.x))
         );

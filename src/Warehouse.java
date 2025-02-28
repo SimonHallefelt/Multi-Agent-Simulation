@@ -38,6 +38,9 @@ public class Warehouse extends SimState {
     Stack<Agent.Trail> trails = new Stack<>();
     long startTime;
 
+    private HashMap<Agent, ArrayList<Task>> tasks_new; // = new HashMap<>();
+
+
     private Color[] defaultColors = new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.ORANGE, Color.PINK, Color.GRAY, Color.DARK_GRAY};
     private int colorIndex = 0;
     private HashMap<String, Color> defaultColorIndex = new HashMap<>();
@@ -298,9 +301,25 @@ public class Warehouse extends SimState {
         System.exit(0);
     }
 
+    public boolean canPerform(Agent a, Task t) {
+        Int2D next = PathFinding.aStar(null, t.start, a.pos, a.size);
+        if (next.x == 0 && next.y == 0) return false;
+        next = PathFinding.aStar(null, t.finish, t.start, a.size);
+        if (next.x == 0 && next.y == 0) return false;
+        return true;
+    }
+
+    public int timeToReach(Agent a, Task t) {
+        ArrayList<Task> agentTasks = tasks_new.get(a);
+        if (agentTasks.size() > 0) {
+
+        }
+        return 0;
+    }
+
     private class Task {
-        Int2D start, finish;
-        boolean started = false;
+        public Int2D start, finish;
+        public boolean started = false;
         public Task(Int2D start, Int2D finish) {
             this.start = start;
             this.finish = finish;
@@ -320,6 +339,14 @@ public class Warehouse extends SimState {
             if (started) return true;
             started = true;
             return false;
+        }
+
+        public int getDistance(Int2D size) {
+            return PathFinding.getDistance(start, finish, size);
+        }
+
+        public int getDistanceBetween(Int2D from, Int2D size) {
+            return PathFinding.getDistance(from, start, size);
         }
     }
 }
