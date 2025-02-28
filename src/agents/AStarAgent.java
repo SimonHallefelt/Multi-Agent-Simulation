@@ -16,6 +16,9 @@ public class AStarAgent extends Agent {
         if (step != null) return step;
         
         ArrayList<Int2D> path = PathFinding.aStar(warehouse, this.target, this.pos, this.size);
+        if (path.get(0).equals(pos)) {
+            path.set(0, path.get(0).add(PathFinding.randomWalk(warehouse, dir)));
+        }
         super.path = new Path(target, warehouse);
         super.path.addNewPositionPath(pos, path);
         return super.path.pop();
