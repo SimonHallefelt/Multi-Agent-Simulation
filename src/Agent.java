@@ -13,11 +13,11 @@ public class Agent implements Steppable, Colorable {
     public Int2D dir = new Int2D(1,0);
     public Int2D target = new Int2D(0,0);
     protected int moveTime = 0;
-    protected Int2D oldPos;
     protected Boolean isMoving = false;
     protected ArrayList<AgentClone> agentClones = new ArrayList<>();
     protected Int2D size = new Int2D(1,1);
     protected Color color = Color.GRAY;
+    protected Path path = new Path(target, null);
 
     public void setColor(Color c) {
         color = c;
@@ -43,10 +43,11 @@ public class Agent implements Steppable, Colorable {
         // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
         
         if (warehouse.move(this, dir, size)) {
-            oldPos = pos;
+            makeTrail(warehouse, pos);
             pos = pos.add(dir);
             isMoving = true;
-            makeTrail(warehouse, oldPos);
+        } else {
+            this.path = new Path(target, warehouse);
         }
     }
 
@@ -85,6 +86,9 @@ public class Agent implements Steppable, Colorable {
     }
     public Int2D getTarget() {
         return target;
+    }
+    public Int2D getPos() {
+        return pos;
     }
     
     public class Trail implements Colorable {

@@ -90,7 +90,7 @@ public class Warehouse extends SimState {
     }
 
     public boolean isOccupied(Int2D pos, boolean noAgents) {
-        return isWall(pos) || (isAgentPresent(pos) && !noAgents);
+        return isWall(pos) || (!noAgents && isAgentPresent(pos));
     }
 
     public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize, boolean noAgents) {
@@ -346,11 +346,13 @@ public class Warehouse extends SimState {
 
     public boolean canPerform(Agent a, Task t) {
         Int2D next;
-        if (!t.start.equals(a.pos)) {
-            next = PathFinding.aStar(this, t.start, a.pos, a.size, true);
+        ArrayList<Int2D> path = PathFinding.aStar(this, t.start, a.pos, a.size, true);
+        if (  !t.start.equals(a.pos)) {
+            next = path.get(0).subtract(a.pos);
             if (next.x == 0 && next.y == 0) return false;
         }
-        next = PathFinding.aStar(this, t.finish, t.start, a.size, true);
+        Int2D startPos = path.get(path.size()-1);
+        next = PathFinding.aStar(this, t.finish, startPos, a.size, true).get(0).subtract(startPos);
         if (next.x == 0 && next.y == 0) return false;
         return true;
     }

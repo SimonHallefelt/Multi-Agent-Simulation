@@ -2,6 +2,7 @@ package src;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
@@ -39,7 +40,7 @@ public class PathFinding {
         return new Int2D(-direction.x,-direction.y);
     }
 
-    public static Int2D aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size, boolean noAgents) {
+    public static ArrayList<Int2D> aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size, boolean noAgents) {
         Int2D endPos = startPos;
         ArrayList<Int2D> dirs = new ArrayList<>(
             Arrays.asList(new Int2D(1,0),new Int2D(-1,0),new Int2D(0,1),new Int2D(0,-1))
@@ -72,17 +73,21 @@ public class PathFinding {
         }
 
         if (startPos.equals(endPos)) {
-            return new Int2D(0, 0);
+            return new ArrayList<>(Arrays.asList(startPos));
         }
 
+        ArrayList<Int2D> steps = new ArrayList<>();
         Int2D pos = endPos;
-        while (!startPos.equals(reached.get(pos))) {
+        while (!startPos.equals(pos)) {
+            steps.add(pos);
             pos = reached.get(pos);
         }
-
-        return new Int2D(pos.x - startPos.x, pos.y - startPos.y);
+        Collections.reverse(steps);
+        
+        return steps;
     }
-    public static Int2D aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size) {
+
+    public static ArrayList<Int2D> aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size) {
         return aStar(warehouse, target, startPos, size, false);
     }
 

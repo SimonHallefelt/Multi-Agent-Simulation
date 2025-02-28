@@ -1,7 +1,10 @@
 package src.agents;
 
+import java.util.ArrayList;
+
 import sim.util.Int2D;
 import src.Agent;
+import src.Path;
 import src.PathFinding;
 import src.Warehouse;
 
@@ -9,6 +12,12 @@ public class AStarAgent extends Agent {
     
     @Override
     public Int2D pickDirection(Warehouse warehouse) {
-        return PathFinding.aStar(warehouse, this.target, this.pos, this.size);
+        Int2D step = super.path.pop();
+        if (step != null) return step;
+        
+        ArrayList<Int2D> path = PathFinding.aStar(warehouse, this.target, this.pos, this.size);
+        super.path = new Path(target, warehouse);
+        super.path.addNewPositionPath(pos, path);
+        return super.path.pop();
     }
 }
