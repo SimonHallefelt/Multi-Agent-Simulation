@@ -46,8 +46,8 @@ public class Warehouse extends SimState {
     private HashMap<String, Color> defaultColorIndex = new HashMap<>();
 
     // String file_path = "test_files\\warehouse_1.json";
-    String file_path = "test_files\\warehouse_1_size_test.json";
-    // String file_path = "test_files\\warehouse_1_lonely.json";
+    //String file_path = "test_files\\warehouse_1_size_test.json";
+     String file_path = "test_files\\warehouse_1_lonely.json";
 
 
     public Warehouse(long seed) {
@@ -184,6 +184,7 @@ public class Warehouse extends SimState {
         ArrayList<Agent> viableAgents = (ArrayList<Agent>) AgentList.clone();
         viableAgents.removeIf(a -> !canPerform(a, t));
         viableAgents.sort((a,b) -> timeToReach(a, t) - timeToReach(b, t));
+        System.out.println(start + " " + goal);
         Agent a = viableAgents.get(0);
         ArrayList<Task> assigned = tasks.get(a);
         if (assigned != null) {
@@ -343,8 +344,11 @@ public class Warehouse extends SimState {
     }
 
     public boolean canPerform(Agent a, Task t) {
-        Int2D next = PathFinding.aStar(this, t.start, a.pos, a.size, true);
-        if (next.x == 0 && next.y == 0) return false;
+        Int2D next;
+        if (!t.start.equals(a.pos)) {
+            next = PathFinding.aStar(this, t.start, a.pos, a.size, true);
+            if (next.x == 0 && next.y == 0) return false;
+        }
         next = PathFinding.aStar(this, t.finish, t.start, a.size, true);
         if (next.x == 0 && next.y == 0) return false;
         return true;
