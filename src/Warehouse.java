@@ -195,7 +195,7 @@ public class Warehouse extends SimState {
             tasks.put(a, assigned);
             a.setTarget(t.getGoal());
         }
-        System.out.println("Assigned task to " + a);
+        System.out.println("Assigned task to " + a + ", fitness: " + timeToReach(a, t));
     }
 
     public void readJson(String path) {
