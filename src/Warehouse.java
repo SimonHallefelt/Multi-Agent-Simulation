@@ -29,8 +29,8 @@ public class Warehouse extends SimState {
     public IntGrid2D map; // = new IntGrid2D(width, height);
     public SparseGrid2D agents; // = new SparseGrid2D(width, height);
     public SparseGrid2D agentTrail; // = new SparseGrid2D(width, height);
-    private HashMap<Agent, Task> tasks; // = new HashMap<>();
-    ArrayList<Agent> AgentList;
+
+    private ArrayList<Agent> AgentList;
     private ArrayList<Int2D> starts;
     private ArrayList<Int2D> goals;
     private int score;
@@ -38,7 +38,7 @@ public class Warehouse extends SimState {
     Stack<Agent.Trail> trails = new Stack<>();
     long startTime;
 
-    private HashMap<Agent, ArrayList<Task>> tasks_new; // = new HashMap<>();
+    private HashMap<Agent, ArrayList<Task>> tasks; // = new HashMap<>();
 
 
     private Color[] defaultColors = new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.ORANGE, Color.PINK, Color.GRAY, Color.DARK_GRAY};
@@ -129,17 +129,38 @@ public class Warehouse extends SimState {
                 }
             }
         }
-        Task goal = tasks.get(a);
-        if (goal != null) {
+        ArrayList<Task> goals = tasks.get(a);
+        if (goals != null) {
+            Task goal = goals.get(0);
             if (goal.reached(pos.x, pos.y ,agentSize)) {
                 a.score++;
                 score++;
-                assignTask(a);
+                assignNextTask(a);
             }
         }
         return true;
     }
 
+    public void assignNextTask(Agent a) {
+        ArrayList<Task> agentTasks = tasks.get(a);
+        if (agentTasks == null) {
+            System.out.println("Agent " + a + " does not have any tasks");
+            return;
+        }
+        Task current = agentTasks.get(0);
+        if (current.progress()) {
+            agentTasks.remove(0);
+            if (agentTasks.size() == 0) {
+                System.out.println("Agent " + a + " ran out of tasks");
+                tasks.remove(a);
+                return;
+            }
+            current = agentTasks.get(0);
+        }
+        a.setTarget(current.getGoal());
+    }
+
+    /** 
     public void assignTask(Agent a) {
         Task current = tasks.get(a);
         if (current == null || current.progress()) {
@@ -151,6 +172,30 @@ public class Warehouse extends SimState {
             tasks.put(a, current);
         }
         a.setTarget(current.getGoal());
+    }
+    */
+
+    public void assignTask() {
+        int startSize = starts.size();
+        int goalSize = goals.size();
+        Int2D start = starts.get(random.nextInt(startSize));
+        Int2D goal = goals.get(random.nextInt(goalSize));
+        Task t = new Task(start, goal);
+        ArrayList<Agent> viableAgents = (ArrayList<Agent>) AgentList.clone();
+        viableAgents.removeIf(a -> !canPerform(a, t));
+        viableAgents.sort((a,b) -> timeToReach(a, t) - timeToReach(b, t));
+        Agent a = viableAgents.get(0);
+        ArrayList<Task> assigned = tasks.get(a);
+        if (assigned != null) {
+            assigned.add(t);
+        }
+        else {
+            assigned = new ArrayList<>();
+            assigned.add(t);
+            tasks.put(a, assigned);
+            a.setTarget(t.getGoal());
+        }
+        System.out.println("Assigned task to " + a);
     }
 
     public void readJson(String path) {
@@ -260,9 +305,6 @@ public class Warehouse extends SimState {
                 }
             }
         }
-        for (Agent a: AgentList) {
-            assignTask(a);
-        }
         schedule.scheduleRepeating(new AfterEveryStep(), 100, 1);
     }
 
@@ -301,19 +343,25 @@ public class Warehouse extends SimState {
     }
 
     public boolean canPerform(Agent a, Task t) {
-        Int2D next = PathFinding.aStar(null, t.start, a.pos, a.size);
+        Int2D next = PathFinding.aStar(this, t.start, a.pos, a.size, true);
         if (next.x == 0 && next.y == 0) return false;
-        next = PathFinding.aStar(null, t.finish, t.start, a.size);
+        next = PathFinding.aStar(this, t.finish, t.start, a.size, true);
         if (next.x == 0 && next.y == 0) return false;
         return true;
     }
 
     public int timeToReach(Agent a, Task t) {
-        ArrayList<Task> agentTasks = tasks_new.get(a);
-        if (agentTasks.size() > 0) {
-
+        int TTR = 0;
+        Int2D current = a.pos;
+        ArrayList<Task> agentTasks = tasks.get(a);
+        if (agentTasks != null) {
+            for (Task ts: agentTasks) {
+                TTR += ts.getCompletionDistance(current, a.size);
+                current = ts.finish;
+            }
         }
-        return 0;
+        TTR += PathFinding.getDistance(current, t.start, a.size);
+        return TTR;
     }
 
     private class Task {
@@ -340,12 +388,9 @@ public class Warehouse extends SimState {
             return false;
         }
 
-        public int getDistance(Int2D size) {
-            return PathFinding.getDistance(start, finish, size);
-        }
-
-        public int getDistanceBetween(Int2D from, Int2D size) {
-            return PathFinding.getDistance(from, start, size);
+        public int getCompletionDistance(Int2D from, Int2D size) {
+            if (!started) return PathFinding.getDistance(from, start, size) + PathFinding.getDistance(start, finish, size);
+            else return PathFinding.getDistance(from, finish, size);
         }
     }
 }
