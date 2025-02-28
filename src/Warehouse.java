@@ -46,8 +46,8 @@ public class Warehouse extends SimState {
     private HashMap<String, Color> defaultColorIndex = new HashMap<>();
 
     // String file_path = "test_files\\warehouse_1.json";
-    //String file_path = "test_files\\warehouse_1_size_test.json";
-    String file_path = "test_files\\warehouse_1_lonely.json";
+    String file_path = "test_files\\warehouse_1_size_test.json";
+    // String file_path = "test_files\\warehouse_1_lonely.json";
 
 
     public Warehouse(long seed) {
@@ -89,29 +89,28 @@ public class Warehouse extends SimState {
         return numOfAgents + numOfTrails > 0;
     }
 
-    public boolean isOccupied(Int2D pos) {
-        return isWall(pos) || isAgentPresent(pos);
+    public boolean isOccupied(Int2D pos, boolean noAgents) {
+        return isWall(pos) || (isAgentPresent(pos) && !noAgents);
     }
 
-    public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize) {
-        if (delta.x < 0) {
-            for (int d = 0; d < agentSize.y; d++) {
-                if (isOccupied(pos.add(0, d))) return false;
-            }
-        } else if (delta.x > 0) {
-            for (int d = 0; d < agentSize.y; d++) {
-                if (isOccupied(pos.add(agentSize.x-1, d))) return false;
-            }
-        } else if (delta.y < 0) {
-            for (int d = 0; d < agentSize.x; d++) {
-                if (isOccupied(pos.add(d, 0))) return false;
+    public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize, boolean noAgents) {
+        int size = delta.x == 0 ? agentSize.y : agentSize.x;
+        int x = delta.x > 0 ? size-1 : 0;
+        int y = delta.y > 0 ? size-1 : 0;
+        if (delta.x != 0) {
+            for (int d = 0; d < size; d++) {
+                if (isOccupied(pos.add(x, d), noAgents)) return false;
             }
         } else {
-            for (int d = 0; d < agentSize.x; d++) {
-                if (isOccupied(pos.add(d, agentSize.y-1))) return false;
+            for (int d = 0; d < size; d++) {
+                if (isOccupied(pos.add(d, y), noAgents)) return false;
             }
         }
         return true;
+    }
+
+    public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize) {
+        return canMove(pos, delta, agentSize, false);
     }
 
     public boolean move(Agent a, Int2D delta, Int2D agentSize) {

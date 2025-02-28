@@ -37,12 +37,12 @@ public class Agent implements Steppable, Colorable {
     
     @Override
     public void step(SimState state) {
+        if (isMoving) return;
         Warehouse warehouse = (Warehouse) state;
         dir = pickDirection(warehouse);
         // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
         
-        pickDirection(warehouse);
-        if (!isMoving && warehouse.move(this, dir, size)) {
+        if (warehouse.move(this, dir, size)) {
             oldPos = pos;
             pos = pos.add(dir);
             isMoving = true;

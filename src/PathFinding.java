@@ -40,7 +40,7 @@ public class PathFinding {
         return new Int2D(-direction.x,-direction.y);
     }
 
-    public static Int2D aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size) {
+    public static Int2D aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size, boolean noAgents) {
         Int2D endPos = startPos;
         ArrayList<Int2D> dirs = new ArrayList<>(
             Arrays.asList(new Int2D(1,0),new Int2D(-1,0),new Int2D(0,1),new Int2D(0,-1))
@@ -62,7 +62,7 @@ public class PathFinding {
 
                 for (Int2D dir : dirs) {
                     Int2D newPos = pos.add(dir);
-                    if (warehouse.canMove(newPos, dir, size) && 
+                    if (warehouse.canMove(newPos, dir, size, noAgents) && 
                     !reached.containsKey(newPos)) {
                         int dist = Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
                         AStarNode newNode = new AStarNode(dist + node.previousCost+1, node.previousCost+1, pos, newPos);
