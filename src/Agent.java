@@ -7,7 +7,7 @@ import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.util.Int2D;
 
-public class Agent implements Steppable, Colorable {
+public abstract class Agent implements Steppable, Colorable {
     public int score = 0;
     public Int2D pos = new Int2D(0,0);
     public Int2D dir = new Int2D(1,0);
