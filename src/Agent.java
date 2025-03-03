@@ -68,6 +68,10 @@ public abstract class Agent implements Steppable, Colorable {
         return this.timeToCompletedMovement--;
     }
 
+    public int getDelay() {
+        return this.timeToCompletedMovement;
+    }
+
     public Int2D pickDirection(Warehouse warehouse) {
         return PathFinding.randomWalk(warehouse, dir);
     }

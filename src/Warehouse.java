@@ -80,10 +80,11 @@ public class Warehouse extends SimState {
         return agents.numObjectsAtLocation(pos) > 0;
     }
 
-    public HashSet<Int3D> getPathSet() {
+    public HashSet<Int3D> getPathSet(Agent ignore) {
         HashSet<Int3D> set = new HashSet<>();
         for (Agent a: AgentList) {
-            a.path.getPathSet(a.pos,a.moveTime,0);
+            if (a == ignore) continue;
+            set.addAll(a.path.getPathSet(a.size,a.pos,a.moveTime,a.moveTime - a.getDelay()));
         }
         return set;
     }

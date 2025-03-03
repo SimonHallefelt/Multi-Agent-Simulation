@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 
 import sim.util.Int2D;
+import sim.util.Int3D;
 
 public class PathFinding {
 
@@ -120,5 +122,10 @@ public class PathFinding {
         if (dx < 0) dx = Math.min(dx + size.x - 1,0);
         if (dy < 0) dy = Math.min(dy + size.y - 1,0);
         return Math.abs(dx) + Math.abs(dy);
+    }
+
+    
+    public static boolean isTileClaimed(HashSet<Int3D> pathSet, Int2D tile, int timeFromNow) {
+        return pathSet.contains(new Int3D(tile.x,tile.y,timeFromNow));
     }
 }
