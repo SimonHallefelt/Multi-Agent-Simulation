@@ -47,6 +47,7 @@ public class Warehouse extends SimState {
     String file_path = "test_files\\warehouse_2.json";
     // String file_path = "test_files\\warehouse_1_size_test.json";
     // String file_path = "test_files\\warehouse_1_lonely.json";
+    // String file_path = "test_files\\warehouse_simple.json";
 
 
     public Warehouse(long seed) {
@@ -92,14 +93,14 @@ public class Warehouse extends SimState {
     }
 
     public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize, boolean noAgents) {
-        int size = delta.x == 0 ? agentSize.y : agentSize.x;
+        int size = delta.x == 0 ? agentSize.x : agentSize.y;
         if (delta.x != 0) {
-            int x = delta.x > 0 ? size-1 : 0;
+            int x = delta.x > 0 ? agentSize.x-1 : 0;
             for (int d = 0; d < size; d++) {
                 if (isOccupied(pos.add(x, d), noAgents)) return false;
             }
         } else {
-            int y = delta.y > 0 ? size-1 : 0;
+            int y = delta.y > 0 ? agentSize.y-1 : 0;
             for (int d = 0; d < size; d++) {
                 if (isOccupied(pos.add(d, y), noAgents)) return false;
             }
@@ -111,9 +112,10 @@ public class Warehouse extends SimState {
         return canMove(pos, delta, agentSize, false);
     }
 
-    public boolean move(Agent a, Int2D delta, Int2D agentSize) {
+    public boolean move(Agent a, Int2D delta) {
         Int2D loc = agents.getObjectLocation(a);
         Int2D pos = loc.add(delta);
+        Int2D agentSize = a.getAgentSize();
         if (!canMove(pos, delta, agentSize)) return false;
         ArrayList<Agent.AgentClone> agentClones = a.getAgentClones();
         ArrayList<Int2D> oldPositions = new ArrayList<>(Arrays.asList(loc));
