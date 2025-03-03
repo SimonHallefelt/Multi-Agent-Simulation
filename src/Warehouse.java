@@ -62,17 +62,12 @@ public class Warehouse extends SimState {
     }
 
     public void clearTrails() {
-        Stack<Agent.Trail> newTrails = new Stack<>();
-        while(!trails.empty()){
-            Agent.Trail t = trails.pop();
-            if (t.TimeToCompletedMovement() > 0) {
-                newTrails.push(t);
-            } else {
+        for (Agent a : AgentList) {
+            if (a.TimeToCompletedMovement() > 0) continue;
+            for (Agent.Trail t : a.removeTrails()) {
                 agents.remove(t);
-                t.delete();
             }
         }
-        trails = newTrails;
     }
 
     public boolean isWall(Int2D pos) {
