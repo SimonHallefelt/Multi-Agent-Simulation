@@ -109,7 +109,7 @@ public abstract class Agent implements Steppable, Colorable {
             return this.timeToCompletedMovement--;
         }
 
-        public Int2D delate() {
+        public Int2D delete() {
             agent.moveComplet();
             return this.trailPos;
         }

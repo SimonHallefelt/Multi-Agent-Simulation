@@ -67,7 +67,7 @@ public class Warehouse extends SimState {
             if (t.TimeToCompletedMovement() > 0) {
                 newTrails.push(t);
             } else {
-                Int2D pos = t.delate();
+                Int2D pos = t.delete();
                 freeOccupiedTrail(pos);
             }
         }

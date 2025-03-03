@@ -1,8 +1,10 @@
 package src;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import sim.util.Int2D;
+import sim.util.Int3D;
 
 public class Path {
     private ArrayList<Int2D> steps = new ArrayList<>();
@@ -46,5 +48,20 @@ public class Path {
         steps.remove(0);
         positionPath.remove(0);
         return next;
+    }
+
+    public HashSet<Int3D> getPathSet(Int2D previous, int moveTime, int delay) {
+        HashSet<Int3D> set = new HashSet<>();
+        moveTime += 1;
+        int elapsedTime = 0;
+        for (Int2D p: positionPath) {
+            for (int i = 0; i < moveTime; i++) {
+                set.add(new Int3D(previous.x,previous.y,elapsedTime - delay));
+                set.add(new Int3D(p.x,p.y,elapsedTime - delay));
+                elapsedTime++;
+            }
+            previous = p;
+        }
+        return set;
     }
 }
