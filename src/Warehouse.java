@@ -28,7 +28,6 @@ public class Warehouse extends SimState {
     public int num_agents;
     public IntGrid2D map; // = new IntGrid2D(width, height);
     public SparseGrid2D agents; // = new SparseGrid2D(width, height);
-    public SparseGrid2D agentTrail; // = new SparseGrid2D(width, height);
 
     private ArrayList<Agent> AgentList;
     private ArrayList<Int2D> starts;
@@ -55,8 +54,9 @@ public class Warehouse extends SimState {
         this.readJson(file_path);
     }
 
-    public void setOccupiedTrail(Agent.Trail t, Int2D pos) {
-        agentTrail.setObjectLocation(t, pos.x, pos.y);
+    public void addTrail(Agent.Trail t, Int2D pos) {
+        if (agents.numObjectsAtLocation(pos) > 0) return;
+        agents.setObjectLocation(t, pos);
         trails.push(t);
     }
 
@@ -67,15 +67,11 @@ public class Warehouse extends SimState {
             if (t.TimeToCompletedMovement() > 0) {
                 newTrails.push(t);
             } else {
-                Int2D pos = t.delete();
-                freeOccupiedTrail(pos);
+                agents.remove(t);
+                t.delete();
             }
         }
         trails = newTrails;
-    }
-
-    public void freeOccupiedTrail(Int2D pos) {
-        agentTrail.removeObjectsAtLocation(pos);
     }
 
     public boolean isWall(Int2D pos) {
@@ -84,9 +80,7 @@ public class Warehouse extends SimState {
     }
 
     public boolean isAgentPresent(Int2D pos) {
-        int numOfAgents = agents.numObjectsAtLocation(pos);
-        int numOfTrails = agentTrail.numObjectsAtLocation(pos);
-        return numOfAgents + numOfTrails > 0;
+        return agents.numObjectsAtLocation(pos) > 0;
     }
 
     public boolean isOccupied(Int2D pos, boolean noAgents) {
@@ -118,16 +112,20 @@ public class Warehouse extends SimState {
         Int2D pos = loc.add(delta);
         if (!canMove(pos, delta, agentSize)) return false;
         ArrayList<Agent.AgentClone> agentClones = a.getAgentClones();
+        ArrayList<Int2D> oldPositions = new ArrayList<>(Arrays.asList(loc));
         for (int x = 0; x < agentSize.x; x++) {
             for (int y = 0; y < agentSize.y; y++) {
                 if (x == 0 && y == 0) {
-                    agents.setObjectLocation(a, pos.x, pos.y);
+                    agents.setObjectLocation(a, pos);
                 } else {
                     AgentClone ac = agentClones.get(x + y * agentSize.x - 1);
-                    agentClones.get(x + y*agentSize.x - 1).makeTrail(this, agents.getObjectLocation(ac));
+                    oldPositions.add(agents.getObjectLocation(ac));
                     agents.setObjectLocation(ac, pos.x + x, pos.y + y);
                 }
             }
+        }
+        for (Int2D oldPos : oldPositions) {
+            a.makeTrail(this, oldPos);
         }
         tasks.reachedTarget(a, pos);
         return true;
@@ -159,7 +157,6 @@ public class Warehouse extends SimState {
 
         this.map = new IntGrid2D(width, height);
         this.agents = new SparseGrid2D(width, height);
-        this.agentTrail = new SparseGrid2D(width, height);
         this.tasks = new Tasks(this);
         this.starts = new ArrayList<>();
         this.goals = new ArrayList<>();
@@ -262,12 +259,11 @@ public class Warehouse extends SimState {
 
     private Color getDefaultColor(String id) {
         if (defaultColorIndex.containsKey(id)) return defaultColorIndex.get(id);
-        else {
-            defaultColorIndex.put(id, defaultColors[colorIndex]);
-            colorIndex++;
-            if (colorIndex >= defaultColors.length) colorIndex = 0;
-            return defaultColorIndex.get(id);
-        }
+
+        defaultColorIndex.put(id, defaultColors[colorIndex]);
+        colorIndex++;
+        if (colorIndex >= defaultColors.length) colorIndex = 0;
+        return defaultColorIndex.get(id);
     }
 
     public void finish() {

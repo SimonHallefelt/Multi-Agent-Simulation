@@ -17,7 +17,6 @@ public class Gui extends GUIState {
     public JFrame displayFrame;
     ValueGridPortrayal2D warehousePortrayal = new ValueGridPortrayal2D("floor_typ");
     SparseGridPortrayal2D agentPortrayal = new SparseGridPortrayal2D();
-    SparseGridPortrayal2D agentTrailPortrayal = new SparseGridPortrayal2D();
     Color[] color;
     SimpleColorMap simpleColorMap;
     Warehouse warehouse = (Warehouse) state;
@@ -49,10 +48,6 @@ public class Gui extends GUIState {
         simpleColorMap = new SimpleColorMap(color);
         warehousePortrayal.setMap(simpleColorMap);
 
-        // agent trail portrayal
-        agentTrailPortrayal.setField( warehouse.agentTrail );
-        agentTrailPortrayal.setPortrayalForAll( new RectanglePortrayal2D(Color.LIGHT_GRAY) );
-
         // agent portrayal
         agentPortrayal.setField( warehouse.agents );
         agentPortrayal.setPortrayalForAll( new RectanglePortrayal2D() {
@@ -79,7 +74,6 @@ public class Gui extends GUIState {
         c.registerFrame(displayFrame); // so the frame appears in the "Display" list
         displayFrame.setVisible(true);
         display.attach( warehousePortrayal, "Warehouse" );
-        display.attach( agentTrailPortrayal, "AgentTrail" );
         display.attach( agentPortrayal, "Agents" );
     }
 
