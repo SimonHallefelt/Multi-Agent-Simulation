@@ -35,7 +35,6 @@ public class Warehouse extends SimState {
     private ArrayList<Int2D> goals;
     private int score;
     public AgentFactory factory = new AgentFactory();
-    Stack<Agent.Trail> trails = new Stack<>();
     long startTime;
 
 
@@ -58,7 +57,6 @@ public class Warehouse extends SimState {
     public void addTrail(Agent.Trail t, Int2D pos) {
         if (agents.numObjectsAtLocation(pos) > 0) return;
         agents.setObjectLocation(t, pos);
-        trails.push(t);
     }
 
     public void clearTrails() {
