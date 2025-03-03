@@ -38,16 +38,15 @@ public class Warehouse extends SimState {
     Stack<Agent.Trail> trails = new Stack<>();
     long startTime;
 
-    private HashMap<Agent, ArrayList<Task>> tasks; // = new HashMap<>();
-
 
     private Color[] defaultColors = new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.ORANGE, Color.PINK, Color.GRAY, Color.DARK_GRAY};
     private int colorIndex = 0;
     private HashMap<String, Color> defaultColorIndex = new HashMap<>();
+    private Tasks tasks;
 
     // String file_path = "test_files\\warehouse_1.json";
-    //String file_path = "test_files\\warehouse_1_size_test.json";
-     String file_path = "test_files\\warehouse_1_lonely.json";
+    String file_path = "test_files\\warehouse_1_size_test.json";
+    //  String file_path = "test_files\\warehouse_1_lonely.json";
 
 
     public Warehouse(long seed) {
@@ -129,75 +128,12 @@ public class Warehouse extends SimState {
                 }
             }
         }
-        ArrayList<Task> goals = tasks.get(a);
-        if (goals != null) {
-            Task goal = goals.get(0);
-            if (goal.reached(pos.x, pos.y ,agentSize)) {
-                a.score++;
-                score++;
-                assignNextTask(a);
-            }
-        }
+        tasks.reachedTarget(a, pos);
         return true;
     }
 
-    public void assignNextTask(Agent a) {
-        ArrayList<Task> agentTasks = tasks.get(a);
-        if (agentTasks == null) {
-            System.out.println("Agent " + a + " does not have any tasks");
-            return;
-        }
-        Task current = agentTasks.get(0);
-        if (current.progress()) {
-            agentTasks.remove(0);
-            if (agentTasks.size() == 0) {
-                System.out.println("Agent " + a + " ran out of tasks");
-                tasks.remove(a);
-                return;
-            }
-            current = agentTasks.get(0);
-        }
-        a.setTarget(current.getGoal());
-    }
-
-    /** 
-    public void assignTask(Agent a) {
-        Task current = tasks.get(a);
-        if (current == null || current.progress()) {
-            int startSize = starts.size();
-            int goalSize = goals.size();
-            Int2D start = starts.get(random.nextInt(startSize));
-            Int2D goal = goals.get(random.nextInt(goalSize));
-            current = new Task(start, goal);
-            tasks.put(a, current);
-        }
-        a.setTarget(current.getGoal());
-    }
-    */
-
     public void assignTask() {
-        int startSize = starts.size();
-        int goalSize = goals.size();
-        Int2D start = starts.get(random.nextInt(startSize));
-        Int2D goal = goals.get(random.nextInt(goalSize));
-        Task t = new Task(start, goal);
-        ArrayList<Agent> viableAgents = (ArrayList<Agent>) AgentList.clone();
-        viableAgents.removeIf(a -> !canPerform(a, t));
-        viableAgents.sort((a,b) -> timeToReach(a, t) - timeToReach(b, t));
-        //System.out.println(start + " " + goal);
-        if (viableAgents.size() == 0) return;
-        Agent a = viableAgents.get(0);
-        ArrayList<Task> assigned = tasks.get(a);
-        if (assigned != null) {
-            assigned.add(t);
-        }
-        else {
-            assigned = new ArrayList<>();
-            assigned.add(t);
-            tasks.put(a, assigned);
-            a.setTarget(t.getGoal());
-        }
-        //System.out.println("Assigned task to " + a + ", fitness: " + timeToReach(a, t));
+        tasks.assignTask(starts, goals, AgentList);
     }
 
     public void readJson(String path) {
@@ -223,7 +159,7 @@ public class Warehouse extends SimState {
         this.map = new IntGrid2D(width, height);
         this.agents = new SparseGrid2D(width, height);
         this.agentTrail = new SparseGrid2D(width, height);
-        this.tasks = new HashMap<>();
+        this.tasks = new Tasks(this);
         this.starts = new ArrayList<>();
         this.goals = new ArrayList<>();
         this.score = 0;
@@ -310,6 +246,10 @@ public class Warehouse extends SimState {
         schedule.scheduleRepeating(new AfterEveryStep(), 100, 1);
     }
 
+    public void increaseScore() {
+        this.score++;
+    }
+
     public void start() {
         super.start();
         defaultColorIndex = new HashMap<>();
@@ -342,62 +282,5 @@ public class Warehouse extends SimState {
     public static void main(String[] args) {
         doLoop(Warehouse.class, args);
         System.exit(0);
-    }
-
-    public boolean canPerform(Agent a, Task t) {
-        Int2D next;
-        ArrayList<Int2D> path = PathFinding.aStar(this, t.start, a.pos, a.size, true);
-        if (  !t.start.equals(a.pos)) {
-            next = path.get(0).subtract(a.pos);
-            if (next.x == 0 && next.y == 0) return false;
-        }
-        Int2D startPos = path.get(path.size()-1);
-        next = PathFinding.aStar(this, t.finish, startPos, a.size, true).get(0).subtract(startPos);
-        if (next.x == 0 && next.y == 0) return false;
-        return true;
-    }
-
-    public int timeToReach(Agent a, Task t) {
-        int TTR = 0;
-        Int2D current = a.pos;
-        ArrayList<Task> agentTasks = tasks.get(a);
-        if (agentTasks != null) {
-            for (Task ts: agentTasks) {
-                TTR += ts.getCompletionDistance(current, a.size);
-                current = ts.finish;
-            }
-        }
-        TTR += PathFinding.getDistance(current, t.start, a.size);
-        return TTR;
-    }
-
-    private class Task {
-        public Int2D start, finish;
-        public boolean started = false;
-        public Task(Int2D start, Int2D finish) {
-            this.start = start;
-            this.finish = finish;
-        }
-
-        public Int2D getGoal() {
-            if (started) return finish;
-            else return start;
-        }
-
-        public boolean reached(int x, int y, Int2D size) {
-            if (started) return finish.x >= x && finish.x < x + size.x && finish.y >= y && finish.y < y + size.y;
-            else return start.x >= x && start.x < x + size.x && start.y >= y && start.y < y + size.y;
-        }
-
-        public boolean progress() {
-            if (started) return true;
-            started = true;
-            return false;
-        }
-
-        public int getCompletionDistance(Int2D from, Int2D size) {
-            if (!started) return PathFinding.getDistance(from, start, size) + PathFinding.getDistance(start, finish, size);
-            else return PathFinding.getDistance(from, finish, size);
-        }
     }
 }
