@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
@@ -87,6 +88,14 @@ public class Warehouse extends SimState {
         int numOfAgents = agents.numObjectsAtLocation(pos);
         int numOfTrails = agentTrail.numObjectsAtLocation(pos);
         return numOfAgents + numOfTrails > 0;
+    }
+
+    public HashSet<Int3D> getPathSet() {
+        HashSet<Int3D> set = new HashSet<>();
+        for (Agent a: AgentList) {
+            a.path.getPathSet(a.pos,a.moveTime,0);
+        }
+        return set;
     }
 
     public boolean isOccupied(Int2D pos, boolean noAgents) {
