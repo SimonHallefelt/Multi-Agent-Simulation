@@ -59,11 +59,9 @@ public abstract class Agent implements Steppable, Colorable {
         warehouse.addTrail(t, pos);
     }
 
-    public ArrayList<Trail> removeTrails() {
+    public void removeTrails() {
         moveComplete();
-        ArrayList<Trail> t = trails;
         trails = new ArrayList<>();
-        return t;
     }
 
     public int TimeToCompletedMovement() {
@@ -107,6 +105,10 @@ public abstract class Agent implements Steppable, Colorable {
     }
     public int getScore() {
         return score;
+    }
+
+    public ArrayList<Trail> getTrails() {
+        return trails;
     }
 
     @Override
