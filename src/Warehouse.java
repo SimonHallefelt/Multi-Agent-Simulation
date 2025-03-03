@@ -64,9 +64,10 @@ public class Warehouse extends SimState {
     public void clearTrails() {
         for (Agent a : AgentList) {
             if (a.TimeToCompletedMovement() > 0) continue;
-            for (Agent.Trail t : a.removeTrails()) {
+            for (Agent.Trail t : a.getTrails()) {
                 agents.remove(t);
             }
+            a.removeTrails();
         }
     }
 
