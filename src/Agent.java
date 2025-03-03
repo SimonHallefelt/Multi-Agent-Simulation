@@ -15,9 +15,11 @@ public abstract class Agent implements Steppable, Colorable {
     protected int moveTime = 0;
     protected Boolean isMoving = false;
     protected ArrayList<AgentClone> agentClones = new ArrayList<>();
+    protected ArrayList<Trail> trails = new ArrayList<>();
     protected Int2D size = new Int2D(1,1);
     protected Color color = Color.GRAY;
     protected Path path = new Path(target, null);
+    private int timeToCompletedMovement;
 
     public void setColor(Color c) {
         color = c;
@@ -45,13 +47,27 @@ public abstract class Agent implements Steppable, Colorable {
         if (warehouse.move(this, dir, size)) {
             pos = pos.add(dir);
             isMoving = true;
+            timeToCompletedMovement = this.moveTime;
         } else {
             this.path = new Path(target, warehouse);
         }
     }
 
     public void makeTrail(Warehouse warehouse, Int2D pos) {
-        warehouse.addTrail(new Trail(this, this.moveTime, pos), pos);
+        Trail t = new Trail(this);
+        trails.add(t);
+        warehouse.addTrail(t, pos);
+    }
+
+    public ArrayList<Trail> removeTrails() {
+        moveComplete();
+        ArrayList<Trail> t = trails;
+        trails = new ArrayList<>();
+        return t;
+    }
+
+    public int TimeToCompletedMovement() {
+        return this.timeToCompletedMovement--;
     }
 
     public Int2D pickDirection(Warehouse warehouse) {
@@ -66,7 +82,7 @@ public abstract class Agent implements Steppable, Colorable {
         setTarget(i.x, i.y);
     }
 
-    public void moveComplet() {
+    public void moveComplete() {
         this.isMoving = false;
     }
 
@@ -99,22 +115,14 @@ public abstract class Agent implements Steppable, Colorable {
     }
     
     public class Trail implements Colorable {
-        int timeToCompletedMovement;
-        Int2D trailPos;
         Agent agent;
         
-        public Trail(Agent a, int ttcm, Int2D pos) {
-            timeToCompletedMovement = ttcm;
-            trailPos = pos;
+        public Trail(Agent a) {
             agent = a;
         }
 
-        public int TimeToCompletedMovement() {
-            return this.timeToCompletedMovement--;
-        }
-
         public void delete() {
-            agent.moveComplet();
+            agent.moveComplete();
         }
 
         public Agent getAgent() {
