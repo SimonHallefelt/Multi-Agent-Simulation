@@ -90,6 +90,9 @@ public abstract class Agent implements Steppable, Colorable {
     public Int2D getPos() {
         return pos;
     }
+    public int getScore() {
+        return score;
+    }
     
     public class Trail implements Colorable {
         int timeToCompletedMovement;
