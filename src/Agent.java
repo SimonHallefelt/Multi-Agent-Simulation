@@ -43,7 +43,6 @@ public abstract class Agent implements Steppable, Colorable {
         // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
         
         if (warehouse.move(this, dir, size)) {
-            makeTrail(warehouse, pos);
             pos = pos.add(dir);
             isMoving = true;
         } else {
@@ -52,7 +51,7 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
     public void makeTrail(Warehouse warehouse, Int2D pos) {
-        warehouse.setOccupiedTrail(new Trail(this, this.moveTime, pos), pos);
+        warehouse.addTrail(new Trail(this, this.moveTime, pos), pos);
     }
 
     public Int2D pickDirection(Warehouse warehouse) {
@@ -93,6 +92,11 @@ public abstract class Agent implements Steppable, Colorable {
     public int getScore() {
         return score;
     }
+
+    @Override
+    public Color getColor() {
+        return color;
+    }
     
     public class Trail implements Colorable {
         int timeToCompletedMovement;
@@ -109,15 +113,15 @@ public abstract class Agent implements Steppable, Colorable {
             return this.timeToCompletedMovement--;
         }
 
-        public Int2D delete() {
+        public void delete() {
             agent.moveComplet();
-            return this.trailPos;
         }
 
         public Agent getAgent() {
             return agent;
         }
 
+        @Override
         public Color getColor() {
             return Color.LIGHT_GRAY;
         }
@@ -130,10 +134,6 @@ public abstract class Agent implements Steppable, Colorable {
             this.agent = agent;
         }
 
-        public void makeTrail(Warehouse warehouse, Int2D pos) {
-            agent.makeTrail(warehouse, pos);
-        }
-
         public Agent getAgent() {
             return agent;
         }
@@ -142,11 +142,6 @@ public abstract class Agent implements Steppable, Colorable {
         public Color getColor() {
             return agent.getColor();
         }
-    }
-
-    @Override
-    public Color getColor() {
-        return color;
     }
 }
 
