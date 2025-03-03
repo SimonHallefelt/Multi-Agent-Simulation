@@ -52,10 +52,9 @@ public class Path {
 
     public HashSet<Int3D> getPathSet(Int2D previous, int moveTime, int delay) {
         HashSet<Int3D> set = new HashSet<>();
-        moveTime += 1;
         int elapsedTime = 0;
         for (Int2D p: positionPath) {
-            for (int i = 0; i < moveTime; i++) {
+            for (int i = 0; i <= moveTime; i++) {
                 set.add(new Int3D(previous.x,previous.y,elapsedTime - delay));
                 set.add(new Int3D(p.x,p.y,elapsedTime - delay));
                 elapsedTime++;
@@ -63,5 +62,9 @@ public class Path {
             previous = p;
         }
         return set;
+    }
+
+    public boolean isTileClaimed(HashSet<Int3D> pathSet, Int2D tile, int timeFromNow) {
+        return pathSet.contains(new Int3D(tile.x,tile.y,timeFromNow));
     }
 }
