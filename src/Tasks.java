@@ -50,6 +50,7 @@ public class Tasks {
         Int2D start = starts.get(warehouse.random.nextInt(startSize));
         Int2D goal = goals.get(warehouse.random.nextInt(goalSize));
         Task t = new Task(start, goal);
+        @SuppressWarnings("unchecked")
         ArrayList<Agent> viableAgents = (ArrayList<Agent>) AgentList.clone();
         viableAgents.removeIf(a -> !canPerform(a, t));
         viableAgents.sort((a,b) -> timeToReach(a, t) - timeToReach(b, t));
