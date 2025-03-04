@@ -13,6 +13,9 @@ public class AgentFactory {
     public Agent createAgent(int x, int y, String algo, int moveTime, Int2D size) {
         Agent a;
         switch (algo) {
+            case "astarnopathcollision":
+                a = new AStarNoPathCollisionAgent();
+                break;
             case "astar":
                 a = new AStarAgent();
                 break;

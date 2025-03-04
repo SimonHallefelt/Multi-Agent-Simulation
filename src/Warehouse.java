@@ -43,7 +43,8 @@ public class Warehouse extends SimState {
     private Tasks tasks;
 
     // String file_path = "test_files\\warehouse_1.json";
-    String file_path = "test_files\\warehouse_2.json";
+    // String file_path = "test_files\\warehouse_2.json";
+    String file_path = "test_files\\warehouse_3.json";
     // String file_path = "test_files\\warehouse_1_size_test.json";
     // String file_path = "test_files\\warehouse_1_lonely.json";
     // String file_path = "test_files\\warehouse_simple.json";
@@ -82,7 +83,7 @@ public class Warehouse extends SimState {
         HashSet<Int3D> set = new HashSet<>();
         for (Agent a: AgentList) {
             if (a == ignore) continue;
-            set.addAll(a.path.getPathSet(a.size,a.pos,a.moveTime,a.moveTime - a.getDelay()));
+            set.addAll(a.path.getPathSet(a.size,a.pos,a.moveTime,a.getDelay()));
         }
         return set;
     }
@@ -92,6 +93,7 @@ public class Warehouse extends SimState {
     }
 
     public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize, boolean noAgents) {
+        if (delta.x == 0 && delta.y == 0) return true;
         int size = delta.x == 0 ? agentSize.x : agentSize.y;
         if (delta.x != 0) {
             int x = delta.x > 0 ? agentSize.x-1 : 0;

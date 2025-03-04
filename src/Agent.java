@@ -12,8 +12,8 @@ public abstract class Agent implements Steppable, Colorable {
     protected int score = 0;
     protected Int2D pos = new Int2D(0,0);
     protected Int2D dir = new Int2D(1,0);
-    protected Int2D target = new Int2D(0,0);
-    protected int moveTime = 0;
+    protected Int2D target = null;
+    protected int moveTime = 1;
     protected Boolean isMoving = false;
     protected ArrayList<AgentClone> agentClones = new ArrayList<>();
     protected ArrayList<Trail> trails = new ArrayList<>();
@@ -34,7 +34,7 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
     public void setMoveTime(int moveTime) {
-        this.moveTime = moveTime -1;
+        this.moveTime = moveTime;
     }
 
     public void setSize(Int2D size) {
@@ -66,7 +66,7 @@ public abstract class Agent implements Steppable, Colorable {
     
     @Override
     public void step(SimState state) {
-        if (isMoving) return;
+        if (isMoving || target == null) return;
         Warehouse warehouse = (Warehouse) state;
         dir = pickDirection(warehouse);
         // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
@@ -93,7 +93,8 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
     public int TimeToCompletedMovement() {
-        return this.timeToCompletedMovement--;
+        this.timeToCompletedMovement = Math.max(0, this.timeToCompletedMovement-1);
+        return this.timeToCompletedMovement;
     }
 
     public Int2D pickDirection(Warehouse warehouse) {

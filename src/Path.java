@@ -44,8 +44,7 @@ public class Path {
 
     public Int2D pop() {
         if (steps.isEmpty()) return null;
-        Int2D next = steps.get(0);
-        steps.remove(0);
+        Int2D next = steps.remove(0);
         positionPath.remove(0);
         return next;
     }
@@ -53,8 +52,16 @@ public class Path {
     public HashSet<Int3D> getPathSet(Int2D size, Int2D previous, int moveTime, int delay) {
         HashSet<Int3D> set = new HashSet<>();
         int elapsedTime = 0;
+        if (positionPath.size() == 0) {
+                for (int x = 0; x < size.x; x++) {
+                    for (int y = 0; y < size.y; y++) {
+                        set.add(new Int3D(previous.x,previous.y,Integer.MAX_VALUE));
+                    }
+                }
+            elapsedTime++;
+        }
         for (Int2D p: positionPath) {
-            for (int i = 0; i <= moveTime; i++) {
+            for (int i = 0; i < moveTime; i++) {
                 for (int x = 0; x < size.x; x++) {
                     for (int y = 0; y < size.y; y++) {
                         set.add(new Int3D(previous.x,previous.y,elapsedTime - delay));
