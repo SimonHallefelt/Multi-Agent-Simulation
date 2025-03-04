@@ -4,11 +4,49 @@
         "D . . # # # # # # # # # # # # . . E",
         "D . . . . . . . . . . . . . . . . E",
         "D . 1 # # # # # # # # # # # # 1 . E",
+        "# # # # # # # # # # # # # # # # # #",
+        "D . 3 # # # # # # # # # # # # . . E",
+        "D . . . . . . . . . . . . . . . . E",
+        "D . 2 # # # # # # # # # # # # 1 . E",
+        "# # # # # # # # # # # # # # # # # #",
+        "D . 3 . # # # # # # # # # # . . . E",
+        "D . . . . . . . . . . . . . . . . E",
+        "D . 4 4 # # # # # # # # # # 5 5 . E",
+        "# # # # # # # # # # # # # # # # # #",
+        "D . 6 6 # # # # # # # # # # . . . E",
+        "D . 6 6 . . . . . . . . . . . . . E",
+        "D . . . . . . . . . . . . . 6 6 . E",
+        "D . . 3 # # # # # # # # # # 6 6 . E",
         "# # # # # # # # # # # # # # # # # #"
     ],
     "1" : {
         "algo" : "astarnopathcollision",
         "size" : "1,1",
         "moveTime" : "1"
+    },
+    "2" : {
+        "algo" : "astarnopathcollision",
+        "size" : "1,1",
+        "moveTime" : "2"
+    },
+    "3" : {
+        "algo" : "astarnopathcollision",
+        "size" : "1,1",
+        "moveTime" : "3"
+    },
+    "4" : {
+        "algo" : "astarnopathcollision",
+        "size" : "2,1",
+        "moveTime" : "1"
+    },
+    "5" : {
+        "algo" : "astarnopathcollision",
+        "size" : "2,1",
+        "moveTime" : "2"
+    },
+    "6" : {
+        "algo" : "astarnopathcollision",
+        "size" : "2,2",
+        "moveTime" : "2"
     }
 }

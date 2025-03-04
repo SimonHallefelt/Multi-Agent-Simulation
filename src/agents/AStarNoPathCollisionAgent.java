@@ -19,9 +19,9 @@ public class AStarNoPathCollisionAgent extends Agent {
         HashSet<Int3D> othersPaths = warehouse.getPathSet(this);
         ArrayList<Int2D> path = PathFinding.aStarNoPathCollisions(warehouse, this.target, this.pos, this.size, 
                                                                   this.moveTime, othersPaths);
-        if (path.isEmpty()) {
-            path.add(this.pos.add(PathFinding.randomWalk(warehouse, dir)));
-        }
+        
+        if (path.isEmpty()) return PathFinding.randomAccessibleWalk(warehouse, this.pos, this.size);
+
         super.path = new Path(target, warehouse);
         super.path.addNewPositionPath(pos, path);
         return super.path.pop();

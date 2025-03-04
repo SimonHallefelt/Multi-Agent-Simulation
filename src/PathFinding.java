@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
-import java.util.concurrent.TimeUnit;
 
 import sim.util.Int2D;
 import sim.util.Int3D;
@@ -120,7 +119,7 @@ public class PathFinding {
             Arrays.asList(new Int3D(1,0,moveTime),new Int3D(-1,0,moveTime),new Int3D(0,1,moveTime),new Int3D(0,-1,moveTime),new Int3D(0,0,moveTime))
         );
         HashMap<Int3D, Int3D> reached = new HashMap<>();
-        AStarNodeNoPathCollision startNode = new AStarNodeNoPathCollision(0, 0, startPos3d, startPos3d, 0);
+        AStarNodeNoPathCollision startNode = new AStarNodeNoPathCollision(0, 0, startPos3d, startPos3d);
         PriorityQueue<AStarNodeNoPathCollision> pq = new PriorityQueue<>();
         pq.add(startNode);
         
@@ -144,17 +143,22 @@ public class PathFinding {
                     if (warehouse.canMove(newPos2d, new Int2D(dir.x,dir.y), size, true) && 
                     !reached.containsKey(newPos3d)) {
                         for (int i = 0; i < moveTime; i++){
-                            if (isTileClaimed(othersPaths, pos2d, node.previousCost+i) ||
-                            isTileClaimed(othersPaths, newPos2d, node.previousCost+i)) {
-                                continue outerLoop;
+                            for (int x = 0; x < size.x; x++) {
+                                for (int y = 0; y < size.y; y++) {
+                                    if (isTileClaimed(othersPaths, pos2d.add(x,y), node.previousCost+i) ||
+                                    isTileClaimed(othersPaths, newPos2d.add(x,y), node.previousCost+i)) {
+                                        continue outerLoop;
+                                    }
+                                }
                             }
+                            
                         }
                         reachedCounter.put(newPos2d, reachedCounter.getOrDefault(newPos2d, 0)+1);
-                        if (reachedCounter.get(newPos2d) >= 5) continue;
+                        if (reachedCounter.get(newPos2d) > moveTime*5) continue;
 
-                        int wait = dir.equals(new Int3D(0,0,moveTime)) ? 1 : 0;
+                        int delay = dir.equals(new Int3D(0,0,moveTime)) ? 1 : moveTime;
                         int dist = Math.abs(newPos2d.x - target.x) + Math.abs(newPos2d.y - target.y);
-                        AStarNodeNoPathCollision newNode = new AStarNodeNoPathCollision(dist + node.previousCost+moveTime, node.previousCost+moveTime, pos3d, newPos3d, node.waitCounter+wait);
+                        AStarNodeNoPathCollision newNode = new AStarNodeNoPathCollision(dist + node.previousCost+delay, node.previousCost+delay, pos3d, newPos3d);
                         pq.add(newNode);
                     }
                 }
@@ -192,15 +196,14 @@ public class PathFinding {
 
     private static class AStarNodeNoPathCollision implements Comparable<AStarNodeNoPathCollision> {
         // cost to reach, cost before, old position, new position
-        int cost, previousCost, waitCounter;
+        int cost, previousCost;
         Int3D oldPos, pos;
 
-        public AStarNodeNoPathCollision(int cost, int previousCost, Int3D oldPos, Int3D pos, int waitCounter) {
+        public AStarNodeNoPathCollision(int cost, int previousCost, Int3D oldPos, Int3D pos) {
             this.cost = cost;
             this.previousCost = previousCost;
             this.oldPos = oldPos;
             this.pos = pos;
-            this.waitCounter = waitCounter;
         }
 
         @Override

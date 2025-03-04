@@ -138,6 +138,12 @@ public abstract class Agent implements Steppable, Colorable {
     public int getDelay() {
         return this.timeToCompletedMovement;
     }
+    public Int2D getDirection() {
+        return this.dir;
+    }
+    public ArrayList<Int2D> getPathPositionPath() {
+        return this.path.getPositionPath();
+    }
 
     public ArrayList<Trail> getTrails() {
         return trails;
