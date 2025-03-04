@@ -203,7 +203,7 @@ public class Warehouse extends SimState {
                     }
                     sizeString = sizeString[0].split(",");
                     Int2D size = new Int2D(Integer.parseInt(sizeString[0]), Integer.parseInt(sizeString[1]));
-                    Agent a = factory.createAgent(x, y, algo, moveTime, size);
+                    Agent a = factory.createAgent(split[0],x, y, algo, moveTime, size);
                     if (colorString[0].equals("default")) {
                         Color color = getDefaultColor(split[0]);
                         a.setColor(color);
