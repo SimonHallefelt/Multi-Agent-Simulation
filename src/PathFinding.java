@@ -39,6 +39,8 @@ public class PathFinding {
         for (Int2D d: directions) {
             if (warehouse.canMove(position.add(d), d, size)) viableDirections.add(d);
         }
+        int v = viableDirections.size();
+        if (v == 0) return new Int2D(0,0);
         int s = warehouse.random.nextInt(viableDirections.size());
         return viableDirections.get(s);
     }
