@@ -158,10 +158,6 @@ public class PathFinding {
                 }
             }
         }
-        if (startPos3d.equals(endPos3d)) {
-            // System.err.println("start " + startPos3d + " end " + endPos3d);
-            // System.err.println("reached " + reached);
-        }
 
         ArrayList<Int2D> steps = new ArrayList<>();
         Int3D pos = endPos3d;
@@ -170,9 +166,6 @@ public class PathFinding {
             pos = reached.get(pos);
         }
         Collections.reverse(steps);
-        
-        System.err.println("return steps " + steps);
-        System.err.println("target " + target);
         return steps;
     }
 
