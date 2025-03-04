@@ -2,6 +2,8 @@ package src;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -21,6 +23,8 @@ public abstract class Agent implements Steppable, Colorable {
     protected Path path = new Path(target, null);
     private int timeToCompletedMovement;
 
+    private HashMap<Int2D, Integer> visited = new HashMap<>();
+
     public void setColor(Color c) {
         color = c;
     }
@@ -37,6 +41,25 @@ public abstract class Agent implements Steppable, Colorable {
         this.size = size;
     }
     
+    public void increaseScore() {
+        score++;
+        visited.clear();
+    }
+
+    private void checkDeadlock() {
+        if (visited.containsKey(pos)) {
+            int n = visited.get(pos);
+            n++;
+            if (n == 100) System.out.println("What have you done " + pos);
+            if (n == 20) System.out.println("Almost certainly deadlock at " + pos);
+            if (n == 10) System.out.println("Probable deadlock at " + pos);
+            if (n == 5) System.out.println("Possible deadlock at " + pos);
+            visited.put(pos, n);
+        } else {
+            visited.put(pos, 1);
+        }
+    }
+    
     @Override
     public void step(SimState state) {
         if (isMoving) return;
@@ -51,6 +74,7 @@ public abstract class Agent implements Steppable, Colorable {
         } else {
             this.path = new Path(target, warehouse);
         }
+        checkDeadlock();
     }
 
     public void makeTrail(Warehouse warehouse, Int2D pos) {

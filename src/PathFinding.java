@@ -26,6 +26,12 @@ public class PathFinding {
         return dir;
     }
 
+    public static Int2D trueRandomWalk(Warehouse warehouse) {
+        Int2D[] directions = new Int2D[] {new Int2D(1,0), new Int2D(0,1), new Int2D(-1,0), new Int2D(0,-1)};
+        int i = warehouse.random.nextInt(4);
+        return directions[i];
+    }
+
     public static Int2D pacman(Warehouse warehouse, Int2D pos, Int2D target, Int2D direction, Int2D size) {
         ArrayList<Int2D> dirs = new ArrayList<>(
             Arrays.asList(direction, new Int2D(direction.y, direction.x), new Int2D(-direction.y, -direction.x))

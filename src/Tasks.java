@@ -18,7 +18,7 @@ public class Tasks {
         if (goals != null) {
             Task goal = goals.get(0);
             if (goal.reached(pos.x, pos.y , a.getAgentSize())) {
-                a.score++;
+                a.increaseScore();
                 warehouse.increaseScore();
                 assignNextTask(a);
             }
