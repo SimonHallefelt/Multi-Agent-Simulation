@@ -22,6 +22,7 @@ public abstract class Agent implements Steppable, Colorable {
     protected Color color = Color.GRAY;
     protected Path path = new Path(target, null);
     private int timeToCompletedMovement;
+    private String id = "Agent";
 
     private HashMap<Int2D, Integer> visited = new HashMap<>();
 
@@ -40,6 +41,10 @@ public abstract class Agent implements Steppable, Colorable {
     public void setSize(Int2D size) {
         this.size = size;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
     
     public void increaseScore() {
         score++;
@@ -50,10 +55,10 @@ public abstract class Agent implements Steppable, Colorable {
         if (visited.containsKey(pos)) {
             int n = visited.get(pos);
             n++;
-            if (n == 100) System.out.println("What have you done " + pos);
-            if (n == 20) System.out.println("Almost certainly deadlock at " + pos);
-            if (n == 10) System.out.println("Probable deadlock at " + pos);
-            if (n == 5) System.out.println("Possible deadlock at " + pos);
+            if (n == 100) System.out.println(this + ": What have you done " + pos);
+            if (n == 20) System.out.println(this + ": Almost certainly deadlock at " + pos);
+            if (n == 10) System.out.println(this + ": Probable deadlock at " + pos);
+            if (n == 5) System.out.println(this + ": Possible deadlock at " + pos);
             visited.put(pos, n);
         } else {
             visited.put(pos, 1);
@@ -141,6 +146,10 @@ public abstract class Agent implements Steppable, Colorable {
     @Override
     public Color getColor() {
         return color;
+    }
+
+    public String toString() {
+        return id;
     }
     
     public class Trail implements Colorable {
