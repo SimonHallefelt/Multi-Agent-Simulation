@@ -58,6 +58,7 @@ public class PathFinding {
     }
 
     public static Int2D pacman(Warehouse warehouse, Int2D pos, Int2D target, Int2D direction, Int2D size) {
+        direction = direction.x == direction.y ? new Int2D(1,0) : direction;
         ArrayList<Int2D> dirs = new ArrayList<>(
             Arrays.asList(direction, new Int2D(direction.y, direction.x), new Int2D(-direction.y, -direction.x))
         );

@@ -11,6 +11,7 @@ import src.PathFinding;
 import src.Warehouse;
 
 public class AStarNoPathCollisionAgent extends Agent {
+
     @Override
     public void makePath(Warehouse warehouse) {
         HashSet<Int3D> othersPaths = warehouse.getPathSet(this);
@@ -21,8 +22,12 @@ public class AStarNoPathCollisionAgent extends Agent {
             super.path.addStep(PathFinding.randomAccessibleWalk(warehouse, this.pos, this.size));
             return;
         }
-
         super.path = new Path(target);
         super.path.addNewPositionPath(pos, path);
+    }
+
+    @Override
+    public void noTarget(Warehouse warehouse) {
+        path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, pos, size));
     }
 }

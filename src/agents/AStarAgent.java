@@ -17,7 +17,6 @@ public class AStarAgent extends Agent {
             super.path.addStep(PathFinding.randomWalk(warehouse, dir));
             return;
         }
-        
         super.path = new Path(target);
         super.path.addNewPositionPath(pos, path);
     }

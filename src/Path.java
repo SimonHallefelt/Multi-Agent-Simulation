@@ -14,7 +14,7 @@ public class Path {
     private Boolean remakePath = false;
 
     public Path(Int2D startPos) {
-        endPos = startPos;
+        endPos = startPos==null ? new Int2D(0,0) : startPos;
     }
 
     public void addStep(Int2D dir) {

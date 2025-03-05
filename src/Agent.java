@@ -19,9 +19,11 @@ public abstract class Agent implements Steppable, Colorable {
     protected ArrayList<Trail> trails = new ArrayList<>();
     protected Int2D size = new Int2D(1,1);
     protected Color color = Color.GRAY;
-    protected Path path = new Path(target);
+    protected Path path = new Path(pos);
     private int timeToCompletedMovement;
     private String id = "Agent";
+    protected Boolean moveIfBlocking = false;
+
 
     private HashMap<Int2D, Integer> visited = new HashMap<>();
 
@@ -46,11 +48,11 @@ public abstract class Agent implements Steppable, Colorable {
     }
     
     public void setTarget(int x, int y) {
-        this.target = new Int2D(x,y);
+        setTarget(new Int2D(x,y));
     }
 
     public void setTarget(Int2D i) {
-        setTarget(i.x, i.y);
+        target = i;
     }
     
     public void increaseScore() {
@@ -71,12 +73,13 @@ public abstract class Agent implements Steppable, Colorable {
             visited.put(pos, 1);
         }
     }
-    
+
     @Override
     public void step(SimState state) {
-        if (isMoving || target == null) return;
+        if (isMoving) return;
         Warehouse warehouse = (Warehouse) state;
         if (path.getRemakePath()) this.path = new Path(target);
+        if (target == null) noTarget(warehouse);
         if (path.isEmpty()) makePath(warehouse);
         dir = path.pop();
         // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
@@ -89,6 +92,10 @@ public abstract class Agent implements Steppable, Colorable {
             this.path = new Path(target);
         }
         checkDeadlock();
+    }
+
+    public void noTarget(Warehouse warehouse) {
+        path.addStep(new Int2D(0,0));
     }
 
     public void makeTrail(Warehouse warehouse, Int2D pos) {

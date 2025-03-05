@@ -1,6 +1,5 @@
 package src.agents;
 
-import sim.util.Int2D;
 import src.Agent;
 import src.PathFinding;
 import src.Warehouse;
