@@ -32,7 +32,7 @@ public class AgentFactory {
                 break;
         }
         a.setId("agent-" + id + "-" + amount);
-        a.updatePosition(x, y);
+        a.setPosition(x, y);
         a.setMoveTime(moveTime);
         a.setSize(size);
         return a;

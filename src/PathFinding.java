@@ -167,7 +167,7 @@ public class PathFinding {
                             
                         }
                         reachedCounter.put(newPos2d, reachedCounter.getOrDefault(newPos2d, 0)+1);
-                        if (reachedCounter.get(newPos2d) > moveTime*5) continue;
+                        if (reachedCounter.get(newPos2d) > moveTime*10) continue;
 
                         int delay = dir.equals(new Int3D(0,0,moveTime)) ? 1 : moveTime;
                         int dist = Math.abs(newPos2d.x - target.x) + Math.abs(newPos2d.y - target.y);

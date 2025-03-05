@@ -10,26 +10,27 @@ import sim.util.Int3D;
 public class Path {
     private ArrayList<Int2D> steps = new ArrayList<>();
     private ArrayList<Int2D> positionPath = new ArrayList<>();
-    private Int2D tail;
-    private Warehouse warehouse;
+    private Int2D endPos;
+    private Boolean remakePath = false;
 
-    public Path(Int2D start, Warehouse wh) {
-        tail = start;
-        warehouse = wh;
+    public Path(Int2D startPos) {
+        endPos = startPos;
     }
 
-    public boolean addStep (Int2D dir) {
-        Int2D target = tail.add(dir);
-        if (!warehouse.isWall(target)) {
-            steps.add(dir);
-            tail = target;
-            return true;
-        }
-        return false;
+    public void addStep(Int2D dir) {
+        steps.add(dir);
+        endPos = endPos.add(dir);
+        positionPath.add(endPos);
+    }
+
+    public void addNewStepPath(Int2D pos, ArrayList<Int2D> stepPath) {
+        this.steps = stepPath;
+        generatePositionPathFromSteps(pos);
     }
 
     public void addNewPositionPath(Int2D pos, ArrayList<Int2D> positionPath) {
         this.positionPath = positionPath;
+        endPos = positionPath.size() != 0 ? positionPath.get(positionPath.size()-1) : pos;
         generateStepsFromPositionPath(pos);
     }
 
@@ -43,11 +44,19 @@ public class Path {
         }
     }
 
+    private void generatePositionPathFromSteps(Int2D pos) {
+        positionPath = new ArrayList<>();
+        for (Int2D step : steps) {
+            pos = pos.add(step);
+            positionPath.add(pos);
+        }
+        endPos = positionPath.get(positionPath.size()-1);
+    }
+
     public Int2D pop() {
         if (steps.isEmpty()) return null;
-        Int2D next = steps.remove(0);
         positionPath.remove(0);
-        return next;
+        return steps.remove(0);
     }
 
     public HashSet<Int3D> getPathSet(Int2D size, Int2D previous, int moveTime, int delay) {
@@ -127,6 +136,18 @@ public class Path {
 
     public ArrayList<Int2D> getPositionPath() {
         return positionPath;
+    }
+
+    public Boolean getRemakePath() {
+        return remakePath;
+    }
+
+    public void setRemakePath(Boolean remakePath) {
+        this.remakePath = remakePath;
+    }
+
+    public Boolean isEmpty() {
+        return steps.isEmpty();
     }
 
 }

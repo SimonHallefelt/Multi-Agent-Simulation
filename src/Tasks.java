@@ -42,6 +42,7 @@ public class Tasks {
             current = agentTasks.get(0);
         }
         a.setTarget(current.getGoal());
+        a.makeInitialPath(warehouse);
     }
 
     public void assignTask(ArrayList<Int2D> starts, ArrayList<Int2D> goals, ArrayList<Agent> AgentList) {
@@ -67,6 +68,7 @@ public class Tasks {
             tasks.put(a, assigned);
             a.setTarget(t.getGoal());
         }
+        a.makeInitialPath(warehouse);
         //System.out.println("Assigned task to " + a + ", fitness: " + timeToReach(a, t));
     }
 
