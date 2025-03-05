@@ -45,6 +45,19 @@ public class PathFinding {
         return viableDirections.get(s);
     }
 
+    public static Int2D randomUnobstructiveWalk(Warehouse warehouse, Int2D position, Int2D size) {
+        HashMap pathmap = warehouse.getPathMap(null);
+        Int2D[] directions = new Int2D[] {new Int2D(1,0), new Int2D(0,1), new Int2D(-1,0), new Int2D(0,-1), new Int2D(0,0)};
+        ArrayList<Int2D> viableDirections = new ArrayList<>();
+        for (Int2D d: directions) {
+            if (warehouse.canMove(position.add(d), d, size) && !pathmap.containsKey(directions)) viableDirections.add(d);
+        }
+        int v = viableDirections.size();
+        if (v == 0) return randomAccessibleWalk(warehouse, position, size);
+        int s = warehouse.random.nextInt(viableDirections.size());
+        return viableDirections.get(s);
+    }
+
     public static Int2D pacman(Warehouse warehouse, Int2D pos, Int2D target, Int2D direction, Int2D size) {
         ArrayList<Int2D> dirs = new ArrayList<>(
             Arrays.asList(direction, new Int2D(direction.y, direction.x), new Int2D(-direction.y, -direction.x))
