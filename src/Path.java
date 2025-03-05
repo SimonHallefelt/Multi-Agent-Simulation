@@ -56,7 +56,7 @@ public class Path {
         if (positionPath.size() == 0) {
                 for (int x = 0; x < size.x; x++) {
                     for (int y = 0; y < size.y; y++) {
-                        set.add(new Int3D(previous.x,previous.y,Integer.MAX_VALUE));
+                        set.add(new Int3D(previous.x + x,previous.y + y,Integer.MAX_VALUE));
                     }
                 }
             elapsedTime++;
@@ -65,8 +65,8 @@ public class Path {
             for (int i = 0; i < moveTime; i++) {
                 for (int x = 0; x < size.x; x++) {
                     for (int y = 0; y < size.y; y++) {
-                        set.add(new Int3D(previous.x,previous.y,elapsedTime - delay));
-                        set.add(new Int3D(p.x,p.y,elapsedTime - delay));
+                        set.add(new Int3D(previous.x + x,previous.y + y,elapsedTime - delay));
+                        set.add(new Int3D(p.x + x,p.y + y,elapsedTime - delay));
                     }
                 }
                 elapsedTime++;
@@ -123,6 +123,10 @@ public class Path {
         for (Int2D k: secondary.keySet()) {
             primary.merge(k, secondary.get(k), (s1,s2) -> {s1.addAll(s2); return s1;});
         }
+    }
+
+    public ArrayList<Int2D> getPositionPath() {
+        return positionPath;
     }
 
 }
