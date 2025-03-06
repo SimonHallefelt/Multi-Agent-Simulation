@@ -154,8 +154,8 @@ public class PathFinding {
                     Int2D newPos2d = new Int2D(newPos3d.x, newPos3d.y);
                     if (warehouse.canMove(newPos2d, dir, size, true) && 
                     !reached.containsKey(newPos3d)) {
-                        if (!isTilesFree(othersPaths, pos3d, size, node.previousCost, moveTime) ||
-                        !isTilesFree(othersPaths, newPos3d, size, node.previousCost, moveTime)) continue;
+                        if (isTilesClaimed(othersPaths, pos3d, size, node.previousCost, moveTime) ||
+                        isTilesClaimed(othersPaths, newPos3d, size, node.previousCost, moveTime)) continue;
 
                         reachedCounter.put(newPos2d, reachedCounter.getOrDefault(newPos2d, 0)+1);
                         if (reachedCounter.get(newPos2d) > moveTime*10) continue;
@@ -242,7 +242,7 @@ public class PathFinding {
         return  isTileClaimed(pathSet, new Int2D(tile.x,tile.y), timeFromNow);
     }
 
-    public static boolean isTilesFree(PathHandler pathSet, Int3D pos, Int2D size, int startTime, int moveTime) {
+    public static boolean isTilesClaimed(PathHandler pathSet, Int3D pos, Int2D size, int startTime, int moveTime) {
         return pathSet.isTileClaimed(new Int2D(pos.x,pos.y), startTime, size, moveTime);
     }
 }

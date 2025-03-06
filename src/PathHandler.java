@@ -100,13 +100,14 @@ public class PathHandler {
         updateValues();
         HashSet<Integer> times = tileTimeMap.get(tile);
         if (times == null) return false;
-        return times.contains(timeFromNow); // || times.contains(Integer.MAX_VALUE);
+        return times.contains(timeFromNow);
     }
 
     public boolean isTileClaimed(Int2D tile, int timeFromNow, Int2D size) {
         for (int x = 0; x < size.x; x++) {
             for (int y = 0; y < size.y; y++) {
-                if (isTileClaimed(tile.add(size), timeFromNow)) return true;
+                Int2D delta = new Int2D(x,y);
+                if (isTileClaimed(tile.add(delta), timeFromNow)) return true;
             }
         }
         return false;
@@ -114,14 +115,14 @@ public class PathHandler {
 
     public boolean isTileClaimed(Int2D tile, int timeFromNow, int moveTime) {
         for (int i = 0; i < moveTime; i++) {
-            if (isTileClaimed(tile, timeFromNow)) return true;
+            if (isTileClaimed(tile, timeFromNow+i)) return true;
         }
         return false;
     }
 
     public boolean isTileClaimed(Int2D tile, int timeFromNow, Int2D size, int moveTime) {
         for (int i = 0; i < moveTime; i++) {
-            if (isTileClaimed(tile, timeFromNow, size)) return true;
+            if (isTileClaimed(tile, timeFromNow+i, size)) return true;
         }
         return false;
     }
@@ -134,7 +135,8 @@ public class PathHandler {
     public boolean willTileBeClaimed(Int2D tile, Int2D size) {
         for (int x = 0; x < size.x; x++) {
             for (int y = 0; y < size.y; y++) {
-                if (willTileBeClaimed(tile.add(size))) return true;
+                Int2D delta = new Int2D(x,y);
+                if (willTileBeClaimed(tile.add(delta))) return true;
             }
         }
         return false;
@@ -146,5 +148,11 @@ public class PathHandler {
         ph.agentPathMap = (HashMap<Agent,Path>) agentPathMap.clone();
         ph.tileTimeMap = (HashMap<Int2D,HashSet<Integer>>) tileTimeMap.clone();
         return ph;
-    } 
+    }
+
+    public void printDiagnostics() {
+        for(Agent a: agentPathMap.keySet()) {
+            System.out.println(a + ": " +agentPathMap.get(a));
+        }
+    }
 }

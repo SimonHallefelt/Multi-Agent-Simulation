@@ -58,7 +58,7 @@ public class Path {
         positionPath.remove(0);
         return steps.remove(0);
     }
-    
+
     public ArrayList<Int2D> getPositionPath() {
         return positionPath;
     }
@@ -75,4 +75,11 @@ public class Path {
         return steps.isEmpty();
     }
 
+    public String toString() {
+        String s = "";
+        for (Int2D p: positionPath) {
+            s += p;
+        }
+        return s;
+    }
 }
