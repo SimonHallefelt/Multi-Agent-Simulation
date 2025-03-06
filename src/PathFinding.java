@@ -129,8 +129,8 @@ public class PathFinding {
                                                          Int2D size, int moveTime, HashSet<Int3D> othersPaths) {
         Int3D startPos3d = new Int3D(startPos, 0);
         Int3D endPos3d = startPos3d;
-        ArrayList<Int3D> dirs = new ArrayList<>(
-            Arrays.asList(new Int3D(1,0,moveTime),new Int3D(-1,0,moveTime),new Int3D(0,1,moveTime),new Int3D(0,-1,moveTime),new Int3D(0,0,moveTime))
+        ArrayList<Int2D> dirs = new ArrayList<>(
+            Arrays.asList(new Int2D(1,0),new Int2D(-1,0),new Int2D(0,1),new Int2D(0,-1),new Int2D(0,0))
         );
         HashMap<Int3D, Int3D> reached = new HashMap<>();
         AStarNodeNoPathCollision startNode = new AStarNodeNoPathCollision(0, 0, startPos3d, startPos3d);
@@ -142,35 +142,25 @@ public class PathFinding {
         while (!pq.isEmpty()) {
             AStarNodeNoPathCollision node = pq.poll();
             Int3D pos3d = node.pos;
-            Int2D pos2d = new Int2D(pos3d.x,pos3d.y);
             if (!reached.containsKey(pos3d)) {
                 reached.put(pos3d, node.oldPos);
-                if (targetReached(pos2d, size, target)) {
+                if (targetReached(pos3d, size, target)) {
                     endPos3d = pos3d;
                     break;
                 }
 
-                outerLoop: 
-                for (Int3D dir : dirs) {
-                    Int3D newPos3d = pos3d.add(dir);
+                for (Int2D dir : dirs) {
+                    Int3D newPos3d = pos3d.add(dir.x, dir.y, moveTime);
                     Int2D newPos2d = new Int2D(newPos3d.x, newPos3d.y);
-                    if (warehouse.canMove(newPos2d, new Int2D(dir.x,dir.y), size, true) && 
+                    if (warehouse.canMove(newPos2d, dir, size, true) && 
                     !reached.containsKey(newPos3d)) {
-                        for (int i = 0; i < moveTime; i++){
-                            for (int x = 0; x < size.x; x++) {
-                                for (int y = 0; y < size.y; y++) {
-                                    if (isTileClaimed(othersPaths, pos2d.add(x,y), node.previousCost+i) ||
-                                    isTileClaimed(othersPaths, newPos2d.add(x,y), node.previousCost+i)) {
-                                        continue outerLoop;
-                                    }
-                                }
-                            }
-                            
-                        }
+                        if (!isTilesFree(othersPaths, pos3d, size, node.previousCost, moveTime) ||
+                        !isTilesFree(othersPaths, newPos3d, size, node.previousCost, moveTime)) continue;
+
                         reachedCounter.put(newPos2d, reachedCounter.getOrDefault(newPos2d, 0)+1);
                         if (reachedCounter.get(newPos2d) > moveTime*10) continue;
 
-                        int delay = dir.equals(new Int3D(0,0,moveTime)) ? 1 : moveTime;
+                        int delay = dir.equals(dirs.get(4)) ? 1 : moveTime;
                         int dist = Math.abs(newPos2d.x - target.x) + Math.abs(newPos2d.y - target.y);
                         AStarNodeNoPathCollision newNode = new AStarNodeNoPathCollision(dist + node.previousCost+delay, node.previousCost+delay, pos3d, newPos3d);
                         pq.add(newNode);
@@ -231,6 +221,10 @@ public class PathFinding {
         return diff.x < size.x && diff.y < size.y && diff.x >= 0 && diff.y >= 0;
     }
 
+    public static boolean targetReached(Int3D pos, Int2D size, Int2D target) {
+        return targetReached(new Int2D(pos.x,pos.y), size, target);
+    }
+
     public static int getDistance(Int2D start, Int2D finish, Int2D size) {
         int dx = start.x - finish.x;
         int dy = start.y - finish.y;
@@ -242,5 +236,22 @@ public class PathFinding {
     
     public static boolean isTileClaimed(HashSet<Int3D> pathSet, Int2D tile, int timeFromNow) {
         return pathSet.contains(new Int3D(tile.x,tile.y,timeFromNow)) || pathSet.contains(new Int3D(tile.x,tile.y,Integer.MAX_VALUE));
+    }
+
+    public static boolean isTileClaimed(HashSet<Int3D> pathSet, Int3D tile, int timeFromNow) {
+        return  isTileClaimed(pathSet, new Int2D(tile.x,tile.y), timeFromNow);
+    }
+
+    public static boolean isTilesFree(HashSet<Int3D> pathSet, Int3D topRightPos, Int2D size, int startTime, int moveTime) {
+        for (int i = 0; i < moveTime; i++){
+            for (int x = 0; x < size.x; x++) {
+                for (int y = 0; y < size.y; y++) {
+                    if (isTileClaimed(pathSet, topRightPos.add(x,y,0), startTime+i)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 }
