@@ -126,7 +126,7 @@ public class PathFinding {
     }
 
     public static ArrayList<Int2D> aStarNoPathCollisions(Warehouse warehouse, Int2D target, Int2D startPos, 
-                                                         Int2D size, int moveTime, HashSet<Int3D> othersPaths) {
+                                                         Int2D size, int moveTime, PathHandler othersPaths) {
         Int3D startPos3d = new Int3D(startPos, 0);
         Int3D endPos3d = startPos3d;
         ArrayList<Int2D> dirs = new ArrayList<>(
@@ -242,16 +242,7 @@ public class PathFinding {
         return  isTileClaimed(pathSet, new Int2D(tile.x,tile.y), timeFromNow);
     }
 
-    public static boolean isTilesFree(HashSet<Int3D> pathSet, Int3D topRightPos, Int2D size, int startTime, int moveTime) {
-        for (int i = 0; i < moveTime; i++){
-            for (int x = 0; x < size.x; x++) {
-                for (int y = 0; y < size.y; y++) {
-                    if (isTileClaimed(pathSet, topRightPos.add(x,y,0), startTime+i)) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+    public static boolean isTilesFree(PathHandler pathSet, Int3D pos, Int2D size, int startTime, int moveTime) {
+        return pathSet.isTileClaimed(new Int2D(pos.x,pos.y), size, startTime, moveTime);
     }
 }

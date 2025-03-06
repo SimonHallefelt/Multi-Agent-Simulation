@@ -84,26 +84,6 @@ public class Warehouse extends SimState {
         return AgentList;
     }
 
-    public HashSet<Int3D> getPathSet(Agent ignore) {
-        HashSet<Int3D> set = new HashSet<>();
-        for (Agent a: AgentList) {
-            if (a == ignore) continue;
-            set.addAll(a.path.getPathSet(a.size,a.pos,a.moveTime,a.getDelay()));
-        }
-        return set;
-    }
-
-    public HashMap<Int2D,HashSet<Integer>> getPathMap(Agent ignore) {
-        HashMap<Int2D,HashSet<Integer>> map = new HashMap<>();
-        HashMap<Int2D,HashSet<Integer>> map2;
-        for (Agent a: AgentList) {
-            if (a == ignore) continue;
-            map2 = a.path.getPathMap(a.size,a.pos,a.moveTime,a.getDelay());
-            Path.addPathMap(map, map2);
-        }
-        return map;
-    }
-
     public boolean isOccupied(Int2D pos, boolean noAgents) {
         return isWall(pos) || (!noAgents && isAgentPresent(pos));
     }

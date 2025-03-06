@@ -8,13 +8,14 @@ import sim.util.Int3D;
 import src.Agent;
 import src.Path;
 import src.PathFinding;
+import src.PathHandler;
 import src.Warehouse;
 
 public class AStarNoPathCollisionAgent extends Agent {
 
     @Override
     public void makePath(Warehouse warehouse) {
-        HashSet<Int3D> othersPaths = warehouse.getPathSet(this);
+        PathHandler othersPaths = new PathHandler(warehouse, this);
         ArrayList<Int2D> path = PathFinding.aStarNoPathCollisions(warehouse, this.target, this.pos, this.size, 
                                                                   this.moveTime, othersPaths);
         

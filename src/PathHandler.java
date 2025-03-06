@@ -112,6 +112,20 @@ public class PathHandler {
         return false;
     }
 
+    public boolean isTileClaimed(Int2D tile, int timeFromNow, int moveTime) {
+        for (int i = 0; i < moveTime; i++) {
+            if (isTileClaimed(tile, timeFromNow)) return true;
+        }
+        return false;
+    }
+
+    public boolean isTileClaimed(Int2D tile, Int2D size, int timeFromNow, int moveTime) {
+        for (int i = 0; i < moveTime; i++) {
+            if (isTileClaimed(tile, size, timeFromNow)) return true;
+        }
+        return false;
+    }
+
     public boolean willTileBeClaimed(Int2D tile) {
         updateValues();
         return tileTimeMap.containsKey(tile);
