@@ -5,20 +5,43 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import sim.util.Int2D;
-import sim.util.Int3D;
 
 public class PathHandler {
     HashMap<Agent, Path> agentPathMap = new HashMap<>();
     HashMap<Int2D, HashSet<Integer>> tileTimeMap = new HashMap<>();
     boolean cooked = true;
 
+    public PathHandler() {
+
+    }
+
+    public PathHandler(Warehouse w) {
+        this(w, null);
+    }
+
+    public PathHandler(Warehouse w, Agent ignore) {
+        Path p;
+        for (Agent a: w.getAgentList()) {
+            if (a == ignore) continue;
+            p = a.path;
+            addAgentPath(a, p);
+        }
+    }
+
     public void addAgentPath(Agent a, Path p) {
         agentPathMap.put(a, p);
         cooked = false;
     }
 
+    public void removeAgent(Agent a) {
+        agentPathMap.remove(a);
+        cooked = false;
+    }
+
     public void updateValues() {
         if (cooked) return;
+        cooked = true;
+        tileTimeMap.clear();
         HashMap<Int2D, HashSet<Integer>> map;
         for (Agent a: agentPathMap.keySet()) {
             ArrayList<Int2D> p = agentPathMap.get(a).getPositionPath();
@@ -37,10 +60,11 @@ public class PathHandler {
         if (positionPath.size() == 0) {
             for (int x = 0; x < size.x; x++) {
                 for (int y = 0; y < size.y; y++) {
-                    set = map.get(previous);
+                    delta = new Int2D(x,y);
+                    set = map.get(previous.add(delta));
                     if (set == null) {
                         set = new HashSet<>();
-                        map.put(previous, set);
+                        map.put(previous.add(delta), set);
                     }
                     set.add(elapsedTime);
                 }
@@ -73,9 +97,33 @@ public class PathHandler {
     }
 
     public boolean isTileClaimed(Int2D tile, int timeFromNow) {
-        if (!cooked) updateValues();
+        updateValues();
         HashSet<Integer> times = tileTimeMap.get(tile);
-        return times.contains(timeFromNow) || times.contains(Integer.MAX_VALUE);
+        if (times == null) return false;
+        return times.contains(timeFromNow); // || times.contains(Integer.MAX_VALUE);
+    }
+
+    public boolean isTileClaimed(Int2D tile, Int2D size, int timeFromNow) {
+        for (int x = 0; x < size.x; x++) {
+            for (int y = 0; y < size.y; y++) {
+                if (isTileClaimed(tile.add(size), timeFromNow)) return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean willTileBeClaimed(Int2D tile) {
+        updateValues();
+        return tileTimeMap.containsKey(tile);
+    }
+
+    public boolean willTileBeClaimed(Int2D tile, Int2D size) {
+        for (int x = 0; x < size.x; x++) {
+            for (int y = 0; y < size.y; y++) {
+                if (willTileBeClaimed(tile.add(size))) return true;
+            }
+        }
+        return false;
     }
 
     @SuppressWarnings("unchecked")

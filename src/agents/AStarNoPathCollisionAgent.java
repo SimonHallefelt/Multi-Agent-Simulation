@@ -19,7 +19,7 @@ public class AStarNoPathCollisionAgent extends Agent {
                                                                   this.moveTime, othersPaths);
         
         if (path.isEmpty()) {
-            super.path.addStep(PathFinding.randomAccessibleWalk(warehouse, this.pos, this.size));
+            super.path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, this.pos, this.size));
             return;
         }
         super.path = new Path(target);

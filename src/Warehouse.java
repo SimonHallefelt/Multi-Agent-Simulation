@@ -44,8 +44,8 @@ public class Warehouse extends SimState {
 
     // String file_path = "test_files\\warehouse_1.json";
     // String file_path = "test_files\\warehouse_2.json";
-    String file_path = "test_files\\warehouse_2_no_path_collision.json";
-    // String file_path = "test_files\\warehouse_3.json";
+    // String file_path = "test_files\\warehouse_2_no_path_collision.json";
+    String file_path = "test_files\\warehouse_3.json";
     // String file_path = "test_files\\warehouse_1_size_test.json";
     // String file_path = "test_files\\warehouse_1_lonely.json";
     // String file_path = "test_files\\warehouse_simple.json";
@@ -78,6 +78,10 @@ public class Warehouse extends SimState {
 
     public boolean isAgentPresent(Int2D pos) {
         return agents.numObjectsAtLocation(pos) > 0;
+    }
+
+    public List<Agent> getAgentList() {
+        return AgentList;
     }
 
     public HashSet<Int3D> getPathSet(Agent ignore) {
