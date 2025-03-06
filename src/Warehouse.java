@@ -50,20 +50,6 @@ public class Warehouse extends SimState {
     // String file_path = "test_files\\warehouse_1_lonely.json";
     // String file_path = "test_files\\warehouse_simple.json";
 
-    // agent: Agent, score 17
-    // agent: Agent, score 23
-    // agent: Agent, score 26
-    // agent: Agent, score 1
-    // agent: Agent, score 7
-    // agent: Agent, score 10
-    // agent: Agent, score 10
-    // agent: Agent, score 21
-    // agent: Agent, score 2
-    // agent: Agent, score 4
-    
-    // Final score: 121
-    // Elapsed time in milliseconds: 2424
-
 
     public Warehouse(long seed) {
         super(seed);

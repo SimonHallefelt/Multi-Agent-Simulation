@@ -19,9 +19,11 @@ public abstract class Agent implements Steppable, Colorable {
     protected ArrayList<Trail> trails = new ArrayList<>();
     protected Int2D size = new Int2D(1,1);
     protected Color color = Color.GRAY;
-    protected Path path = new Path(target, null);
+    protected Path path = new Path(pos);
     private int timeToCompletedMovement;
     private String id = "Agent";
+    protected Boolean moveIfBlocking = false;
+
 
     private HashMap<Int2D, Integer> visited = new HashMap<>();
 
@@ -29,7 +31,7 @@ public abstract class Agent implements Steppable, Colorable {
         color = c;
     }
 
-    public void updatePosition(int x, int y) {
+    public void setPosition(int x, int y) {
         this.pos = new Int2D(x,y);
     }
 
@@ -43,6 +45,14 @@ public abstract class Agent implements Steppable, Colorable {
 
     public void setId(String id) {
         this.id = id;
+    }
+    
+    public void setTarget(int x, int y) {
+        setTarget(new Int2D(x,y));
+    }
+
+    public void setTarget(Int2D i) {
+        target = i;
     }
     
     public void increaseScore() {
@@ -63,12 +73,15 @@ public abstract class Agent implements Steppable, Colorable {
             visited.put(pos, 1);
         }
     }
-    
+
     @Override
     public void step(SimState state) {
-        if (isMoving || target == null) return;
+        if (isMoving) return;
         Warehouse warehouse = (Warehouse) state;
-        dir = pickDirection(warehouse);
+        if (path.getRemakePath()) this.path = new Path(target);
+        if (target == null) noTarget(warehouse);
+        if (path.isEmpty()) makePath(warehouse);
+        dir = path.pop();
         // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
         
         if (warehouse.move(this, dir)) {
@@ -76,9 +89,13 @@ public abstract class Agent implements Steppable, Colorable {
             isMoving = true;
             timeToCompletedMovement = this.moveTime;
         } else {
-            this.path = new Path(target, warehouse);
+            this.path = new Path(target);
         }
         checkDeadlock();
+    }
+
+    public void noTarget(Warehouse warehouse) {
+        path.addStep(new Int2D(0,0));
     }
 
     public void makeTrail(Warehouse warehouse, Int2D pos) {
@@ -97,16 +114,15 @@ public abstract class Agent implements Steppable, Colorable {
         return this.timeToCompletedMovement;
     }
 
-    public Int2D pickDirection(Warehouse warehouse) {
-        return PathFinding.randomWalk(warehouse, dir);
+    public void makePath(Warehouse warehouse) {
+        path.addStep(PathFinding.randomAccessibleWalk(warehouse, pos, size));
     }
 
-    public void setTarget(int x, int y) {
-        this.target = new Int2D(x,y);
-    }
 
-    public void setTarget(Int2D i) {
-        setTarget(i.x, i.y);
+    public void makeInitialPath(Warehouse warehouse) {
+        if (!this.path.isEmpty()) return;
+        this.path.addNewPositionPath(this.pos, PathFinding.aStar(warehouse, target, pos, size, true));
+        this.path.setRemakePath(true);
     }
 
     public void moveComplete() {
