@@ -38,7 +38,7 @@ public class PathHandler {
         cooked = false;
     }
 
-    public void updateValues() {
+    private void updateValues() {
         if (cooked) return;
         cooked = true;
         tileTimeMap.clear();
@@ -103,7 +103,7 @@ public class PathHandler {
         return times.contains(timeFromNow); // || times.contains(Integer.MAX_VALUE);
     }
 
-    public boolean isTileClaimed(Int2D tile, Int2D size, int timeFromNow) {
+    public boolean isTileClaimed(Int2D tile, int timeFromNow, Int2D size) {
         for (int x = 0; x < size.x; x++) {
             for (int y = 0; y < size.y; y++) {
                 if (isTileClaimed(tile.add(size), timeFromNow)) return true;
@@ -119,9 +119,9 @@ public class PathHandler {
         return false;
     }
 
-    public boolean isTileClaimed(Int2D tile, Int2D size, int timeFromNow, int moveTime) {
+    public boolean isTileClaimed(Int2D tile, int timeFromNow, Int2D size, int moveTime) {
         for (int i = 0; i < moveTime; i++) {
-            if (isTileClaimed(tile, size, timeFromNow)) return true;
+            if (isTileClaimed(tile, timeFromNow, size)) return true;
         }
         return false;
     }

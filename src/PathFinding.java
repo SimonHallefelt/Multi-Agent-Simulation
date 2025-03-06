@@ -243,6 +243,6 @@ public class PathFinding {
     }
 
     public static boolean isTilesFree(PathHandler pathSet, Int3D pos, Int2D size, int startTime, int moveTime) {
-        return pathSet.isTileClaimed(new Int2D(pos.x,pos.y), size, startTime, moveTime);
+        return pathSet.isTileClaimed(new Int2D(pos.x,pos.y), startTime, size, moveTime);
     }
 }
