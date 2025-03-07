@@ -127,53 +127,50 @@ public class PathFinding {
 
     public static ArrayList<Int2D> aStarNoPathCollisions(Warehouse warehouse, Int2D target, Int2D startPos, 
                                                          Int2D size, int moveTime, PathHandler othersPaths) {
-        Int3D startPos3d = new Int3D(startPos, 0);
-        Int3D endPos3d = startPos3d;
-        ArrayList<Int2D> dirs = new ArrayList<>(
-            Arrays.asList(new Int2D(1,0),new Int2D(-1,0),new Int2D(0,1),new Int2D(0,-1),new Int2D(0,0))
+        ArrayList<Int3D> dirs = new ArrayList<>(Arrays.asList(
+            new Int3D(1,0,moveTime),
+            new Int3D(-1,0,moveTime),
+            new Int3D(0,1,moveTime),
+            new Int3D(0,-1,moveTime),
+            new Int3D(0,0,1))
         );
-        HashMap<Int3D, Int3D> reached = new HashMap<>();
-        AStarNodeNoPathCollision startNode = new AStarNodeNoPathCollision(0, 0, startPos3d, startPos3d);
+        HashSet<Int3D> reached = new HashSet<>();
+        AStarNodeNoPathCollision startNode = new AStarNodeNoPathCollision(0, 0, null, startPos);
         PriorityQueue<AStarNodeNoPathCollision> pq = new PriorityQueue<>();
         pq.add(startNode);
-        
+        AStarNodeNoPathCollision endNode = startNode;
         HashMap<Int2D, Integer> reachedCounter = new HashMap<>();
 
         while (!pq.isEmpty()) {
             AStarNodeNoPathCollision node = pq.poll();
-            Int3D pos3d = node.pos;
-            if (!reached.containsKey(pos3d)) {
-                reached.put(pos3d, node.oldPos);
-                if (targetReached(pos3d, size, target)) {
-                    endPos3d = pos3d;
+            if (reached.add(new Int3D(node.pos, node.previousCost))) {
+                if (targetReached(node.pos, size, target)) {
+                    endNode = node;
                     break;
                 }
 
-                for (Int2D dir : dirs) {
-                    Int3D newPos3d = pos3d.add(dir.x, dir.y, moveTime);
-                    Int2D newPos2d = new Int2D(newPos3d.x, newPos3d.y);
-                    if (warehouse.canMove(newPos2d, dir, size, true) && 
-                    !reached.containsKey(newPos3d)) {
-                        if (isTilesClaimed(othersPaths, pos3d, size, node.previousCost, moveTime) ||
-                        isTilesClaimed(othersPaths, newPos3d, size, node.previousCost, moveTime)) continue;
+                for (Int3D dir : dirs) {
+                    Int2D newPos = node.pos.add(dir.x,dir.y);
+                    if (warehouse.canMove(newPos, new Int2D(dir.x,dir.y), size, true) && 
+                    !reached.contains(new Int3D(newPos, node.previousCost+dir.z))) {
+                        if (othersPaths.isTileClaimed(node.pos, node.previousCost, size, dir.z) ||
+                        othersPaths.isTileClaimed(newPos, node.previousCost, size, dir.z)) continue;
 
-                        reachedCounter.put(newPos2d, reachedCounter.getOrDefault(newPos2d, 0)+1);
-                        if (reachedCounter.get(newPos2d) > moveTime*10) continue;
+                        reachedCounter.put(newPos, reachedCounter.getOrDefault(newPos, 0)+1);
+                        if (reachedCounter.get(newPos) > moveTime*10) continue;
 
-                        int delay = dir.equals(dirs.get(4)) ? 1 : moveTime;
-                        int dist = Math.abs(newPos2d.x - target.x) + Math.abs(newPos2d.y - target.y);
-                        AStarNodeNoPathCollision newNode = new AStarNodeNoPathCollision(dist + node.previousCost+delay, node.previousCost+delay, pos3d, newPos3d);
-                        pq.add(newNode);
+                        int dist = Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
+                        pq.add(new AStarNodeNoPathCollision(dist + node.previousCost+dir.z, node.previousCost+dir.z, node, newPos));
                     }
                 }
             }
         }
 
         ArrayList<Int2D> steps = new ArrayList<>();
-        Int3D pos = endPos3d;
-        while (!pos.equals(startPos3d)) {
-            steps.add(new Int2D(pos.x, pos.y));
-            pos = reached.get(pos);
+        AStarNodeNoPathCollision node = endNode;
+        while (node.previousNode != null) {
+            steps.add(node.pos);
+            node = node.previousNode;
         }
         Collections.reverse(steps);
         return steps;
@@ -201,12 +198,13 @@ public class PathFinding {
     private static class AStarNodeNoPathCollision implements Comparable<AStarNodeNoPathCollision> {
         // cost to reach, cost before, old position, new position
         int cost, previousCost;
-        Int3D oldPos, pos;
+        AStarNodeNoPathCollision previousNode; 
+        Int2D pos;
 
-        public AStarNodeNoPathCollision(int cost, int previousCost, Int3D oldPos, Int3D pos) {
+        public AStarNodeNoPathCollision(int cost, int previousCost, AStarNodeNoPathCollision previousNode, Int2D pos) {
             this.cost = cost;
             this.previousCost = previousCost;
-            this.oldPos = oldPos;
+            this.previousNode = previousNode;
             this.pos = pos;
         }
 
@@ -231,18 +229,5 @@ public class PathFinding {
         if (dx < 0) dx = Math.min(dx + size.x - 1,0);
         if (dy < 0) dy = Math.min(dy + size.y - 1,0);
         return Math.abs(dx) + Math.abs(dy);
-    }
-
-    
-    public static boolean isTileClaimed(HashSet<Int3D> pathSet, Int2D tile, int timeFromNow) {
-        return pathSet.contains(new Int3D(tile.x,tile.y,timeFromNow)) || pathSet.contains(new Int3D(tile.x,tile.y,Integer.MAX_VALUE));
-    }
-
-    public static boolean isTileClaimed(HashSet<Int3D> pathSet, Int3D tile, int timeFromNow) {
-        return  isTileClaimed(pathSet, new Int2D(tile.x,tile.y), timeFromNow);
-    }
-
-    public static boolean isTilesClaimed(PathHandler pathSet, Int3D pos, Int2D size, int startTime, int moveTime) {
-        return pathSet.isTileClaimed(new Int2D(pos.x,pos.y), startTime, size, moveTime);
     }
 }
