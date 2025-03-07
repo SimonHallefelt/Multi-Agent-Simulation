@@ -15,7 +15,7 @@ public class AgentFactory {
         amount++;
         Agent a;
         switch (algo) {
-            case "astarnopathcollision":
+            case "aStarSmart":
                 a = new AStarNoPathCollisionAgent();
                 break;
             case "astar":

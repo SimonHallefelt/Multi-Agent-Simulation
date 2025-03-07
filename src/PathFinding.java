@@ -127,13 +127,13 @@ public class PathFinding {
 
     public static ArrayList<Int2D> aStarNoPathCollisions(Warehouse warehouse, Int2D target, Int2D startPos, 
                                                          Int2D size, int moveTime, PathHandler othersPaths) {
-        ArrayList<Int3D> dirs = new ArrayList<>(Arrays.asList(
+        Int3D[] dirs = new Int3D[] {
             new Int3D(1,0,moveTime),
             new Int3D(-1,0,moveTime),
             new Int3D(0,1,moveTime),
             new Int3D(0,-1,moveTime),
-            new Int3D(0,0,1))
-        );
+            new Int3D(0,0,1)
+        };
         HashSet<Int3D> reached = new HashSet<>();
         AStarNodeNoPathCollision startNode = new AStarNodeNoPathCollision(0, 0, null, startPos);
         PriorityQueue<AStarNodeNoPathCollision> pq = new PriorityQueue<>();

@@ -20,32 +20,32 @@
         "# # # # # # # # # # # # # # # # # #"
     ],
     "1" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "1,1",
         "moveTime" : "1"
     },
     "2" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "1,1",
         "moveTime" : "2"
     },
     "3" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "1,1",
         "moveTime" : "3"
     },
     "4" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "2,1",
         "moveTime" : "1"
     },
     "5" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "2,1",
         "moveTime" : "2"
     },
     "6" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "2,2",
         "moveTime" : "2"
     }
