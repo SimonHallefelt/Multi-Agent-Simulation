@@ -23,47 +23,47 @@
         "# # # E E # # # # # E # E E E E # #"
     ],
     "1" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "1,1",
         "moveTime" : "1"
     },
     "2" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "1,1",
         "moveTime" : "2"
     },
     "3" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "2,2",
         "moveTime" : "1"
     },
     "4" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "2,2",
         "moveTime" : "2"
     },
     "5" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "3,3",
         "moveTime" : "2"
     },
     "6" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "1,1",
         "moveTime" : "1"
     },
     "7" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "1,1",
         "moveTime" : "3"
     },
     "8" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "1,2",
         "moveTime" : "2"
     },
     "9" : {
-        "algo" : "astarnopathcollision",
+        "algo" : "aStarSmart",
         "size" : "4,1",
         "moveTime" : "1"
     }
