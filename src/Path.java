@@ -1,11 +1,8 @@
 package src;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 
 import sim.util.Int2D;
-import sim.util.Int3D;
 
 public class Path {
     private ArrayList<Int2D> steps = new ArrayList<>();

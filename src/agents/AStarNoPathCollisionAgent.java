@@ -1,10 +1,8 @@
 package src.agents;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import sim.util.Int2D;
-import sim.util.Int3D;
 import src.Agent;
 import src.Path;
 import src.PathFinding;
@@ -20,7 +18,7 @@ public class AStarNoPathCollisionAgent extends Agent {
                                                                   this.moveTime, othersPaths);
         
         if (path.isEmpty()) {
-            super.path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, this.pos, this.size));
+            super.path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, this, this.pos, this.size));
             return;
         }
         super.path = new Path(target);
@@ -29,6 +27,6 @@ public class AStarNoPathCollisionAgent extends Agent {
 
     @Override
     public void noTarget(Warehouse warehouse) {
-            path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, pos, size));
+        path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, this, pos, size));
     }
 }

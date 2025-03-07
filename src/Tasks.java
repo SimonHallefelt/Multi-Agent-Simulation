@@ -29,14 +29,14 @@ public class Tasks {
     public void assignNextTask(Agent a) {
         ArrayList<Task> agentTasks = tasks.get(a);
         if (agentTasks == null) {
-            System.out.println("Agent " + a + " does not have any tasks");
+            //System.out.println("Agent " + a + " does not have any tasks");
             return;
         }
         Task current = agentTasks.get(0);
         if (current.progress()) {
             agentTasks.remove(0);
             if (agentTasks.size() == 0) {
-                System.out.println("Agent " + a + " ran out of tasks");
+                //System.out.println("Agent " + a + " ran out of tasks");
                 tasks.remove(a);
                 return;
             }
