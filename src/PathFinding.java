@@ -129,8 +129,12 @@ public class PathFinding {
                                                          Int2D size, int moveTime, PathHandler othersPaths) {
         Int3D startPos3d = new Int3D(startPos, 0);
         Int3D endPos3d = startPos3d;
-        ArrayList<Int2D> dirs = new ArrayList<>(
-            Arrays.asList(new Int2D(1,0),new Int2D(-1,0),new Int2D(0,1),new Int2D(0,-1),new Int2D(0,0))
+        ArrayList<Int3D> dirs = new ArrayList<>(Arrays.asList(
+            new Int3D(1,0,moveTime),
+            new Int3D(-1,0,moveTime),
+            new Int3D(0,1,moveTime),
+            new Int3D(0,-1,moveTime),
+            new Int3D(0,0,1))
         );
         HashMap<Int3D, Int3D> reached = new HashMap<>();
         AStarNodeNoPathCollision startNode = new AStarNodeNoPathCollision(0, 0, startPos3d, startPos3d);
@@ -149,21 +153,19 @@ public class PathFinding {
                     break;
                 }
 
-                for (Int2D dir : dirs) {
-                    Int3D newPos3d = pos3d.add(dir.x, dir.y, moveTime);
+                for (Int3D dir : dirs) {
+                    Int3D newPos3d = pos3d.add(dir);
                     Int2D newPos2d = new Int2D(newPos3d.x, newPos3d.y);
-                    if (warehouse.canMove(newPos2d, dir, size, true) && 
+                    if (warehouse.canMove(newPos2d, new Int2D(dir.x,dir.y), size, true) && 
                     !reached.containsKey(newPos3d)) {
-                        if (isTilesClaimed(othersPaths, pos3d, size, node.previousCost, moveTime) ||
-                        isTilesClaimed(othersPaths, newPos3d, size, node.previousCost, moveTime)) continue;
+                        if (othersPaths.isTileClaimed(new Int2D(pos3d.x,pos3d.y), node.previousCost, size, dir.z) ||
+                        othersPaths.isTileClaimed(newPos2d, node.previousCost, size, dir.z)) continue;
 
                         reachedCounter.put(newPos2d, reachedCounter.getOrDefault(newPos2d, 0)+1);
                         if (reachedCounter.get(newPos2d) > moveTime*10) continue;
 
-                        int delay = dir.equals(dirs.get(4)) ? 1 : moveTime;
                         int dist = Math.abs(newPos2d.x - target.x) + Math.abs(newPos2d.y - target.y);
-                        AStarNodeNoPathCollision newNode = new AStarNodeNoPathCollision(dist + node.previousCost+delay, node.previousCost+delay, pos3d, newPos3d);
-                        pq.add(newNode);
+                        pq.add(new AStarNodeNoPathCollision(dist + node.previousCost+dir.z, node.previousCost+dir.z, pos3d, newPos3d));
                     }
                 }
             }
@@ -231,18 +233,5 @@ public class PathFinding {
         if (dx < 0) dx = Math.min(dx + size.x - 1,0);
         if (dy < 0) dy = Math.min(dy + size.y - 1,0);
         return Math.abs(dx) + Math.abs(dy);
-    }
-
-    
-    public static boolean isTileClaimed(HashSet<Int3D> pathSet, Int2D tile, int timeFromNow) {
-        return pathSet.contains(new Int3D(tile.x,tile.y,timeFromNow)) || pathSet.contains(new Int3D(tile.x,tile.y,Integer.MAX_VALUE));
-    }
-
-    public static boolean isTileClaimed(HashSet<Int3D> pathSet, Int3D tile, int timeFromNow) {
-        return  isTileClaimed(pathSet, new Int2D(tile.x,tile.y), timeFromNow);
-    }
-
-    public static boolean isTilesClaimed(PathHandler pathSet, Int3D pos, Int2D size, int startTime, int moveTime) {
-        return pathSet.isTileClaimed(new Int2D(pos.x,pos.y), startTime, size, moveTime);
     }
 }
