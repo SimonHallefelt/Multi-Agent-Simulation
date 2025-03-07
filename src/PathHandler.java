@@ -58,19 +58,6 @@ public class PathHandler {
         HashSet<Integer> set;
         Int2D delta;
         int elapsedTime = 0;
-        if (positionPath.size() == 0) {
-            for (int x = 0; x < size.x; x++) {
-                for (int y = 0; y < size.y; y++) {
-                    delta = new Int2D(x,y);
-                    set = map.get(previous.add(delta));
-                    if (set == null) {
-                        set = new HashSet<>();
-                        map.put(previous.add(delta), set);
-                    }
-                    set.add(elapsedTime);
-                }
-            }
-        }
         for (Int2D p: positionPath) {
             for (int i = 0; i < moveTime; i++) {
                 for (int x = 0; x < size.x; x++) {
@@ -95,6 +82,17 @@ public class PathHandler {
             }
             previous = p;
         }
+        for (int x = 0; x < size.x; x++) {
+            for (int y = 0; y < size.y; y++) {
+                delta = new Int2D(x,y);
+                set = map.get(previous.add(delta));
+                if (set == null) {
+                    set = new HashSet<>();
+                    map.put(previous.add(delta), set);
+                }
+                set.add(Integer.MAX_VALUE);
+            }
+        }
         return map;
     }
 
@@ -102,6 +100,14 @@ public class PathHandler {
         updateValues();
         HashSet<Integer> times = tileTimeMap.get(tile);
         if (times == null) return false;
+        if (times.contains(Integer.MAX_VALUE)) {
+            int highest = 0;
+            for (int i: times) {
+                if (i > highest && i != Integer.MAX_VALUE) highest = i;
+            }
+            if (timeFromNow >= highest) return true;
+            
+        }
         return times.contains(timeFromNow);
     }
 
