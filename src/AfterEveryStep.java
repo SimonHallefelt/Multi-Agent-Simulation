@@ -10,6 +10,7 @@ public class AfterEveryStep implements Steppable {
         Warehouse warehouse = (Warehouse) state;
         warehouse.clearTrails();
         warehouse.assignTask();
+        //System.out.println("-----");
     }
     
 }

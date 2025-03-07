@@ -50,6 +50,7 @@ public class PathHandler {
                 tileTimeMap.merge(k, map.get(k), (s1,s2) -> {s1.addAll(s2); return s1;});
             }
         }
+        //System.out.println(tileTimeMap);
     }
     
     private HashMap<Int2D, HashSet<Integer>> getPathMap(ArrayList<Int2D> positionPath, Int2D size, Int2D previous, int moveTime, int delay) {
@@ -90,6 +91,7 @@ public class PathHandler {
                     }
                 }
                 elapsedTime++;
+                if (p == previous) break;
             }
             previous = p;
         }

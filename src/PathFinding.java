@@ -49,7 +49,7 @@ public class PathFinding {
         Int2D[] directions = new Int2D[] {new Int2D(1,0), new Int2D(0,1), new Int2D(-1,0), new Int2D(0,-1), new Int2D(0,0)};
         ArrayList<Int2D> viableDirections = new ArrayList<>();
         for (Int2D d: directions) {
-            if (warehouse.canMove(position.add(d), d, size) && !ph.willTileBeClaimed(d,size)) viableDirections.add(d);
+            if (warehouse.canMove(position.add(d), d, size) && !ph.willTileBeClaimed(position.add(d),size)) viableDirections.add(d);
         }
         int v = viableDirections.size();
         if (v == 0) return randomAccessibleWalk(warehouse, position, size);
