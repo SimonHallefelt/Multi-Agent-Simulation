@@ -78,7 +78,7 @@ public abstract class Agent implements Steppable, Colorable {
     public void step(SimState state) {
         if (isMoving) return;
         Warehouse warehouse = (Warehouse) state;
-        if (path.getRemakePath()) this.path = new Path(target);
+        if (path.getRemakePath()) this.path = new Path(pos);
         PathHandler pathHandler = new PathHandler(warehouse, this);
         if (target == null) noTarget(warehouse, pathHandler);
         if (path.isEmpty()) {
@@ -90,9 +90,10 @@ public abstract class Agent implements Steppable, Colorable {
         if (warehouse.move(this, dir)) {
             pos = pos.add(dir);
             isMoving = true;
-            timeToCompletedMovement = this.moveTime;
+            if (dir.x != 0 || dir.y != 0) timeToCompletedMovement = this.moveTime;
+            else timeToCompletedMovement = 1;
         } else {
-            this.path = new Path(target);
+            this.path = new Path(pos);
         }
         if (this.target != null) checkDeadlock();
     }

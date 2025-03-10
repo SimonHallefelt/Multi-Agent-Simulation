@@ -68,13 +68,13 @@ public class PathHandler {
                             set = new HashSet<>();
                             map.put(previous.add(delta), set);
                         }
-                        set.add(elapsedTime);
+                        set.add(elapsedTime - delay);
                         set = map.get(p.add(delta));
                         if (set == null) {
                             set = new HashSet<>();
                             map.put(p.add(delta), set);
                         }
-                        set.add(elapsedTime);
+                        set.add(elapsedTime - delay);
                     }
                 }
                 elapsedTime++;
@@ -82,16 +82,19 @@ public class PathHandler {
             }
             previous = p;
         }
-        for (int x = 0; x < size.x; x++) {
-            for (int y = 0; y < size.y; y++) {
-                delta = new Int2D(x,y);
-                set = map.get(previous.add(delta));
-                if (set == null) {
-                    set = new HashSet<>();
-                    map.put(previous.add(delta), set);
+        for (int i = 0; i < moveTime; i++) {
+            for (int x = 0; x < size.x; x++) {
+                for (int y = 0; y < size.y; y++) {
+                    delta = new Int2D(x,y);
+                    set = map.get(previous.add(delta));
+                    if (set == null) {
+                        set = new HashSet<>();
+                        map.put(previous.add(delta), set);
+                    }
+                    set.add(elapsedTime - delay);
                 }
-                set.add(Integer.MAX_VALUE);
             }
+            elapsedTime++;
         }
         return map;
     }
@@ -100,14 +103,6 @@ public class PathHandler {
         updateValues();
         HashSet<Integer> times = tileTimeMap.get(tile);
         if (times == null) return false;
-        if (times.contains(Integer.MAX_VALUE)) {
-            int highest = 0;
-            for (int i: times) {
-                if (i > highest && i != Integer.MAX_VALUE) highest = i;
-            }
-            if (timeFromNow >= highest) return true;
-            
-        }
         return times.contains(timeFromNow);
     }
 
