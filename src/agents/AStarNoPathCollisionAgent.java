@@ -12,21 +12,21 @@ import src.Warehouse;
 public class AStarNoPathCollisionAgent extends Agent {
 
     @Override
-    public void makePath(Warehouse warehouse) {
-        PathHandler othersPaths = new PathHandler(warehouse, this);
+    public boolean makePath(Warehouse warehouse, PathHandler pathHandler) {
         ArrayList<Int2D> path = PathFinding.aStarNoPathCollisions(warehouse, this.target, this.pos, this.size, 
-                                                                  this.moveTime, othersPaths);
+                                                                  this.moveTime, pathHandler);
         
         if (path.isEmpty()) {
-            super.path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, this, this.pos, this.size));
-            return;
+            // super.path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, this.pos, this.size, pathHandler));
+            return false;
         }
         super.path = new Path(target);
         super.path.addNewPositionPath(pos, path);
+        return true;
     }
 
     @Override
-    public void noTarget(Warehouse warehouse) {
-        path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, this, pos, size));
+    public void noTarget(Warehouse warehouse, PathHandler pathHandler) {
+        path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, pos, size, pathHandler));
     }
 }

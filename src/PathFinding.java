@@ -44,8 +44,7 @@ public class PathFinding {
         return viableDirections.get(s);
     }
 
-    public static Int2D randomUnobstructiveWalk(Warehouse warehouse, Agent agent, Int2D position, Int2D size) {
-        PathHandler ph = new PathHandler(warehouse, agent);
+    public static Int2D randomUnobstructiveWalk(Warehouse warehouse, Int2D position, Int2D size, PathHandler ph) {
         Int2D[] directions = new Int2D[] {new Int2D(1,0), new Int2D(0,1), new Int2D(-1,0), new Int2D(0,-1), new Int2D(0,0)};
         ArrayList<Int2D> viableDirections = new ArrayList<>();
         for (Int2D d: directions) {
