@@ -3,6 +3,7 @@ package src;
 import sim.engine.*;
 import sim.util.*;
 import src.Agent.AgentClone;
+import src.injectors.DefaultInjector;
 import sim.field.grid.*;
 
 import java.awt.Color;
@@ -54,6 +55,7 @@ public class Warehouse extends SimState {
 
     public Warehouse(long seed) {
         super(seed);
+        new DefaultInjector().injectAgents();
         this.readJson(file_path);
     }
 

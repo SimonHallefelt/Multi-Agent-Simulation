@@ -7,7 +7,7 @@ public class BeforeEveryStep implements Steppable {
 
     @Override
     public void step(SimState state) {
-        Warehouse warehouse = (Warehouse) state;
+        //Warehouse warehouse = (Warehouse) state;
     }
     
 }

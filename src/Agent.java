@@ -7,6 +7,7 @@ import java.util.HashMap;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.util.Int2D;
+import src.interfaces.Colorable;
 
 public abstract class Agent implements Steppable, Colorable {
     protected int score = 0;

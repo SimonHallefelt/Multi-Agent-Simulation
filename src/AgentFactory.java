@@ -17,25 +17,12 @@ public class AgentFactory {
     public Agent createAgent(String id, int x, int y, String algo, int moveTime, Int2D size) {
         amount++;
         Agent a;
-        if (agents.containsKey(id)) {
-            a = agents.get(id).createAgent();
+        if (agents.containsKey(algo)) {
+            a = agents.get(algo).createAgent();
         }
-        switch (algo) {
-            case "aStarSmart":
-                a = new AStarNoPathCollisionAgent();
-                break;
-            case "astar":
-                a = new AStarAgent();
-                break;
-            case "pacman":
-                a = new PacmanAgent();
-                break;
-            case "randomWalk":
-                a =  new RandomAgent();
-                break;
-            default:
-                a =  new RandomAgent();
-                break;
+        else {
+            System.out.println("WARING: unknown agent type " + id + "!");
+            a =  new RandomAgent();
         }
         a.setId("agent-" + algo + "-" + id + "-" + amount);
         a.setPosition(x, y);

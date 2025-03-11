@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import sim.util.gui.SimpleColorMap;
+import src.interfaces.Colorable;
 
 public class Gui extends GUIState {
     public Display2D display;
