@@ -78,27 +78,35 @@ public abstract class Agent implements Steppable, Colorable {
     public void step(SimState state) {
         if (isMoving) return;
         Warehouse warehouse = (Warehouse) state;
-        if (path.getRemakePath()) this.path = new Path(target);
+        if (path.getRemakePath()) this.path = new Path(pos);
         PathHandler pathHandler = new PathHandler(warehouse, this);
-        if (target == null) noTarget(warehouse, pathHandler);
-        if (path.isEmpty()) {
-            if (!makePath(warehouse, pathHandler)) noTarget(warehouse, pathHandler);;
+        if (target == null) {
+            path = noTarget(warehouse, pathHandler);
         }
+        else if (path.isEmpty()) {
+            path = makePath(warehouse, pathHandler);
+            if (path == null) path = noTarget(warehouse, pathHandler);
+        }
+        if (path == null) path = new Path(pos);
         dir = path.pop();
         // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
+        if (dir == null) dir = new Int2D(0,0);
         
         if (warehouse.move(this, dir)) {
             pos = pos.add(dir);
             isMoving = true;
-            timeToCompletedMovement = this.moveTime;
+            if (dir.x != 0 || dir.y != 0) timeToCompletedMovement = this.moveTime;
+            else timeToCompletedMovement = 1;
         } else {
-            this.path = new Path(target);
+            this.path = new Path(pos);
         }
         if (this.target != null) checkDeadlock();
     }
 
-    public void noTarget(Warehouse warehouse, PathHandler pathHandler) {
+    public Path noTarget(Warehouse warehouse, PathHandler pathHandler) {
+        Path path = new Path(pos);
         path.addStep(new Int2D(0,0));
+        return path;
     }
 
     public void makeTrail(Warehouse warehouse, Int2D pos) {
@@ -117,9 +125,10 @@ public abstract class Agent implements Steppable, Colorable {
         return this.timeToCompletedMovement;
     }
 
-    public boolean makePath(Warehouse warehouse, PathHandler pathHandler) {
+    public Path makePath(Warehouse warehouse, PathHandler pathHandler) {
+        Path path = new Path(pos);
         path.addStep(PathFinding.randomAccessibleWalk(warehouse, pos, size));
-        return true;
+        return path;
     }
 
 

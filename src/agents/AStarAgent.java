@@ -12,13 +12,13 @@ import src.Warehouse;
 public class AStarAgent extends Agent {
     
     @Override
-    public boolean makePath(Warehouse warehouse, PathHandler pathHandler) {
-        ArrayList<Int2D> path = PathFinding.aStar(warehouse, this.target, this.pos, this.size);
-        if (path.get(0).equals(pos)) {
+    public Path makePath(Warehouse warehouse, PathHandler pathHandler) {
+        ArrayList<Int2D> rawPath = PathFinding.aStar(warehouse, this.target, this.pos, this.size);
+        if (rawPath.get(0).equals(pos)) {
             super.path.addStep(PathFinding.randomWalk(warehouse, dir));
-            return false;
+            return null;
         }
-        super.path.addNewPositionPath(pos, path);
-        return true;
+        path.addNewPositionPath(pos, rawPath);
+        return path;
     }
 }
