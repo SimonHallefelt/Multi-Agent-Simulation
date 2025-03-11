@@ -271,13 +271,15 @@ public class Warehouse extends SimState {
     }
 
     public void finish() {
+        AgentList.sort((a1,a2) -> a1.getId().compareTo(a2.getId()));
         for (Agent a: AgentList) {
-            System.out.println("agent: " + a + ", score " + a.score);
+            System.out.println(a + ", score " + a.score);
             // System.out.println ("pos: " + a.pos + ", delta: " + a.delta + ", target: " + a.target + "\n");
         }
         System.out.println("\nFinal score: " + score);
         long elapsedTime = System.currentTimeMillis() - startTime;
         System.out.println("Elapsed time in milliseconds: " + elapsedTime);
+        System.out.println("Number of steps: " + this.schedule.getSteps());
     }
 
     public static void main(String[] args) {

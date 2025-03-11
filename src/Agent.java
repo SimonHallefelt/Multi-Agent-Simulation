@@ -177,15 +177,15 @@ public abstract class Agent implements Steppable, Colorable {
     public ArrayList<Trail> getTrails() {
         return trails;
     }
-    public boolean getRemakePath() {
-        return path.getRemakePath();
+    public String getId() {
+        return id;
     }
 
     @Override
     public Color getColor() {
         return color;
     }
-
+    
     public String toString() {
         return id;
     }

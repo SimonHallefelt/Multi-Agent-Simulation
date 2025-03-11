@@ -6,11 +6,6 @@ import src.agents.*;
 public class AgentFactory {
     int amount = 0;
 
-    
-    public AgentFactory() {
-
-    }
-
     public Agent createAgent(String id, int x, int y, String algo, int moveTime, Int2D size) {
         amount++;
         Agent a;
@@ -31,7 +26,7 @@ public class AgentFactory {
                 a =  new RandomAgent();
                 break;
         }
-        a.setId("agent-" + id + "-" + amount);
+        a.setId("agent-" + algo + "-" + id + "-" + amount);
         a.setPosition(x, y);
         a.setMoveTime(moveTime);
         a.setSize(size);

@@ -20,7 +20,6 @@ public class AStarNoPathCollisionAgent extends Agent {
             // super.path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, this.pos, this.size, pathHandler));
             return null;
         }
-        Path path = new Path(pos);
         path.addNewPositionPath(pos, rawPath);
         return path;
     }
