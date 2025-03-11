@@ -74,16 +74,17 @@ public class Tasks {
     }
 
     public boolean canPerform(Agent a, Task t) {
-        Int2D next;
-        ArrayList<Int2D> path = PathFinding.aStar(warehouse, t.start, a.pos, a.size, true);
-        if (  !t.start.equals(a.pos)) {
-            next = path.get(0).subtract(a.pos);
-            if (next.x == 0 && next.y == 0) return false;
+        Int2D startPos;
+        ArrayList<Int2D> path;
+        if (reached(a.pos, a.size, t.start)) {
+            startPos = a.pos;
+        } else {
+            path = PathFinding.aStar(warehouse, t.start, a.pos, a.size, true);
+            if (path.isEmpty()) return false;
+            startPos = path.get(path.size()-1);
         }
-        Int2D startPos = path.get(path.size()-1);
-        next = PathFinding.aStar(warehouse, t.finish, startPos, a.size, true).get(0).subtract(startPos);
-        if (next.x == 0 && next.y == 0) return false;
-        return true;
+        if (reached(startPos, a.size, t.finish)) return true;
+        return !PathFinding.aStar(warehouse, t.finish, startPos, a.size, true).isEmpty();
     }
 
     public int timeToReach(Agent a, Task t) {
@@ -99,6 +100,10 @@ public class Tasks {
         TTR += PathFinding.getDistance(current, t.start, a.size);
         return TTR;
     } 
+
+    public boolean reached(Int2D pos, Int2D size, Int2D target) {
+        return target.x >= pos.x && target.x < pos.x + size.x && target.y >= pos.y && target.y < pos.y + size.y;
+    }
 
     private class Task {
         public Int2D start, finish;

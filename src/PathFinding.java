@@ -108,10 +108,6 @@ public class PathFinding {
             }
         }
 
-        if (startPos.equals(endPos)) {
-            return new ArrayList<>(Arrays.asList(startPos));
-        }
-
         ArrayList<Int2D> steps = new ArrayList<>();
         Int2D pos = endPos;
         while (!startPos.equals(pos)) {
