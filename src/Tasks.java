@@ -33,9 +33,9 @@ public class Tasks {
             return;
         }
         Task current = agentTasks.get(0);
-        if (current.progress()) {
+        if (current.progress() == 1.0) {
             agentTasks.remove(0);
-            if (agentTasks.size() == 0) {
+            if (agentTasks.isEmpty()) {
                 //System.out.println("Agent " + a + " ran out of tasks");
                 tasks.remove(a);
                 return;
@@ -47,11 +47,7 @@ public class Tasks {
     }
 
     public void assignTask(ArrayList<Int2D> starts, ArrayList<Int2D> goals, ArrayList<Agent> AgentList) {
-        int startSize = starts.size();
-        int goalSize = goals.size();
-        Int2D start = starts.get(warehouse.random.nextInt(startSize));
-        Int2D goal = goals.get(warehouse.random.nextInt(goalSize));
-        Task t = new Task(start, goal);
+        Task t = generateTask(starts, goals, AgentList);
         @SuppressWarnings("unchecked")
         ArrayList<Agent> viableAgents = (ArrayList<Agent>) AgentList.clone();
         viableAgents.removeIf(a -> !canPerform(a, t));
@@ -73,32 +69,39 @@ public class Tasks {
         //System.out.println("Assigned task to " + a + ", fitness: " + timeToReach(a, t));
     }
 
+    public Task generateTask(ArrayList<Int2D> starts, ArrayList<Int2D> goals, ArrayList<Agent> AgentList) {
+        Int2D[] targets = new Int2D[] {
+            starts.get(warehouse.random.nextInt(starts.size())),
+            goals.get(warehouse.random.nextInt(goals.size()))
+        };
+        return new Task(targets);
+    }
+
     public boolean canPerform(Agent a, Task t) {
-        Int2D startPos;
+        Int2D startPos = a.pos;
         ArrayList<Int2D> path;
-        if (reached(a.pos, a.size, t.start)) {
-            startPos = a.pos;
-        } else {
-            path = PathFinding.aStar(warehouse, t.start, a.pos, a.size, true);
-            if (path.isEmpty()) return false;
-            startPos = path.get(path.size()-1);
+        for (Int2D target : t.getTargets()) {
+            if (!reached(startPos, a.size, target)) {
+                path = PathFinding.aStar(warehouse, target, startPos, a.size, true);
+                if (path.isEmpty()) return false;
+                startPos = path.get(path.size()-1);
+            }
         }
-        if (reached(startPos, a.size, t.finish)) return true;
-        return !PathFinding.aStar(warehouse, t.finish, startPos, a.size, true).isEmpty();
+        return true;
     }
 
     public int timeToReach(Agent a, Task t) {
         int TTR = 0;
-        Int2D current = a.pos;
+        Int2D startPos = a.pos;
         ArrayList<Task> agentTasks = tasks.get(a);
         if (agentTasks != null) {
             for (Task ts: agentTasks) {
-                TTR += ts.getCompletionDistance(current, a.size);
-                current = ts.finish;
+                TTR += ts.getCompletionDistance(startPos, a.size);
+                startPos = ts.getLastTarget();
             }
         }
-        TTR += PathFinding.getDistance(current, t.start, a.size);
-        return TTR;
+        TTR += PathFinding.getDistance(startPos, t.getFirstTarget(), a.size);
+        return TTR * a.moveTime;
     } 
 
     public boolean reached(Int2D pos, Int2D size, Int2D target) {
@@ -106,32 +109,50 @@ public class Tasks {
     }
 
     private class Task {
-        public Int2D start, finish;
-        public boolean started = false;
-        public Task(Int2D start, Int2D finish) {
-            this.start = start;
-            this.finish = finish;
+        private Int2D[] targets = new Int2D[] {};
+        private int targetIndex = 0;
+
+        public Task(Int2D[] targets) {
+            this.targets = targets;
         }
 
         public Int2D getGoal() {
-            if (started) return finish;
-            else return start;
+            return targets[targetIndex];
+        }
+
+        public Int2D[] getTargets() {
+            return targets;
+        }
+
+        public Int2D getFirstTarget() {
+            return targets[0];
+        }
+
+        public Int2D getLastTarget() {
+            return targets[targets.length-1];
         }
 
         public boolean reached(int x, int y, Int2D size) {
-            if (started) return finish.x >= x && finish.x < x + size.x && finish.y >= y && finish.y < y + size.y;
-            else return start.x >= x && start.x < x + size.x && start.y >= y && start.y < y + size.y;
-        }
-
-        public boolean progress() {
-            if (started) return true;
-            started = true;
+            Int2D target = getGoal();
+            if (target.x >= x && target.x < x + size.x && target.y >= y && target.y < y + size.y) {
+                targetIndex++;
+                return true;
+            }
             return false;
         }
 
+        public float progress() {
+            return targetIndex / targets.length;
+        }
+
         public int getCompletionDistance(Int2D from, Int2D size) {
-            if (!started) return PathFinding.getDistance(from, start, size) + PathFinding.getDistance(start, finish, size);
-            else return PathFinding.getDistance(from, finish, size);
+            int dist = 0;
+            for (int i = targetIndex; i < targets.length; i++) {
+                Int2D target = targets[targetIndex];
+                dist += PathFinding.getDistance(from, target, size);
+                from = target;
+            }
+            return dist;
         }
     }
 }
