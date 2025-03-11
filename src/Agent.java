@@ -100,7 +100,7 @@ public abstract class Agent implements Steppable, Colorable {
         } else {
             this.path = new Path(pos);
         }
-        if (this.target != null) checkDeadlock();
+        //if (this.target != null) checkDeadlock();
     }
 
     public Path noTarget(Warehouse warehouse, PathHandler pathHandler) {
