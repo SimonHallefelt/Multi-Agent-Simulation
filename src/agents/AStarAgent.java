@@ -21,4 +21,11 @@ public class AStarAgent extends Agent {
         path.addNewPositionPath(pos, rawPath);
         return path;
     }
+
+    @Override
+    public Path noTarget(Warehouse warehouse, PathHandler pathHandler) {
+        Path path = new Path(pos);
+        path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, pos, size, pathHandler));
+        return path;
+    }
 }
