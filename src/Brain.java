@@ -12,4 +12,6 @@ public abstract class Brain {
     public boolean equals(Object other) {
         return this.getClass().equals(other.getClass());
     }
+
+    public abstract void think(Warehouse warehouse);
 }

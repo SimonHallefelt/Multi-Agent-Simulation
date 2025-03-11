@@ -185,6 +185,10 @@ public abstract class Agent implements Steppable, Colorable {
     public Color getColor() {
         return color;
     }
+
+    public Brain getBrain() {
+        return null;
+    }
     
     public String toString() {
         return id;
