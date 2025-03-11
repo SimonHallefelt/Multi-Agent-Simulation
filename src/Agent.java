@@ -78,7 +78,7 @@ public abstract class Agent implements Steppable, Colorable {
     public void step(SimState state) {
         if (isMoving) return;
         Warehouse warehouse = (Warehouse) state;
-        if (path.getRemakePath()) this.path = new Path(pos);
+        if (path.getRemakePath()) path = new Path(pos);
         PathHandler pathHandler = new PathHandler(warehouse, this);
         if (target == null) {
             path = noTarget(warehouse, pathHandler);
@@ -176,6 +176,9 @@ public abstract class Agent implements Steppable, Colorable {
 
     public ArrayList<Trail> getTrails() {
         return trails;
+    }
+    public boolean getRemakePath() {
+        return path.getRemakePath();
     }
 
     @Override

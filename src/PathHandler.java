@@ -57,7 +57,7 @@ public class PathHandler {
         HashMap<Int2D, HashSet<Integer>> map = new HashMap<>();
         HashSet<Integer> set;
         Int2D delta;
-        int elapsedTime = 0;
+        int elapsedTime = moveTime - delay;
         for (Int2D p: positionPath) {
             for (int i = 0; i < moveTime; i++) {
                 for (int x = 0; x < size.x; x++) {
@@ -68,13 +68,13 @@ public class PathHandler {
                             set = new HashSet<>();
                             map.put(previous.add(delta), set);
                         }
-                        set.add(elapsedTime - delay);
+                        set.add(elapsedTime);
                         set = map.get(p.add(delta));
                         if (set == null) {
                             set = new HashSet<>();
                             map.put(p.add(delta), set);
                         }
-                        set.add(elapsedTime - delay);
+                        set.add(elapsedTime);
                     }
                 }
                 elapsedTime++;
@@ -91,7 +91,7 @@ public class PathHandler {
                         set = new HashSet<>();
                         map.put(previous.add(delta), set);
                     }
-                    set.add(elapsedTime - delay);
+                    set.add(elapsedTime);
                 }
             }
             elapsedTime++;
