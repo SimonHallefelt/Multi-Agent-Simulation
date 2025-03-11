@@ -42,9 +42,9 @@ public class Warehouse extends SimState {
     private Tasks tasks;
 
     // String file_path = "test_files\\warehouse_1.json";
-    String file_path = "test_files\\warehouse_2.json";
+    //String file_path = "test_files\\warehouse_2.json";
     // String file_path = "test_files\\warehouse_2_no_path_collision.json";
-    // String file_path = "test_files\\warehouse_3.json";
+    String file_path = "test_files\\warehouse_3.json";
     // String file_path = "test_files\\warehouse_4.json";
     // String file_path = "test_files\\warehouse_4_smart.json";
     // String file_path = "test_files\\warehouse_1_size_test.json";
@@ -164,6 +164,7 @@ public class Warehouse extends SimState {
         this.tasks = new Tasks(this);
         this.starts = new ArrayList<>();
         this.goals = new ArrayList<>();
+        this.factory = new AgentFactory();
         this.score = 0;
 
         HashMap<String, JSONObject> agentTypes = new HashMap<>();
