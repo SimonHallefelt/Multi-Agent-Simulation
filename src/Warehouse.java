@@ -279,6 +279,7 @@ public class Warehouse extends SimState {
         System.out.println("\nFinal score: " + score);
         long elapsedTime = System.currentTimeMillis() - startTime;
         System.out.println("Elapsed time in milliseconds: " + elapsedTime);
+        System.out.println("Number of steps: " + this.schedule.getSteps());
     }
 
     public static void main(String[] args) {
