@@ -17,7 +17,7 @@ public class Tasks {
         ArrayList<Task> goals = tasks.get(a);
         if (goals != null) {
             Task goal = goals.get(0);
-            if (goal.reached(pos.x, pos.y , a.getAgentSize())) {
+            if (goal.reached(pos, a.getAgentSize())) {
                 a.increaseScore();
                 warehouse.increaseScore();
                 a.setTarget(null);
@@ -109,7 +109,7 @@ public class Tasks {
     }
 
     private class Task {
-        private Int2D[] targets = new Int2D[] {};
+        private Int2D[] targets;
         private int targetIndex = 0;
 
         public Task(Int2D[] targets) {
@@ -132,9 +132,9 @@ public class Tasks {
             return targets[targets.length-1];
         }
 
-        public boolean reached(int x, int y, Int2D size) {
+        public boolean reached(Int2D pos, Int2D size) {
             Int2D target = getGoal();
-            if (target.x >= x && target.x < x + size.x && target.y >= y && target.y < y + size.y) {
+            if (target.x >= pos.x && target.x < pos.x + size.x && target.y >= pos.y && target.y < pos.y + size.y) {
                 targetIndex++;
                 return true;
             }
