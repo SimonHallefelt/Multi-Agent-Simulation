@@ -75,9 +75,12 @@ public class PathFinding {
 
     public static ArrayList<Int2D> aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size, boolean noAgents) {
         Int2D endPos = startPos;
-        ArrayList<Int2D> dirs = new ArrayList<>(
-            Arrays.asList(new Int2D(1,0),new Int2D(-1,0),new Int2D(0,1),new Int2D(0,-1))
-        );
+        Int2D[] dirs = new Int2D[] {
+            new Int2D(1,0),
+            new Int2D(-1,0),
+            new Int2D(0,1),
+            new Int2D(0,-1)
+        };
         HashMap<Int2D, Int2D> reached = new HashMap<>();
         AStarNode startNode = new AStarNode(0, 0, startPos, startPos);
         PriorityQueue<AStarNode> pq = new PriorityQueue<>();
