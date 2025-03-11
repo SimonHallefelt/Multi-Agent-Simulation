@@ -26,7 +26,7 @@ public class AgentFactory {
                 a =  new RandomAgent();
                 break;
         }
-        a.setId("agent-" + id + "-" + amount);
+        a.setId("agent-" + algo + "-" + id + "-" + amount);
         a.setPosition(x, y);
         a.setMoveTime(moveTime);
         a.setSize(size);

@@ -271,8 +271,9 @@ public class Warehouse extends SimState {
     }
 
     public void finish() {
+        AgentList.sort((a1,a2) -> a1.getId().compareTo(a2.getId()));
         for (Agent a: AgentList) {
-            System.out.println("agent: " + a + ", score " + a.score);
+            System.out.println(a + ", score " + a.score);
             // System.out.println ("pos: " + a.pos + ", delta: " + a.delta + ", target: " + a.target + "\n");
         }
         System.out.println("\nFinal score: " + score);
