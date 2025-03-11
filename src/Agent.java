@@ -81,14 +81,15 @@ public abstract class Agent implements Steppable, Colorable {
         Warehouse warehouse = (Warehouse) state;
         if (path.getRemakePath()) path = new Path(pos);
         PathHandler pathHandler = new PathHandler(warehouse, this);
+        Path newPath = null;
         if (target == null) {
-            path = noTarget(warehouse, pathHandler);
+            newPath = noTarget(warehouse, pathHandler);
         }
         else if (path.isEmpty()) {
-            path = makePath(warehouse, pathHandler);
-            if (path == null) path = noTarget(warehouse, pathHandler);
+            newPath = makePath(warehouse, pathHandler);
+            if (newPath == null) path = noTarget(warehouse, pathHandler);
         }
-        if (path == null) path = new Path(pos);
+        if (newPath != null) path = newPath;
         dir = path.pop();
         // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
         if (dir == null) dir = new Int2D(0,0);
@@ -98,8 +99,11 @@ public abstract class Agent implements Steppable, Colorable {
             isMoving = true;
             if (dir.x != 0 || dir.y != 0) timeToCompletedMovement = this.moveTime;
             else timeToCompletedMovement = 1;
+            path.setRemakePath(false);
         } else {
-            this.path = new Path(pos);
+            path.backtrack();
+            path.setRemakePath(true);
+            timeToCompletedMovement = 1;
         }
         //if (this.target != null) checkDeadlock();
     }

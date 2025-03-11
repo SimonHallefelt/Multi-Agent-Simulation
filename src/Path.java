@@ -9,6 +9,8 @@ public class Path {
     private ArrayList<Int2D> positionPath = new ArrayList<>();
     private Int2D endPos;
     private Boolean remakePath = false;
+    private Int2D poppedPos;
+    private Int2D poppedDir;
 
     public Path(Int2D startPos) {
         endPos = startPos==null ? new Int2D(0,0) : startPos;
@@ -52,8 +54,9 @@ public class Path {
 
     public Int2D pop() {
         if (steps.isEmpty()) return null;
-        positionPath.remove(0);
-        return steps.remove(0);
+        poppedPos = positionPath.remove(0);
+        poppedDir = steps.remove(0);
+        return poppedDir;
     }
 
     public ArrayList<Int2D> getPositionPath() {
@@ -78,5 +81,13 @@ public class Path {
             s += p;
         }
         return s;
+    }
+
+    public void backtrack() {
+        // TODO Auto-generated method stub
+        if (poppedDir == null) return;
+        positionPath.add(0, poppedPos);
+        steps.add(0, poppedDir);
+        poppedDir = null;
     }
 }
