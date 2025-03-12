@@ -21,7 +21,7 @@ public class AgentFactory {
             a = agents.get(algo).createAgent();
         }
         else {
-            System.out.println("WARING: unknown agent type " + id + "!");
+            System.out.println("WARING: unknown agent type " + algo + "!");
             a =  new RandomAgent();
         }
         a.setId("agent-" + algo + "-" + id + "-" + amount);
