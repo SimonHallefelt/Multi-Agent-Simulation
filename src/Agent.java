@@ -24,6 +24,7 @@ public abstract class Agent implements Steppable, Colorable {
     private int timeToCompletedMovement;
     private String id = "Agent";
     protected Boolean moveIfBlocking = false;
+    boolean debug = false;
 
 
     private HashMap<Int2D, Integer> visited = new HashMap<>();
@@ -47,6 +48,14 @@ public abstract class Agent implements Steppable, Colorable {
     public void setId(String id) {
         this.id = id;
     }
+
+    public void setDebug(boolean d) {
+        debug = d;
+    }
+
+    public boolean getDebug() {
+        return debug;
+    }
     
     public void setTarget(int x, int y) {
         setTarget(new Int2D(x,y));
@@ -54,6 +63,11 @@ public abstract class Agent implements Steppable, Colorable {
 
     public void setTarget(Int2D i) {
         target = i;
+    }
+
+    
+    public boolean getRemakePath() {
+        return path.getRemakePath();
     }
     
     public void increaseScore() {
@@ -103,9 +117,11 @@ public abstract class Agent implements Steppable, Colorable {
         } else {
             path.backtrack();
             path.setRemakePath(true);
+            // path = new Path(pos);
+            if (debug) System.out.println(id + ": agent could not move to " + pos.add(dir) + "(" + dir + ")");
             timeToCompletedMovement = 1;
         }
-        //if (this.target != null) checkDeadlock();
+        if (debug) if (this.target != null) checkDeadlock();
     }
 
     public Path noTarget(Warehouse warehouse, PathHandler pathHandler) {
@@ -133,6 +149,7 @@ public abstract class Agent implements Steppable, Colorable {
     public Path makePath(Warehouse warehouse, PathHandler pathHandler) {
         Path path = new Path(pos);
         path.addStep(PathFinding.randomAccessibleWalk(warehouse, pos, size));
+        if (debug) System.out.println(id +": created initial path " + path);
         return path;
     }
 

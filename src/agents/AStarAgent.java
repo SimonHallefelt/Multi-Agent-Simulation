@@ -13,9 +13,9 @@ public class AStarAgent extends Agent {
     
     @Override
     public Path makePath(Warehouse warehouse, PathHandler pathHandler) {
+        Path path = new Path(pos);
         ArrayList<Int2D> rawPath = PathFinding.aStar(warehouse, this.target, this.pos, this.size);
         if (rawPath.isEmpty()) {
-            super.path.addStep(PathFinding.randomWalk(warehouse, dir));
             return null;
         }
         path.addNewPositionPath(pos, rawPath);
