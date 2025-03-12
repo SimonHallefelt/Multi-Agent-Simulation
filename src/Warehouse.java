@@ -52,7 +52,7 @@ public class Warehouse extends SimState {
     // String file_path = "test_files\\warehouse_4_smart.json";
     // String file_path = "test_files\\warehouse_simple.json";
 
-    static String default_file_path = "test_files\\warehouse_4_smart.json";
+    static String default_file_path = "test_files\\warehouse_3.json";
 
 
     public Warehouse(long seed) {

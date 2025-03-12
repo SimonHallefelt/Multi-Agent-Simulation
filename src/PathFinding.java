@@ -73,7 +73,7 @@ public class PathFinding {
         return new Int2D(-direction.x,-direction.y);
     }
     
-    public static ArrayList<Int2D> moveOutOfWay(Warehouse warehouse, PathHandler pathHandler, Int2D startPos, Int2D size, boolean noAgents) {
+    public static ArrayList<Int2D> moveOutOfWay(Warehouse warehouse, PathHandler pathHandler, Int2D startPos, Int2D size, int moveTime) {
         Int2D endPos = startPos;
         Int2D[] dirs = new Int2D[] {
             new Int2D(1,0),
@@ -99,10 +99,11 @@ public class PathFinding {
 
                 for (Int2D dir : dirs) {
                     Int2D newPos = pos.add(dir);
-                    if (warehouse.canMove(newPos, dir, size, noAgents) && 
-                    !reached.containsKey(newPos)) {
-                        int dist = 10;//Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
-                        AStarNode newNode = new AStarNode(dist + node.previousCost+1, node.previousCost+1, pos, newPos);
+                    if (warehouse.canMove(newPos, dir, size, true) && 
+                    !reached.containsKey(newPos) && 
+                    pathHandler.isTileClaimed(newPos,node.previousCost,size,moveTime)) {
+                        int safety = node.previousCost * moveTime - pathHandler.nextClaim(newPos);//Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
+                        AStarNode newNode = new AStarNode(safety, node.previousCost+1, pos, newPos);
                         pq.add(newNode);
                     }
                 }

@@ -67,6 +67,7 @@ public abstract class Agent implements Steppable, Colorable {
 
     public void setTarget(Int2D i) {
         target = i;
+        if (debug) System.out.println(id + ": new target " + i);
     }
 
     
@@ -107,7 +108,10 @@ public abstract class Agent implements Steppable, Colorable {
             newPath = makePath(warehouse, pathHandler);
             if (newPath == null) path = noTarget(warehouse, pathHandler);
         }
-        if (newPath != null) path = newPath;
+        if (newPath != null) {
+            path = newPath;
+            if (debug) System.out.println(id + ": " + getPathPositionPath());
+        }
         dir = path.pop();
         // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
         if (dir == null) dir = new Int2D(0,0);

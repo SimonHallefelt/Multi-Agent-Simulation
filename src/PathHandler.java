@@ -212,7 +212,12 @@ public class PathHandler {
     public int nextClaim(Int2D tile) {
         updateValues();
         if (tileTimeMap.containsKey(tile)) {
-            
+            HashSet<Integer> set = tileTimeMap.get(tile);
+            int smallest = Integer.MAX_VALUE;
+            for (int i : set) {
+                if (smallest > i) smallest = i;
+            }
+            return smallest;
         }
         return Integer.MAX_VALUE;
     }
