@@ -59,6 +59,11 @@ public class Path {
         return poppedDir;
     }
 
+    public Int2D peek() {
+        if (steps.isEmpty()) return null;
+        return steps.get(0);
+    }
+
     public ArrayList<Int2D> getPositionPath() {
         return positionPath;
     }

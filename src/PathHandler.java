@@ -45,7 +45,7 @@ public class PathHandler {
         HashMap<Int2D, HashSet<Integer>> map;
         for (Agent a: agentPathMap.keySet()) {
             ArrayList<Int2D> p = agentPathMap.get(a).getPositionPath();
-            map = getPathMap(p, a.size, a.pos, a.moveTime, a.getDelay());
+            map = generatePathMap(p, a.size, a.pos, a.moveTime, a.getDelay());
             for (Int2D k: map.keySet()) {
                 tileTimeMap.merge(k, map.get(k), (s1,s2) -> {s1.addAll(s2); return s1;});
             }
@@ -53,7 +53,7 @@ public class PathHandler {
         //System.out.println(tileTimeMap);
     }
     
-    private HashMap<Int2D, HashSet<Integer>> getPathMap(ArrayList<Int2D> positionPath, Int2D size, Int2D previous, int moveTime, int delay) {
+    private HashMap<Int2D, HashSet<Integer>> generatePathMap(ArrayList<Int2D> positionPath, Int2D size, Int2D previous, int moveTime, int delay) {
         HashMap<Int2D, HashSet<Integer>> map = new HashMap<>();
         HashSet<Integer> set;
         Int2D delta;
