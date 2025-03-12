@@ -16,7 +16,8 @@ public class PathFindingTests {
     public void test_trueRandomWalk_1() {
         int n = 100000;
         Warehouse warehouse = new Warehouse(0);
-        HashMap<Int2D, Integer> counter = new HashMap<>() {{
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        HashMap<Int2D, Integer> counter = new HashMap() {{
             put(new Int2D(1, 0), 0);
             put(new Int2D(-1, 0), 0);
             put(new Int2D(0, 1), 0);

@@ -212,7 +212,7 @@ public class PathHandler {
     public int nextClaim(Int2D tile) {
         updateValues();
         if (tileTimeMap.containsKey(tile)) {
-
+            
         }
         return Integer.MAX_VALUE;
     }
