@@ -33,8 +33,12 @@ public abstract class Agent implements Steppable, Colorable {
         color = c;
     }
 
+    public void setPosition(Int2D pos) {
+        this.pos = pos;
+    }
+
     public void setPosition(int x, int y) {
-        this.pos = new Int2D(x,y);
+        setPosition(new Int2D(x,y));
     }
 
     public void setMoveTime(int moveTime) {
@@ -109,7 +113,6 @@ public abstract class Agent implements Steppable, Colorable {
         if (dir == null) dir = new Int2D(0,0);
         
         if (warehouse.move(this, dir)) {
-            pos = pos.add(dir);
             isMoving = true;
             if (dir.x != 0 || dir.y != 0) timeToCompletedMovement = this.moveTime;
             else timeToCompletedMovement = 1;
