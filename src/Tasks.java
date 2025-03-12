@@ -33,7 +33,7 @@ public class Tasks {
             return;
         }
         Task current = agentTasks.get(0);
-        if (current.progress() == 1.0) {
+        if (current.complete()) {
             agentTasks.remove(0);
             if (agentTasks.isEmpty()) {
                 //System.out.println("Agent " + a + " ran out of tasks");
@@ -141,8 +141,8 @@ public class Tasks {
             return false;
         }
 
-        public float progress() {
-            return targetIndex / targets.length;
+        public boolean complete() {
+            return targetIndex == targets.length;
         }
 
         public int getCompletionDistance(Int2D from, Int2D size) {
