@@ -209,6 +209,14 @@ public class PathHandler {
         return false;
     }
 
+    public int nextClaim(Int2D tile) {
+        updateValues();
+        if (tileTimeMap.containsKey(tile)) {
+
+        }
+        return Integer.MAX_VALUE;
+    }
+
     @SuppressWarnings("unchecked")
     public PathHandler clone() {
         PathHandler ph = new PathHandler();

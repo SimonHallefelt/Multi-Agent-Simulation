@@ -73,7 +73,7 @@ public class PathFinding {
         return new Int2D(-direction.x,-direction.y);
     }
     
-    public static ArrayList<Int2D> moveOutOfWay(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size, boolean noAgents) {
+    public static ArrayList<Int2D> moveOutOfWay(Warehouse warehouse, PathHandler pathHandler, Int2D startPos, Int2D size, boolean noAgents) {
         Int2D endPos = startPos;
         Int2D[] dirs = new Int2D[] {
             new Int2D(1,0),
@@ -91,7 +91,8 @@ public class PathFinding {
             Int2D pos = node.pos;
             if (!reached.containsKey(pos)) {
                 reached.put(pos, node.oldPos);
-                if (targetReached(pos, size, target)) {
+                //if (targetReached(pos, size, target)) {
+                if (!pathHandler.willTileBeClaimed(pos, size)) {
                     endPos = pos;
                     break;
                 }
@@ -100,7 +101,7 @@ public class PathFinding {
                     Int2D newPos = pos.add(dir);
                     if (warehouse.canMove(newPos, dir, size, noAgents) && 
                     !reached.containsKey(newPos)) {
-                        int dist = Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
+                        int dist = 10;//Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
                         AStarNode newNode = new AStarNode(dist + node.previousCost+1, node.previousCost+1, pos, newPos);
                         pq.add(newNode);
                     }
@@ -169,8 +170,8 @@ public class PathFinding {
         return aStar(warehouse, target, startPos, size, false);
     }
 
-    public static ArrayList<Int2D> aStarNoPathCollisions(Warehouse warehouse, Int2D target, Int2D startPos, 
-                                                         Int2D size, int moveTime, PathHandler othersPaths) {
+    public static ArrayList<Int2D> aStarNoPathCollisions(Warehouse warehouse, PathHandler othersPaths, Int2D target, Int2D startPos, 
+                                                         Int2D size, int moveTime) {
         Int3D[] dirs = new Int3D[] {
             new Int3D(1,0,moveTime),
             new Int3D(-1,0,moveTime),

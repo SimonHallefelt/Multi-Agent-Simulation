@@ -13,8 +13,8 @@ public class AStarNoPathCollisionAgent extends Agent {
 
     @Override
     public Path makePath(Warehouse warehouse, PathHandler pathHandler) {
-        ArrayList<Int2D> rawPath = PathFinding.aStarNoPathCollisions(warehouse, this.target, this.pos, this.size, 
-                                                                  this.moveTime, pathHandler);
+        ArrayList<Int2D> rawPath = PathFinding.aStarNoPathCollisions(warehouse, pathHandler, this.target, this.pos, this.size, 
+                                                                  this.moveTime);
         
         if (rawPath.isEmpty()) {
             // super.path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, this.pos, this.size, pathHandler));
