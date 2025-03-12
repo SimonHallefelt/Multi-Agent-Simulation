@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import sim.util.Int2D;
+import sim.util.Int3D;
 
 public class PathHandler {
     HashMap<Agent, Path> agentPathMap = new HashMap<>();
+    HashMap<Agent, HashSet<Int3D>> agent3DMap = new HashMap<>();
     HashMap<Int2D, HashSet<Integer>> tileTimeMap = new HashMap<>();
     boolean cooked = true;
 
@@ -43,16 +45,61 @@ public class PathHandler {
         cooked = true;
         tileTimeMap.clear();
         HashMap<Int2D, HashSet<Integer>> map;
+        HashSet<Int3D> set;
         for (Agent a: agentPathMap.keySet()) {
             ArrayList<Int2D> p = agentPathMap.get(a).getPositionPath();
             map = generatePathMap(p, a.size, a.pos, a.moveTime, a.getDelay());
             for (Int2D k: map.keySet()) {
                 tileTimeMap.merge(k, map.get(k), (s1,s2) -> {s1.addAll(s2); return s1;});
             }
+            set = generatePathSet(p, a.size, a.pos, a.moveTime, a.getDelay());
+            agent3DMap.put(a, set);
         }
         //System.out.println(tileTimeMap);
     }
     
+    private HashSet<Int3D> generatePathSet(ArrayList<Int2D> positionPath, Int2D size, Int2D previous, int moveTime, int delay) {
+        HashSet<Int3D> set = new HashSet<>();
+        Int2D delta;
+        //int elapsedTime = delay;
+        /** */
+        int elapsedTime = delay - moveTime;
+        for (int i = 0; i < moveTime; i++) {
+            for (int x = 0; x < size.x; x++) {
+                for (int y = 0; y < size.y; y++) {
+                    delta = new Int2D(x,y);
+                    set.add(new Int3D(previous.add(delta),elapsedTime));
+                }
+            }
+            elapsedTime++;
+        }
+        /** */
+        for (Int2D p: positionPath) {
+            for (int i = 0; i < moveTime; i++) {
+                for (int x = 0; x < size.x; x++) {
+                    for (int y = 0; y < size.y; y++) {
+                        delta = new Int2D(x,y);
+                        set.add(new Int3D(previous.add(delta),elapsedTime));
+                        set.add(new Int3D(p.add(delta),elapsedTime));
+                    }
+                }
+                elapsedTime++;
+                if (p == previous) break;
+            }
+            previous = p;
+        }
+        for (int i = 0; i < moveTime; i++) {
+            for (int x = 0; x < size.x; x++) {
+                for (int y = 0; y < size.y; y++) {
+                    delta = new Int2D(x,y);
+                    set.add(new Int3D(previous.add(delta),elapsedTime));
+                }
+            }
+            elapsedTime++;
+        }
+        return set;
+    }
+
     private HashMap<Int2D, HashSet<Integer>> generatePathMap(ArrayList<Int2D> positionPath, Int2D size, Int2D previous, int moveTime, int delay) {
         HashMap<Int2D, HashSet<Integer>> map = new HashMap<>();
         HashSet<Integer> set;

@@ -72,6 +72,52 @@ public class PathFinding {
 
         return new Int2D(-direction.x,-direction.y);
     }
+    
+    public static ArrayList<Int2D> moveOutOfWay(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size, boolean noAgents) {
+        Int2D endPos = startPos;
+        Int2D[] dirs = new Int2D[] {
+            new Int2D(1,0),
+            new Int2D(-1,0),
+            new Int2D(0,1),
+            new Int2D(0,-1)
+        };
+        HashMap<Int2D, Int2D> reached = new HashMap<>();
+        AStarNode startNode = new AStarNode(0, 0, startPos, startPos);
+        PriorityQueue<AStarNode> pq = new PriorityQueue<>();
+        pq.add(startNode);
+        
+        while (!pq.isEmpty()) {
+            AStarNode node = pq.poll();
+            Int2D pos = node.pos;
+            if (!reached.containsKey(pos)) {
+                reached.put(pos, node.oldPos);
+                if (targetReached(pos, size, target)) {
+                    endPos = pos;
+                    break;
+                }
+
+                for (Int2D dir : dirs) {
+                    Int2D newPos = pos.add(dir);
+                    if (warehouse.canMove(newPos, dir, size, noAgents) && 
+                    !reached.containsKey(newPos)) {
+                        int dist = Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
+                        AStarNode newNode = new AStarNode(dist + node.previousCost+1, node.previousCost+1, pos, newPos);
+                        pq.add(newNode);
+                    }
+                }
+            }
+        }
+
+        ArrayList<Int2D> steps = new ArrayList<>();
+        Int2D pos = endPos;
+        while (!startPos.equals(pos)) {
+            steps.add(pos);
+            pos = reached.get(pos);
+        }
+        Collections.reverse(steps);
+        
+        return steps;
+    }
 
     public static ArrayList<Int2D> aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size, boolean noAgents) {
         Int2D endPos = startPos;
