@@ -1,7 +1,6 @@
 package simulation;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -11,10 +10,6 @@ import sim.util.Int2D;
 public class PathFindingTests {
 
     @Test void test_trueRandomWalk_1() {
-        // Hello hw = new Hello();
-        // String s = hw.hello();
-        // System.out.println(s + "2");
-        // assertTrue(s.equals("Hello World!"));
         int n = 100000;
         Warehouse warehouse = new Warehouse(0);
         HashMap<Int2D, Integer> counter = new HashMap<Int2D, Integer>() {{
