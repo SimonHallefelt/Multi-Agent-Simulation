@@ -16,5 +16,6 @@
         "c:\\Program Files\\Java\\mason\\json-20250107.jar",
         "libraries/json-20250107.jar"
     ],
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.configuration.updateBuildConfiguration": "automatic"
 }
