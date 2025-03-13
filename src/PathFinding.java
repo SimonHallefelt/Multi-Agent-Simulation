@@ -101,8 +101,8 @@ public class PathFinding {
                     Int2D newPos = pos.add(dir);
                     if (warehouse.canMove(newPos, dir, size, true) && 
                     !reached.containsKey(newPos) && 
-                    pathHandler.isTileClaimed(newPos,node.previousCost,size,moveTime)) {
-                        int safety = node.previousCost * moveTime - pathHandler.nextClaim(newPos);//Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
+                    !pathHandler.isTileClaimed(newPos,node.previousCost,size,moveTime)) {
+                        int safety = node.previousCost + 1; //Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
                         AStarNode newNode = new AStarNode(safety, node.previousCost+1, pos, newPos);
                         pq.add(newNode);
                     }

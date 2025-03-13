@@ -122,10 +122,9 @@ public abstract class Agent implements Steppable, Colorable {
             else timeToCompletedMovement = 1;
             //path.setRemakePath(false);
         } else {
-            path.backtrack();
-            path.setRemakePath(true);
-            // path = new Path(pos);
+            path = new Path(pos);
             if (debug) System.out.println(id + ": agent could not move to " + pos.add(dir) + "(" + dir + ")");
+            //if (path.peek() == null && this.target != null) makeInitialPath(warehouse);
             timeToCompletedMovement = 1;
         }
         if (debug) if (this.target != null) checkDeadlock();
@@ -161,10 +160,9 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
 
-    public void makeInitialPath(Warehouse warehouse) {
-        if (!this.path.isEmpty()) return;
-        this.path.addNewPositionPath(this.pos, PathFinding.aStar(warehouse, target, pos, size, true));
-        this.path.setRemakePath(true);
+    public Path makeInitialPath(Warehouse warehouse) {
+        // Do nothing
+        return null;
     }
 
     public void moveComplete() {
