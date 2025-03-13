@@ -5,8 +5,8 @@ public class Hello {
         return "Hello World!";
     }
 
-    public static void main(String[] args) {
-        Hello h = new Hello();
-        System.out.println("main " + h.hello());
-    }
+    //public static void main(String[] args) {
+      //  Hello h = new Hello();
+        //System.out.println("main " + h.hello());
+    //}
 }

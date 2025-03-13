@@ -20,14 +20,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // implementation group: 'net.sf.sociaal', name: 'mason', version: '16'
-}
-
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'simulation.Hello'
-        )
-    }
+    // implementation group: 'com.neko233', name: 'json-java', version: '0.3.2'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 tasks.named('test') {
