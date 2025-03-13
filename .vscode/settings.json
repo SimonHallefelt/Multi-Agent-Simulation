@@ -1,20 +1,9 @@
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "c:\\Program Files\\Java\\mason\\bsh-2.0b4.jar",
-        "c:\\Program Files\\Java\\mason\\itext-1.2.jar",
-        "c:\\Program Files\\Java\\mason\\j3dcore.jar",
-        "c:\\Program Files\\Java\\mason\\j3dutils.jar",
-        "c:\\Program Files\\Java\\mason\\jcommon-1.0.21.jar",
-        "c:\\Program Files\\Java\\mason\\jfreechart-1.0.17.jar",
-        "c:\\Program Files\\Java\\mason\\jmf.jar",
-        "c:\\Program Files\\Java\\mason\\jogamp-fat.jar",
-        "c:\\Program Files\\Java\\mason\\mason.22.jar",
-        "c:\\Program Files\\Java\\mason\\portfolio.jar",
-        "c:\\Program Files\\Java\\mason\\vecmath.jar",
         "c:\\Program Files\\Java\\libraries\\mason.22.jar",
-        "c:\\Program Files\\Java\\mason\\json-20250107.jar",
         "libraries/json-20250107.jar"
     ],
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.configuration.updateBuildConfiguration": "automatic"
 }
