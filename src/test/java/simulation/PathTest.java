@@ -9,7 +9,7 @@ import java.util.Arrays;
 import sim.util.Int2D;
 
 public class PathTest {
-    @Test void test_addNewPositionPath_1() {
+    @Test void test_1_addNewPositionPath() {
         Int2D pos = new Int2D(20,20);
         ArrayList<Int2D> positionPath = new ArrayList<Int2D>( 
             Arrays.asList(

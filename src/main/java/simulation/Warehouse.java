@@ -7,6 +7,7 @@ import simulation.injectors.DefaultInjector;
 import sim.field.grid.*;
 
 import java.awt.Color;
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -270,7 +271,6 @@ public class Warehouse extends SimState {
         colorIndex = 0;
         this.readJson(file_path);
         startTime = System.currentTimeMillis();
-        // this.readJson("test_files\\warehouse_simple.json");
     }
 
     private Color getDefaultColor(String id) {
@@ -293,6 +293,7 @@ public class Warehouse extends SimState {
         System.out.println("Elapsed time in milliseconds: " + elapsedTime);
         System.out.println("Number of steps: " + this.schedule.getSteps());
         System.out.println("Seed: " + this.seed());
+        System.out.println("warehouse: " + this.file_path);
         System.out.println("--------------------------");
     }
 
