@@ -1,8 +1,6 @@
 {
     "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "c:\\Program Files\\Java\\libraries\\mason.22.jar",
-        "libraries/json-20250107.jar"
+        "libs/*.jar"
     ],
     "java.debug.settings.onBuildFailureProceed": true,
     "java.configuration.updateBuildConfiguration": "automatic"
