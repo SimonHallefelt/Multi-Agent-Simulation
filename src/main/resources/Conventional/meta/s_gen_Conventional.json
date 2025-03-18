@@ -1,0 +1,29 @@
+{
+  "nameTsplib": null,
+  "description": "",
+  "nameSpecsSkeleton": "s_gen_Conventional",
+  "numItems": 0,
+  "numOrders": 10,
+  "percDuplicates": 0,
+  "itemsPerBoxLow": 2,
+  "itemsPerBoxHigh": 5,
+  "dynamicity": {"numTimeSteps": 1, "percDynamic": 0},
+  "mapXyHighs": [80, 80],
+  "depotSection": {"0": [20, 5], "1": [50, 5]},
+  "numSlottingZones": 2,
+  "numVehicles": null,
+  "numItemsToMove": 0,
+  "obstaclesType": "Conventional",
+  "randomSeed": 1000,
+  "min_dist_to_slotting_zone": 30,
+  "mobileUnitCapacities": {"numOrders": 3, "weight": null, "volume": null},
+  "requestType": "multibatch",
+  "optimizerUsed": null,
+  "path_local": "./benchmarking/tsplibfiles/1_1v4/Conventional/",
+  "path_gui_test": "./gui-test/Conventional/BO_jsons/optim/",
+  "possibleVisitLocs": null,
+  "slottingZones": [
+    {"xrange":  [0, 69], "yrange": [0, 59], "mid_point": [32, 21], "SKUs": [], "num_SKUs":  0},
+    {"xrange":  [20, 75], "yrange": [5, 80], "mid_point": [70, 30], "SKUs": [], "num_SKUs":  0}
+  ]
+}
