@@ -6,21 +6,10 @@ import simulation.Agent.AgentClone;
 import simulation.injectors.DefaultInjector;
 import sim.field.grid.*;
 
-import java.awt.Color;
-import java.io.EOFException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-// import org.json.simple.JSONArray; 
-// import org.json.simple.JSONObject; 
-// import org.json.simple.parser.*; 
-import org.json.*;
 
 
 public class Warehouse extends SimState {
@@ -37,10 +26,6 @@ public class Warehouse extends SimState {
     public AgentFactory factory = new AgentFactory();
     long startTime;
 
-
-    private Color[] defaultColors = new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.ORANGE, Color.PINK, Color.GRAY, Color.DARK_GRAY};
-    private int colorIndex = 0;
-    private HashMap<String, Color> defaultColorIndex = new HashMap<>();
     private Tasks tasks;
 
     // String file_path = "resources\\warehouse_1.json";
@@ -65,7 +50,7 @@ public class Warehouse extends SimState {
         super(seed);
         this.file_path = file_path;
         new DefaultInjector().injectAgents();
-        this.readJson(file_path);
+        this.readFile(file_path);
     }
 
     public void addTrail(Agent.Trail t, Int2D pos) {
@@ -151,113 +136,27 @@ public class Warehouse extends SimState {
         tasks.assignTask(starts, goals, AgentList);
     }
 
-    public void readJson(String path) {
-        JSONObject obj = null;
-        try {
-            obj = new JSONObject(new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8));
-        } catch (JSONException e) {
-            e.printStackTrace();
-            System.exit(1);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        List<ArrayList<String>> jsonMap = new ArrayList<>();
-        this.width = 0;
-        for (Object o : obj.getJSONArray("map").toList()) {
-            ArrayList<String> list = new ArrayList<String>(Arrays.asList(o.toString().split(" ")));
-            this.width = Math.max(this.width, list.size());
-            jsonMap.add(list);
-        }
-        this.height = jsonMap.size();
+    public void readFile(String path) {
+        ReadFile rf = new ReadFile();
+        ReadFile.FileData fd = rf.simpleMapJson(path);
 
-        this.map = new IntGrid2D(width, height);
-        this.agents = new SparseGrid2D(width, height);
+        this.map = fd.map;
+        this.agents = fd.agents;
+        this.starts = fd.starts;
+        this.goals = fd.goals;
+        this.AgentList = fd.agentList;
+
+        this.width = map.getWidth();
+        this.height = map.getHeight();
+
         this.tasks = new Tasks(this);
-        this.starts = new ArrayList<>();
-        this.goals = new ArrayList<>();
-        this.factory = new AgentFactory();
         this.score = 0;
 
-        HashMap<String, JSONObject> agentTypes = new HashMap<>();
-        this.AgentList = new ArrayList<>();
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < jsonMap.get(y).size(); x++) {
-                String value = jsonMap.get(y).get(x);
-                String[] split = value.split("-");
-                if (split[0].chars().allMatch( Character::isDigit )) { // if it is numberic, create an agent here
-                    JSONObject o = agentTypes.get(split[0]);
-                    if (o == null) {
-                        o = obj.getJSONObject(split[0]);
-                        if (o != null) {
-                            agentTypes.put(split[0], o);
-                        }
-                    }
-                    String algo;
-                    String[] sizeString = {""};
-                    String[] colorString = {""};
-                    int moveTime;
-                    if (o != null) {
-                        algo = o.has("algo") ? o.getString("algo") : "none";
-                        sizeString[0] = o.has("size") ? o.getString("size") : "1,1";
-                        moveTime = o.has("moveTime") ? o.getInt("moveTime") : 0;
-                        colorString[0] = o.has("color") ? o.getString("color") : "default";
-
-                    } else {
-                        algo = "none";
-                        sizeString[0] = "1,1";
-                        moveTime = 0;
-                        colorString[0] = "default";
-
-                    }
-                    sizeString = sizeString[0].split(",");
-                    Int2D size = new Int2D(Integer.parseInt(sizeString[0]), Integer.parseInt(sizeString[1]));
-                    Agent a = factory.createAgent(split[0],x, y, algo, moveTime, size);
-                    if (colorString[0].equals("default")) {
-                        Color color = getDefaultColor(split[0]);
-                        a.setColor(color);
-                    }
-                    else {
-                        colorString = colorString[0].split(",");
-                        Color color = new Color(Integer.parseInt(colorString[0]), Integer.parseInt(colorString[1]), Integer.parseInt(colorString[2]));
-                        a.setColor(color);
-                    }
-                    this.agents.setObjectLocation(a, x, y);
-                    for (int yy = y; yy < y + size.y; yy++){ // make sure the agent size is correct and stop duplicates
-                        for (int xx = x; xx < x + size.x; xx++){
-                            if (xx == x && yy == y) continue;
-                            String value2 = jsonMap.get(yy).get(xx);
-                            String[] split2 = value2.split("-");
-                            if (!split2[0].chars().allMatch( Character::isDigit )) {
-                                throw new IllegalArgumentException("should have been an agent at this position (" + xx + ", " + yy + ")");
-                            }
-                            Agent.AgentClone ag = a.makeAgentClone();
-                            this.agents.setObjectLocation(ag, xx, yy);
-                            jsonMap.get(yy).set(xx, split2.length > 1 ? split2[1] : ".");
-                        }
-                    }
-                    schedule.scheduleRepeating(a);
-                    AgentList.add(a);
-                }
-                if (split.length > 1) {
-                    value = split[1];
-                }
-                switch (value) {
-                    case "#":
-                        this.map.set(x, y, 1);
-                        break;
-                    case "E":
-                        starts.add(new Int2D(x,y));
-                        break;
-                    case "D":
-                        goals.add(new Int2D(x,y));
-                        break;
-                    default:
-                        break;
-                }
-            }
+        for (Agent a : this.AgentList) {
+            schedule.scheduleRepeating(a, 10, 1);
         }
+
+        schedule.scheduleRepeating(new BeforeEveryStep(), 0, 1);
         schedule.scheduleRepeating(new AfterEveryStep(), 100, 1);
     }
 
@@ -267,19 +166,8 @@ public class Warehouse extends SimState {
 
     public void start() {
         super.start();
-        defaultColorIndex = new HashMap<>();
-        colorIndex = 0;
-        this.readJson(file_path);
+        this.readFile(file_path);
         startTime = System.currentTimeMillis();
-    }
-
-    private Color getDefaultColor(String id) {
-        if (defaultColorIndex.containsKey(id)) return defaultColorIndex.get(id);
-
-        defaultColorIndex.put(id, defaultColors[colorIndex]);
-        colorIndex++;
-        if (colorIndex >= defaultColors.length) colorIndex = 0;
-        return defaultColorIndex.get(id);
     }
 
     public void finish() {
