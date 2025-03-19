@@ -175,8 +175,6 @@ public class Warehouse extends SimState {
         startTime = System.currentTimeMillis();
     }
 
-=======
->>>>>>> d0b68ecb670a09abdab8d0530555d90c8c57f686
     public void finish() {
         AgentList.sort((a1, a2) -> a1.getId().compareTo(a2.getId()));
         for (Agent a : AgentList) {
