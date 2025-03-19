@@ -22,13 +22,13 @@ import java.util.List;
 // import org.json.simple.parser.*; 
 import org.json.*;
 
-
 public class Warehouse extends SimState {
     public int height;
     public int width;
     public int num_agents;
     public IntGrid2D map; // = new IntGrid2D(width, height);
     public SparseGrid2D agents; // = new SparseGrid2D(width, height);
+    public ArrayList<Brain> brains;
 
     private ArrayList<Agent> AgentList;
     private ArrayList<Int2D> starts;
@@ -37,8 +37,8 @@ public class Warehouse extends SimState {
     public AgentFactory factory = new AgentFactory();
     long startTime;
 
-
-    private Color[] defaultColors = new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.ORANGE, Color.PINK, Color.GRAY, Color.DARK_GRAY};
+    private Color[] defaultColors = new Color[] { Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA,
+            Color.YELLOW, Color.ORANGE, Color.PINK, Color.GRAY, Color.DARK_GRAY };
     private int colorIndex = 0;
     private HashMap<String, Color> defaultColorIndex = new HashMap<>();
     private Tasks tasks;
@@ -46,7 +46,7 @@ public class Warehouse extends SimState {
     // String file_path = "resources\\warehouse_1.json";
     // String file_path = "resources\\warehouse_1_size_test.json";
     // String file_path = "resources\\warehouse_1_lonely.json";
-    //String file_path = "resources\\warehouse_2.json";
+    // String file_path = "resources\\warehouse_2.json";
     // String file_path = "resources\\warehouse_2_no_path_collision.json";
     String file_path = "resources\\warehouse_3.json";
     // String file_path = "resources\\warehouse_4.json";
@@ -55,7 +55,6 @@ public class Warehouse extends SimState {
 
     // static String default_file_path = "resources\\warehouse_3.json";
     static String default_file_path = "src\\main\\resources\\warehouse_3.json";
-
 
     public Warehouse(long seed) {
         this(seed, default_file_path);
@@ -69,13 +68,15 @@ public class Warehouse extends SimState {
     }
 
     public void addTrail(Agent.Trail t, Int2D pos) {
-        if (agents.numObjectsAtLocation(pos) > 0) return;
+        if (agents.numObjectsAtLocation(pos) > 0)
+            return;
         agents.setObjectLocation(t, pos);
     }
 
     public void clearTrails() {
         for (Agent a : AgentList) {
-            if (a.TimeToCompletedMovement() > 0) continue;
+            if (a.TimeToCompletedMovement() > 0)
+                continue;
             for (Agent.Trail t : a.getTrails()) {
                 agents.remove(t);
             }
@@ -84,7 +85,8 @@ public class Warehouse extends SimState {
     }
 
     public boolean isWall(Int2D pos) {
-        if (pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height) return true;
+        if (pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height)
+            return true;
         return map.get(pos.x, pos.y) == 1;
     }
 
@@ -101,17 +103,20 @@ public class Warehouse extends SimState {
     }
 
     public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize, boolean noAgents) {
-        if (delta.x == 0 && delta.y == 0) return true;
+        if (delta.x == 0 && delta.y == 0)
+            return true;
         int size = delta.x == 0 ? agentSize.x : agentSize.y;
         if (delta.x != 0) {
-            int x = delta.x > 0 ? agentSize.x-1 : 0;
+            int x = delta.x > 0 ? agentSize.x - 1 : 0;
             for (int d = 0; d < size; d++) {
-                if (isOccupied(pos.add(x, d), noAgents)) return false;
+                if (isOccupied(pos.add(x, d), noAgents))
+                    return false;
             }
         } else {
-            int y = delta.y > 0 ? agentSize.y-1 : 0;
+            int y = delta.y > 0 ? agentSize.y - 1 : 0;
             for (int d = 0; d < size; d++) {
-                if (isOccupied(pos.add(d, y), noAgents)) return false;
+                if (isOccupied(pos.add(d, y), noAgents))
+                    return false;
             }
         }
         return true;
@@ -125,7 +130,8 @@ public class Warehouse extends SimState {
         Int2D loc = agents.getObjectLocation(a);
         Int2D pos = loc.add(delta);
         Int2D agentSize = a.getAgentSize();
-        if (!canMove(pos, delta, agentSize)) return false;
+        if (!canMove(pos, delta, agentSize))
+            return false;
         a.setPosition(pos);
         ArrayList<Agent.AgentClone> agentClones = a.getAgentClones();
         ArrayList<Int2D> oldPositions = new ArrayList<>(Arrays.asList(loc));
@@ -186,7 +192,7 @@ public class Warehouse extends SimState {
             for (int x = 0; x < jsonMap.get(y).size(); x++) {
                 String value = jsonMap.get(y).get(x);
                 String[] split = value.split("-");
-                if (split[0].chars().allMatch( Character::isDigit )) { // if it is numberic, create an agent here
+                if (split[0].chars().allMatch(Character::isDigit)) { // if it is numberic, create an agent here
                     JSONObject o = agentTypes.get(split[0]);
                     if (o == null) {
                         o = obj.getJSONObject(split[0]);
@@ -195,8 +201,8 @@ public class Warehouse extends SimState {
                         }
                     }
                     String algo;
-                    String[] sizeString = {""};
-                    String[] colorString = {""};
+                    String[] sizeString = { "" };
+                    String[] colorString = { "" };
                     int moveTime;
                     if (o != null) {
                         algo = o.has("algo") ? o.getString("algo") : "none";
@@ -213,24 +219,26 @@ public class Warehouse extends SimState {
                     }
                     sizeString = sizeString[0].split(",");
                     Int2D size = new Int2D(Integer.parseInt(sizeString[0]), Integer.parseInt(sizeString[1]));
-                    Agent a = factory.createAgent(split[0],x, y, algo, moveTime, size);
+                    Agent a = factory.createAgent(split[0], x, y, algo, moveTime, size);
                     if (colorString[0].equals("default")) {
                         Color color = getDefaultColor(split[0]);
                         a.setColor(color);
-                    }
-                    else {
+                    } else {
                         colorString = colorString[0].split(",");
-                        Color color = new Color(Integer.parseInt(colorString[0]), Integer.parseInt(colorString[1]), Integer.parseInt(colorString[2]));
+                        Color color = new Color(Integer.parseInt(colorString[0]), Integer.parseInt(colorString[1]),
+                                Integer.parseInt(colorString[2]));
                         a.setColor(color);
                     }
                     this.agents.setObjectLocation(a, x, y);
-                    for (int yy = y; yy < y + size.y; yy++){ // make sure the agent size is correct and stop duplicates
-                        for (int xx = x; xx < x + size.x; xx++){
-                            if (xx == x && yy == y) continue;
+                    for (int yy = y; yy < y + size.y; yy++) { // make sure the agent size is correct and stop duplicates
+                        for (int xx = x; xx < x + size.x; xx++) {
+                            if (xx == x && yy == y)
+                                continue;
                             String value2 = jsonMap.get(yy).get(xx);
                             String[] split2 = value2.split("-");
-                            if (!split2[0].chars().allMatch( Character::isDigit )) {
-                                throw new IllegalArgumentException("should have been an agent at this position (" + xx + ", " + yy + ")");
+                            if (!split2[0].chars().allMatch(Character::isDigit)) {
+                                throw new IllegalArgumentException(
+                                        "should have been an agent at this position (" + xx + ", " + yy + ")");
                             }
                             Agent.AgentClone ag = a.makeAgentClone();
                             this.agents.setObjectLocation(ag, xx, yy);
@@ -248,10 +256,10 @@ public class Warehouse extends SimState {
                         this.map.set(x, y, 1);
                         break;
                     case "E":
-                        starts.add(new Int2D(x,y));
+                        starts.add(new Int2D(x, y));
                         break;
                     case "D":
-                        goals.add(new Int2D(x,y));
+                        goals.add(new Int2D(x, y));
                         break;
                     default:
                         break;
@@ -274,19 +282,22 @@ public class Warehouse extends SimState {
     }
 
     private Color getDefaultColor(String id) {
-        if (defaultColorIndex.containsKey(id)) return defaultColorIndex.get(id);
+        if (defaultColorIndex.containsKey(id))
+            return defaultColorIndex.get(id);
 
         defaultColorIndex.put(id, defaultColors[colorIndex]);
         colorIndex++;
-        if (colorIndex >= defaultColors.length) colorIndex = 0;
+        if (colorIndex >= defaultColors.length)
+            colorIndex = 0;
         return defaultColorIndex.get(id);
     }
 
     public void finish() {
-        AgentList.sort((a1,a2) -> a1.getId().compareTo(a2.getId()));
-        for (Agent a: AgentList) {
+        AgentList.sort((a1, a2) -> a1.getId().compareTo(a2.getId()));
+        for (Agent a : AgentList) {
             System.out.println(a + ", score " + a.score);
-            // System.out.println ("pos: " + a.pos + ", delta: " + a.delta + ", target: " + a.target + "\n");
+            // System.out.println ("pos: " + a.pos + ", delta: " + a.delta + ", target: " +
+            // a.target + "\n");
         }
         System.out.println("\nFinal score: " + score);
         long elapsedTime = System.currentTimeMillis() - startTime;
