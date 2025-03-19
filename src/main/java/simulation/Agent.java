@@ -31,6 +31,10 @@ public abstract class Agent implements Steppable, Colorable {
 
     private HashMap<Int2D, Integer> visited = new HashMap<>();
 
+    public void setPath(Path p) {
+        path = p;
+    }
+
     public void setColor(Color c) {
         color = c;
     }
@@ -49,6 +53,10 @@ public abstract class Agent implements Steppable, Colorable {
 
     public void setSize(Int2D size) {
         this.size = size;
+    }
+
+    public Int2D getSize() {
+        return size;
     }
 
     public void setId(String id) {
