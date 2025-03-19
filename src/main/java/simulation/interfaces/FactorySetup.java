@@ -1,5 +1,5 @@
 package simulation.interfaces;
 
-public interface FactoryInjector {
+public interface FactorySetup {
     void injectAgents();
 }

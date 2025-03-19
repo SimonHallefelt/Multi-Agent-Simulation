@@ -3,7 +3,7 @@ package simulation;
 import sim.engine.*;
 import sim.util.*;
 import simulation.Agent.AgentClone;
-import simulation.injectors.DefaultInjector;
+import simulation.injectors.DefaultSetup;
 import sim.field.grid.*;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class Warehouse extends SimState {
     public Warehouse(long seed, String file_path) {
         super(seed);
         this.file_path = file_path;
-        new DefaultInjector().injectAgents();
+        new DefaultSetup().injectAgents();
         this.readFile(file_path);
     }
 

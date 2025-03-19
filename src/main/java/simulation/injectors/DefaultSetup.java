@@ -6,9 +6,9 @@ import simulation.agents.AStarNoPathCollisionAgent;
 import simulation.agents.AStarSmarter;
 import simulation.agents.PacmanAgent;
 import simulation.agents.RandomAgent;
-import simulation.interfaces.FactoryInjector;
+import simulation.interfaces.FactorySetup;
 
-public class DefaultInjector implements FactoryInjector {
+public class DefaultSetup implements FactorySetup {
 
     public void injectAgents() {
         AgentFactory.registerAgent("aStarSmart", () -> new AStarNoPathCollisionAgent());
@@ -17,5 +17,5 @@ public class DefaultInjector implements FactoryInjector {
         AgentFactory.registerAgent("pacman", () -> new PacmanAgent());
         AgentFactory.registerAgent("randomWalk", () -> new RandomAgent());
     }
-    
+
 }
