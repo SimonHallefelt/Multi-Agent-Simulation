@@ -16,9 +16,9 @@ public class Warehouse extends SimState {
     public int num_agents;
     public IntGrid2D map; // = new IntGrid2D(width, height);
     public SparseGrid2D agents; // = new SparseGrid2D(width, height);
-    public ArrayList<Brain> brains;
 
     private ArrayList<Agent> AgentList;
+    public ArrayList<Brain> BrainList;
     private ArrayList<Int2D> starts;
     private ArrayList<Int2D> goals;
     private int score;
@@ -150,6 +150,7 @@ public class Warehouse extends SimState {
         this.starts = fd.starts;
         this.goals = fd.goals;
         this.AgentList = fd.agentList;
+        this.BrainList = fd.brainList;
 
         this.width = map.getWidth();
         this.height = map.getHeight();
