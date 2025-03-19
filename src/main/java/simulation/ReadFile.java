@@ -1,0 +1,163 @@
+package simulation;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.awt.Color;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import sim.field.grid.IntGrid2D;
+import sim.field.grid.SparseGrid2D;
+import sim.util.Int2D;
+
+public class ReadFile {
+    private HashMap<String, Color> defaultColorIndex = new HashMap<>();
+    private Color[] defaultColors = new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.ORANGE, Color.PINK, Color.GRAY, Color.DARK_GRAY};
+    private int colorIndex = 0;
+
+    public FileData simpleMapJson(String path) {
+        JSONObject obj = null;
+        try {
+            obj = new JSONObject(new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        List<ArrayList<String>> jsonMap = new ArrayList<>();
+        int width = 0;
+        for (Object o : obj.getJSONArray("map").toList()) {
+            ArrayList<String> list = new ArrayList<String>(Arrays.asList(o.toString().split(" ")));
+            width = Math.max(width, list.size());
+            jsonMap.add(list);
+        }
+        int height = jsonMap.size();
+
+        IntGrid2D map = new IntGrid2D(width, height);
+        SparseGrid2D agents = new SparseGrid2D(width, height);
+        // Tasks tasks = new Tasks(this);
+        ArrayList<Int2D> starts = new ArrayList<>();
+        ArrayList<Int2D> goals = new ArrayList<>();
+        AgentFactory factory = new AgentFactory();
+        // this.score = 0;
+
+        HashMap<String, JSONObject> agentTypes = new HashMap<>();
+        ArrayList<Agent> AgentList = new ArrayList<>();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < jsonMap.get(y).size(); x++) {
+                String value = jsonMap.get(y).get(x);
+                String[] split = value.split("-");
+                if (split[0].chars().allMatch( Character::isDigit )) { // if it is numberic, create an agent here
+                    JSONObject o = agentTypes.get(split[0]);
+                    if (o == null) {
+                        o = obj.getJSONObject(split[0]);
+                        if (o != null) {
+                            agentTypes.put(split[0], o);
+                        }
+                    }
+                    String algo;
+                    String[] sizeString = {""};
+                    String[] colorString = {""};
+                    int moveTime;
+                    if (o != null) {
+                        algo = o.has("algo") ? o.getString("algo") : "none";
+                        sizeString[0] = o.has("size") ? o.getString("size") : "1,1";
+                        moveTime = o.has("moveTime") ? o.getInt("moveTime") : 0;
+                        colorString[0] = o.has("color") ? o.getString("color") : "default";
+
+                    } else {
+                        algo = "none";
+                        sizeString[0] = "1,1";
+                        moveTime = 0;
+                        colorString[0] = "default";
+
+                    }
+                    sizeString = sizeString[0].split(",");
+                    Int2D size = new Int2D(Integer.parseInt(sizeString[0]), Integer.parseInt(sizeString[1]));
+                    Agent a = factory.createAgent(split[0],x, y, algo, moveTime, size);
+                    if (colorString[0].equals("default")) {
+                        Color color = getDefaultColor(split[0]);
+                        a.setColor(color);
+                    }
+                    else {
+                        colorString = colorString[0].split(",");
+                        Color color = new Color(Integer.parseInt(colorString[0]), Integer.parseInt(colorString[1]), Integer.parseInt(colorString[2]));
+                        a.setColor(color);
+                    }
+                    agents.setObjectLocation(a, x, y);
+                    for (int yy = y; yy < y + size.y; yy++){ // make sure the agent size is correct and stop duplicates
+                        for (int xx = x; xx < x + size.x; xx++){
+                            if (xx == x && yy == y) continue;
+                            String value2 = jsonMap.get(yy).get(xx);
+                            String[] split2 = value2.split("-");
+                            if (!split2[0].chars().allMatch( Character::isDigit )) {
+                                throw new IllegalArgumentException("should have been an agent at this position (" + xx + ", " + yy + ")");
+                            }
+                            Agent.AgentClone ag = a.makeAgentClone();
+                            agents.setObjectLocation(ag, xx, yy);
+                            jsonMap.get(yy).set(xx, split2.length > 1 ? split2[1] : ".");
+                        }
+                    }
+                    AgentList.add(a);
+                }
+                if (split.length > 1) {
+                    value = split[1];
+                }
+                switch (value) {
+                    case "#":
+                        map.set(x, y, 1);
+                        break;
+                    case "E":
+                        starts.add(new Int2D(x,y));
+                        break;
+                    case "D":
+                        goals.add(new Int2D(x,y));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return new FileData(map, agents, starts, goals, AgentList);
+    }
+
+
+
+
+    private Color getDefaultColor(String id) {
+        if (defaultColorIndex.containsKey(id)) return defaultColorIndex.get(id);
+
+        defaultColorIndex.put(id, defaultColors[colorIndex]);
+        colorIndex++;
+        if (colorIndex >= defaultColors.length) colorIndex = 0;
+        return defaultColorIndex.get(id);
+    }
+
+
+    
+    public class FileData {
+        IntGrid2D map;
+        SparseGrid2D agents;
+        ArrayList<Int2D> starts;
+        ArrayList<Int2D> goals;
+        ArrayList<Agent> agentList;
+
+        public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Int2D> starts, ArrayList<Int2D> goals, ArrayList<Agent> agentList) {
+            this.map = map;
+            this.agents = agents;
+            this.starts = starts;
+            this.goals = goals;
+            this.agentList = agentList;
+        }
+    }
+}
