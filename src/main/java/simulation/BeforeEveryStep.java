@@ -11,6 +11,8 @@ public class BeforeEveryStep implements Steppable {
         for (Brain b : warehouse.BrainList) {
             b.think(warehouse);
         }
+        warehouse.generateTasks();
+        warehouse.assignTasks();
     }
 
 }

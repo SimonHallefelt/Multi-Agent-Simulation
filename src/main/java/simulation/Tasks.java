@@ -3,78 +3,142 @@ package simulation;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import bsh.This;
 import sim.util.Int2D;
 
 public class Tasks {
     private Warehouse warehouse;
-    private HashMap<Agent, ArrayList<Task>> tasks = new HashMap<>();
+    private ArrayList<Int2D> pickup;
+    private ArrayList<Int2D> delivery;
+    private HashMap<Agent, ArrayList<Task>> activeTasks = new HashMap<>();
+    private ArrayList<Task> taskList = new ArrayList<>();
+    private ArrayList<Task> availableTasks = new ArrayList<>();
+    private ArrayList<Task> impossibleTask = new ArrayList<>();
+    private TaskConfiguration tc = TaskConfiguration.generateTasksUsingPickupAndDelivery;
 
     public Tasks(Warehouse warehouse) {
+        this(warehouse, new ArrayList<>(), new ArrayList<>());
+    }
+
+    public Tasks(Warehouse warehouse, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery) {
         this.warehouse = warehouse;
+        this.pickup = pickup;
+        this.delivery = delivery;
+    }
+
+    public void setTaskList(ArrayList<Task> taskList) {
+        this.taskList = taskList;
+    }
+
+    public void setTaskConfiguration(int i) {
+        switch (i) {
+            case 0:
+                tc = TaskConfiguration.generateTasksUsingPickupAndDelivery;
+                break;
+            case 1:
+                tc = TaskConfiguration.completeTaskList;
+                break;
+            case 2:
+                tc = TaskConfiguration.selectTasksFromTaskList;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void generateTasks() {
+        switch (tc) {
+            case generateTasksUsingPickupAndDelivery:
+                generateTasksUsingPickupAndDelivery();
+                break;
+            case completeTaskList:
+                getFirstInTaskList();
+                break;
+            case selectTasksFromTaskList:
+                copyTaskFromTaskList();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void generateTasksUsingPickupAndDelivery() {
+        Int2D[] targets = new Int2D[] {
+            pickup.get(warehouse.random.nextInt(pickup.size())),
+            delivery.get(warehouse.random.nextInt(delivery.size()))
+        };
+        availableTasks.add(new Task(targets));
+    }
+
+    public void getFirstInTaskList() {
+        if(taskList.isEmpty()) {
+            Boolean noActiveTasks = !activeTasks.values().stream().map(a -> a.isEmpty()).anyMatch(a -> false);
+            if(availableTasks.isEmpty() && noActiveTasks) warehouse.kill();
+            return;
+        }
+        availableTasks.add(taskList.remove(0));
+    }
+
+    public void copyTaskFromTaskList() {
+        availableTasks.add(taskList.get(warehouse.random.nextInt(taskList.size())).clone());
+    }
+
+    public void assignTasks(ArrayList<Agent> AgentList) {
+        ArrayList<Agent> availableAgents = (ArrayList) AgentList.clone();
+        int size = availableTasks.size();
+        for (int i = 0; i < size; i++) {
+            Task t = availableTasks.remove(0);
+            // select best agent for task
+            ArrayList<Agent> possibleAgents = (ArrayList) availableAgents.clone();
+            possibleAgents.removeIf(a -> !canPerform(a, t));
+            if (possibleAgents.isEmpty()) {
+                impossibleTask.add(t);
+                continue;
+            }
+            possibleAgents.sort((a,b) -> timeToReach(a, t) - timeToReach(b, t));
+            Agent a = possibleAgents.get(0);
+
+            // assign task to agent
+            ArrayList<Task> assigned = activeTasks.get(a);
+            if (assigned != null) {
+                assigned.add(t);
+            } else {
+                assigned = new ArrayList<>();
+                assigned.add(t);
+                activeTasks.put(a, assigned);
+            }
+            if (a.getTarget() == null) {
+                a.setTarget(t.getGoal());
+                a.makeInitialPath(warehouse);
+            }
+        }
     }
 
     public void reachedTarget(Agent a, Int2D pos) {
-        ArrayList<Task> goals = tasks.get(a);
-        if (goals != null) {
+        ArrayList<Task> goals = activeTasks.get(a);
+        if (goals != null && !goals.isEmpty()) {
             Task goal = goals.get(0);
             if (goal.reached(pos, a.getAgentSize())) {
                 a.increaseScore();
                 warehouse.increaseScore();
-                a.setTarget(null);
-                assignNextTask(a);
+                if (goal.complete()) {
+                    goals.remove(0);
+                    a.setTarget(null);
+                    assignNextTask(a);
+                } else {
+                    a.setTarget(goal.getGoal());
+                    a.makeInitialPath(warehouse);
+                }
             }
         }
     }
 
     public void assignNextTask(Agent a) {
-        ArrayList<Task> agentTasks = tasks.get(a);
-        if (agentTasks == null) {
-            //System.out.println("Agent " + a + " does not have any tasks");
-            return;
-        }
-        Task current = agentTasks.get(0);
-        if (current.complete()) {
-            agentTasks.remove(0);
-            if (agentTasks.isEmpty()) {
-                //System.out.println("Agent " + a + " ran out of tasks");
-                tasks.remove(a);
-                return;
-            }
-            current = agentTasks.get(0);
-        }
-        a.setTarget(current.getGoal());
+        ArrayList<Task> goals = activeTasks.get(a);
+        if (goals == null || goals.isEmpty()) return;
+        Task t = goals.get(0);
+        a.setTarget(t.getGoal());
         a.makeInitialPath(warehouse);
-    }
-
-    public void assignTask(ArrayList<Int2D> starts, ArrayList<Int2D> goals, ArrayList<Agent> AgentList) {
-        Task t = generateTask(starts, goals, AgentList);
-        @SuppressWarnings("unchecked")
-        ArrayList<Agent> viableAgents = (ArrayList<Agent>) AgentList.clone();
-        viableAgents.removeIf(a -> !canPerform(a, t));
-        viableAgents.sort((a,b) -> timeToReach(a, t) - timeToReach(b, t));
-        //System.out.println(start + " " + goal);
-        if (viableAgents.size() == 0) return;
-        Agent a = viableAgents.get(0);
-        ArrayList<Task> assigned = tasks.get(a);
-        if (assigned != null) {
-            assigned.add(t);
-        }
-        else {
-            assigned = new ArrayList<>();
-            assigned.add(t);
-            tasks.put(a, assigned);
-            a.setTarget(t.getGoal());
-        }
-        a.makeInitialPath(warehouse);
-        //System.out.println("Assigned task to " + a + ", fitness: " + timeToReach(a, t));
-    }
-
-    public Task generateTask(ArrayList<Int2D> starts, ArrayList<Int2D> goals, ArrayList<Agent> AgentList) {
-        Int2D[] targets = new Int2D[] {
-            starts.get(warehouse.random.nextInt(starts.size())),
-            goals.get(warehouse.random.nextInt(goals.size()))
-        };
-        return new Task(targets);
     }
 
     public boolean canPerform(Agent a, Task t) {
@@ -93,7 +157,7 @@ public class Tasks {
     public int timeToReach(Agent a, Task t) {
         int TTR = 0;
         Int2D startPos = a.pos;
-        ArrayList<Task> agentTasks = tasks.get(a);
+        ArrayList<Task> agentTasks = activeTasks.get(a);
         if (agentTasks != null) {
             for (Task ts: agentTasks) {
                 TTR += ts.getCompletionDistance(startPos, a.size);
@@ -142,7 +206,7 @@ public class Tasks {
         }
 
         public boolean complete() {
-            return targetIndex == targets.length;
+            return targetIndex >= targets.length;
         }
 
         public int getCompletionDistance(Int2D from, Int2D size) {
@@ -154,5 +218,15 @@ public class Tasks {
             }
             return dist;
         }
+
+        public Task clone() {
+            return new Task(targets.clone());
+        }
+    }
+
+    enum TaskConfiguration {
+        completeTaskList,
+        selectTasksFromTaskList,
+        generateTasksUsingPickupAndDelivery
     }
 }

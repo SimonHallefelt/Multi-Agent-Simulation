@@ -8,7 +8,6 @@ import sim.field.grid.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Warehouse extends SimState {
     public int height;
@@ -19,8 +18,8 @@ public class Warehouse extends SimState {
 
     private ArrayList<Agent> AgentList;
     public ArrayList<Brain> BrainList;
-    private ArrayList<Int2D> starts;
-    private ArrayList<Int2D> goals;
+    private ArrayList<Int2D> pickup;
+    private ArrayList<Int2D> delivery;
     private int score;
     public AgentFactory factory = new AgentFactory();
     long startTime;
@@ -78,7 +77,7 @@ public class Warehouse extends SimState {
         return agents.numObjectsAtLocation(pos) > 0;
     }
 
-    public List<Agent> getAgentList() {
+    public ArrayList<Agent> getAgentList() {
         return AgentList;
     }
 
@@ -137,8 +136,11 @@ public class Warehouse extends SimState {
         return true;
     }
 
-    public void assignTask() {
-        tasks.assignTask(starts, goals, AgentList);
+    public void generateTasks() {
+        tasks.generateTasks();
+    }
+    public void assignTasks() {
+        tasks.assignTasks(AgentList);
     }
 
     public void readFile(String path) {
@@ -147,15 +149,15 @@ public class Warehouse extends SimState {
 
         this.map = fd.map;
         this.agents = fd.agents;
-        this.starts = fd.starts;
-        this.goals = fd.goals;
+        this.pickup = fd.pickup;
+        this.delivery = fd.delivery;
         this.AgentList = fd.agentList;
         this.BrainList = fd.brainList;
 
         this.width = map.getWidth();
         this.height = map.getHeight();
 
-        this.tasks = new Tasks(this);
+        this.tasks = new Tasks(this, pickup, delivery);
         this.score = 0;
 
         for (Agent a : this.AgentList) {

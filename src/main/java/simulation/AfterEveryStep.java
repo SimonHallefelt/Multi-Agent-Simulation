@@ -9,7 +9,6 @@ public class AfterEveryStep implements Steppable {
     public void step(SimState state) {
         Warehouse warehouse = (Warehouse) state;
         warehouse.clearTrails();
-        warehouse.assignTask();
     }
     
 }
