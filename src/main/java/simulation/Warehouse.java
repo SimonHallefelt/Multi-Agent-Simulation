@@ -158,7 +158,7 @@ public class Warehouse extends SimState {
         this.width = map.getWidth();
         this.height = map.getHeight();
 
-        this.tasks = new Tasks(this, pickup, delivery);
+        this.tasks = new Tasks(this, pickup, delivery, 1.0);
         this.score = 0;
 
         for (Agent a : this.AgentList) {
@@ -190,6 +190,8 @@ public class Warehouse extends SimState {
         long elapsedTime = System.currentTimeMillis() - startTime;
         System.out.println("Elapsed time in milliseconds: " + elapsedTime);
         System.out.println("Number of steps: " + this.schedule.getSteps());
+        System.out.println("Number of tasks generated: " + this.tasks.getGeneratedTasks());
+        System.out.println("Number of tasks completed: " + this.tasks.getCompletedTasks());
         System.out.println("Seed: " + this.seed());
         System.out.println("warehouse: " + this.file_path);
         System.out.println("--------------------------");

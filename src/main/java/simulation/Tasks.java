@@ -3,7 +3,6 @@ package simulation;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import bsh.This;
 import sim.util.Int2D;
 
 public class Tasks {
@@ -15,15 +14,19 @@ public class Tasks {
     private ArrayList<Task> availableTasks = new ArrayList<>();
     private ArrayList<Task> impossibleTask = new ArrayList<>();
     private TaskConfiguration tc = TaskConfiguration.generateTasksUsingPickupAndDelivery;
+    private double generateTasksPerStep = 1.0;
+    private long generatedTasks = 0;
+    private long completedTasks = 0;
 
     public Tasks(Warehouse warehouse) {
-        this(warehouse, new ArrayList<>(), new ArrayList<>());
+        this(warehouse, new ArrayList<>(), new ArrayList<>(), 1.0);
     }
 
-    public Tasks(Warehouse warehouse, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery) {
+    public Tasks(Warehouse warehouse, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery, double generateTasksPerStep) {
         this.warehouse = warehouse;
         this.pickup = pickup;
         this.delivery = delivery;
+        this.generateTasksPerStep = generateTasksPerStep;
     }
 
     public void setTaskList(ArrayList<Task> taskList) {
@@ -47,18 +50,21 @@ public class Tasks {
     }
 
     public void generateTasks() {
-        switch (tc) {
-            case generateTasksUsingPickupAndDelivery:
-                generateTasksUsingPickupAndDelivery();
-                break;
-            case completeTaskList:
-                getFirstInTaskList();
-                break;
-            case selectTasksFromTaskList:
-                copyTaskFromTaskList();
-                break;
-            default:
-                break;
+        while ((warehouse.schedule.getSteps()+1) * generateTasksPerStep > generatedTasks) {
+            switch (tc) {
+                case generateTasksUsingPickupAndDelivery:
+                    generateTasksUsingPickupAndDelivery();
+                    break;
+                case completeTaskList:
+                    getFirstInTaskList();
+                    break;
+                case selectTasksFromTaskList:
+                    copyTaskFromTaskList();
+                    break;
+                default:
+                    break;
+            }
+            generatedTasks++;
         }
     }
 
@@ -122,6 +128,7 @@ public class Tasks {
                 a.increaseScore();
                 warehouse.increaseScore();
                 if (goal.complete()) {
+                    completedTasks++;
                     goals.remove(0);
                     a.setTarget(null);
                     assignNextTask(a);
@@ -170,6 +177,13 @@ public class Tasks {
 
     public boolean reached(Int2D pos, Int2D size, Int2D target) {
         return target.x >= pos.x && target.x < pos.x + size.x && target.y >= pos.y && target.y < pos.y + size.y;
+    }
+
+    public long getGeneratedTasks() {
+        return generatedTasks;
+    }
+    public long getCompletedTasks() {
+        return completedTasks;
     }
 
     private class Task {
