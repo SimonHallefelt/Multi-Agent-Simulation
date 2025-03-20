@@ -9,11 +9,10 @@ public class Path {
     private ArrayList<Int2D> positionPath = new ArrayList<>();
     private Int2D endPos;
     private Boolean remakePath = false;
-    private Int2D poppedPos;
     private Int2D poppedDir;
 
     public Path(Int2D startPos) {
-        endPos = startPos==null ? new Int2D(0,0) : startPos;
+        endPos = startPos == null ? new Int2D(0, 0) : startPos;
     }
 
     public void addStep(Int2D dir) {
@@ -29,7 +28,7 @@ public class Path {
 
     public void addNewPositionPath(Int2D pos, ArrayList<Int2D> positionPath) {
         this.positionPath = positionPath;
-        endPos = positionPath.size() != 0 ? positionPath.get(positionPath.size()-1) : pos;
+        endPos = positionPath.size() != 0 ? positionPath.get(positionPath.size() - 1) : pos;
         generateStepsFromPositionPath(pos);
     }
 
@@ -49,18 +48,19 @@ public class Path {
             pos = pos.add(step);
             positionPath.add(pos);
         }
-        endPos = positionPath.get(positionPath.size()-1);
+        endPos = positionPath.get(positionPath.size() - 1);
     }
 
     public Int2D pop() {
-        if (steps.isEmpty()) return null;
-        poppedPos = positionPath.remove(0);
-        poppedDir = steps.remove(0);
-        return poppedDir;
+        if (steps.isEmpty())
+            return null;
+        positionPath.remove(0);
+        return steps.remove(0);
     }
 
     public Int2D peek() {
-        if (steps.isEmpty()) return null;
+        if (steps.isEmpty())
+            return null;
         return steps.get(0);
     }
 
@@ -82,17 +82,9 @@ public class Path {
 
     public String toString() {
         String s = "";
-        for (Int2D p: positionPath) {
+        for (Int2D p : positionPath) {
             s += p;
         }
         return s;
-    }
-
-    public void backtrack() {
-        // TODO Auto-generated method stub
-        if (poppedDir == null) return;
-        positionPath.add(0, poppedPos);
-        steps.add(0, poppedDir);
-        poppedDir = null;
     }
 }

@@ -146,7 +146,6 @@ public abstract class Agent implements Steppable, Colorable {
                 timeToCompletedMovement = 1;
             // path.setRemakePath(false);
         } else {
-            path.backtrack();
             path.setRemakePath(true);
             // path = new Path(pos);
             if (debug)

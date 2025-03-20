@@ -86,13 +86,13 @@ public class ReadFile {
                     if (o != null) {
                         algo = o.has("algo") ? o.getString("algo") : "none";
                         sizeString[0] = o.has("size") ? o.getString("size") : "1,1";
-                        moveTime = o.has("moveTime") ? o.getInt("moveTime") : 0;
+                        moveTime = o.has("moveTime") ? o.getInt("moveTime") : 1;
                         colorString[0] = o.has("color") ? o.getString("color") : "default";
 
                     } else {
                         algo = "none";
                         sizeString[0] = "1,1";
-                        moveTime = 0;
+                        moveTime = 1;
                         colorString[0] = "default";
 
                     }
@@ -134,10 +134,10 @@ public class ReadFile {
                         map.set(x, y, 1);
                         break;
                     case "E":
-                        pickup.add(new Int2D(x,y));
+                        pickup.add(new Int2D(x, y));
                         break;
                     case "D":
-                        delivery.add(new Int2D(x,y));
+                        delivery.add(new Int2D(x, y));
                         break;
                     default:
                         break;
@@ -166,7 +166,7 @@ public class ReadFile {
         ArrayList<Agent> agentList;
         ArrayList<Brain> brainList;
 
-        public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery, 
+        public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery,
                 ArrayList<Agent> agentList, ArrayList<Brain> brainList) {
             this.map = map;
             this.agents = agents;

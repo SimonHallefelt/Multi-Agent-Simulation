@@ -41,7 +41,7 @@ public class Gui extends GUIState {
 
     public void setupPortrayals() {
         // tell the portrayals what to portray and how to portray them
-        warehousePortrayal.setField( warehouse.map );
+        warehousePortrayal.setField(warehouse.map);
         // set color map
         color = new Color[2];
         color[0] = Color.WHITE;
@@ -50,13 +50,13 @@ public class Gui extends GUIState {
         warehousePortrayal.setMap(simpleColorMap);
 
         // agent portrayal
-        agentPortrayal.setField( warehouse.agents );
-        agentPortrayal.setPortrayalForAll( new RectanglePortrayal2D() {
+        agentPortrayal.setField(warehouse.agents);
+        agentPortrayal.setPortrayalForAll(new RectanglePortrayal2D() {
             public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
                 Colorable agent = (Colorable) object;
                 paint = agent.getColor();
                 super.draw(object, graphics, info);
-                }
+            }
         });
 
         // reschedule the displayer
@@ -65,34 +65,36 @@ public class Gui extends GUIState {
         // redraw the display
         display.repaint();
     }
-    
+
     public void init(Controller c) {
         super.init(c);
-        display = new Display2D(warehouse.width * 32, warehouse.height * 32,this);
+        display = new Display2D(warehouse.width * 32, warehouse.height * 32, this);
         display.setClipping(false);
         displayFrame = display.createFrame();
         displayFrame.setTitle("Warehouse Display");
         c.registerFrame(displayFrame); // so the frame appears in the "Display" list
         displayFrame.setVisible(true);
-        display.attach( warehousePortrayal, "Warehouse" );
-        display.attach( agentPortrayal, "Agents" );
+        display.attach(warehousePortrayal, "Warehouse");
+        display.attach(agentPortrayal, "Agents");
     }
 
     public void quit() {
         super.quit();
-        if (displayFrame!=null) displayFrame.dispose();
+        if (displayFrame != null)
+            displayFrame.dispose();
         displayFrame = null;
         display = null;
     }
 
+    public Gui() {
+        super(new Warehouse(System.currentTimeMillis()));
+    }
 
-    public Gui() { 
-        super(new Warehouse(System.currentTimeMillis())); 
+    public Gui(SimState state) {
+        super(state);
     }
-    public Gui(SimState state) { 
-        super(state); 
-    }
-    public static String getName() { 
-        return "Heterogeneous Agents"; 
+
+    public static String getName() {
+        return "Heterogeneous Agents";
     }
 }
