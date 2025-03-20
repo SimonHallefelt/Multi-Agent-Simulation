@@ -13,6 +13,8 @@ public class BeforeEveryStep implements Steppable {
             System.out.println("Thinking...");
             b.think(warehouse);
         }
+        warehouse.generateTasks();
+        warehouse.assignTasks();
     }
 
 }

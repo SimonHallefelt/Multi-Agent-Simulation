@@ -47,8 +47,8 @@ public class ReadFile {
         IntGrid2D map = new IntGrid2D(width, height);
         SparseGrid2D agents = new SparseGrid2D(width, height);
         // Tasks tasks = new Tasks(this);
-        ArrayList<Int2D> starts = new ArrayList<>();
-        ArrayList<Int2D> goals = new ArrayList<>();
+        ArrayList<Int2D> pickup = new ArrayList<>();
+        ArrayList<Int2D> delivery = new ArrayList<>();
         AgentFactory factory = new AgentFactory();
         BrainFactory brainFactory = new BrainFactory();
         // this.score = 0;
@@ -134,17 +134,17 @@ public class ReadFile {
                         map.set(x, y, 1);
                         break;
                     case "E":
-                        starts.add(new Int2D(x, y));
+                        pickup.add(new Int2D(x,y));
                         break;
                     case "D":
-                        goals.add(new Int2D(x, y));
+                        delivery.add(new Int2D(x,y));
                         break;
                     default:
                         break;
                 }
             }
         }
-        return new FileData(map, agents, starts, goals, AgentList, BrainList);
+        return new FileData(map, agents, pickup, delivery, AgentList, BrainList);
     }
 
     private Color getDefaultColor(String id) {
@@ -161,17 +161,17 @@ public class ReadFile {
     public class FileData {
         IntGrid2D map;
         SparseGrid2D agents;
-        ArrayList<Int2D> starts;
-        ArrayList<Int2D> goals;
+        ArrayList<Int2D> pickup;
+        ArrayList<Int2D> delivery;
         ArrayList<Agent> agentList;
         ArrayList<Brain> brainList;
 
-        public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Int2D> starts, ArrayList<Int2D> goals,
+        public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery, 
                 ArrayList<Agent> agentList, ArrayList<Brain> brainList) {
             this.map = map;
             this.agents = agents;
-            this.starts = starts;
-            this.goals = goals;
+            this.pickup = pickup;
+            this.delivery = delivery;
             this.agentList = agentList;
             this.brainList = brainList;
         }
