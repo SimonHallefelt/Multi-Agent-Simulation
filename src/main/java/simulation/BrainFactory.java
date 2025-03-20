@@ -2,8 +2,6 @@ package simulation;
 
 import java.util.HashMap;
 
-import sim.util.Int2D;
-import simulation.agents.*;
 import simulation.interfaces.BrainConstructor;
 
 public class BrainFactory {

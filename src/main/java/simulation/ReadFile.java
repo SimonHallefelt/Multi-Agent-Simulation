@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.awt.Color;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,11 +50,22 @@ public class ReadFile {
         ArrayList<Int2D> starts = new ArrayList<>();
         ArrayList<Int2D> goals = new ArrayList<>();
         AgentFactory factory = new AgentFactory();
+        BrainFactory brainFactory = new BrainFactory();
         // this.score = 0;
 
         HashMap<String, JSONObject> agentTypes = new HashMap<>();
         ArrayList<Agent> AgentList = new ArrayList<>();
         ArrayList<Brain> BrainList = new ArrayList<>();
+
+        if (obj.has("brains")) {
+            for (Object o : obj.getJSONArray("brains").toList()) {
+                String name = o.toString();
+                Brain b = brainFactory.createBrain(name);
+                if (b != null) {
+                    BrainList.add(b);
+                }
+            }
+        }
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < jsonMap.get(y).size(); x++) {

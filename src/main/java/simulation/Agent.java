@@ -51,6 +51,10 @@ public abstract class Agent implements Steppable, Colorable {
         this.moveTime = moveTime;
     }
 
+    public int getMoveTime() {
+        return moveTime;
+    }
+
     public void setSize(Int2D size) {
         this.size = size;
     }
@@ -185,10 +189,16 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
     public void makeInitialPath(Warehouse warehouse) {
-        if (!this.path.isEmpty())
-            return;
-        this.path.addNewPositionPath(this.pos, PathFinding.aStar(warehouse, target, pos, size, true));
-        this.path.setRemakePath(true);
+        /**
+         * if (!this.path.isEmpty())
+         * return;
+         * this.path = new Path(pos);
+         * this.path.addNewPositionPath(this.pos, PathFinding.aStar(warehouse, target,
+         * pos, size, true));
+         * this.path.setRemakePath(true);
+         * if (debug)
+         * System.out.println("made new initial path");
+         */
     }
 
     public void moveComplete() {
