@@ -20,17 +20,17 @@ public class AstarBrain extends Brain {
         for (Agent a : agents) {
             if (a.getPathPositionPath().size() == 0 && a.getTarget() != null) {
                 ph.removeAgent(a);
-                // ArrayList<Int2D> p = PathFinding.aStarNoPathCollisions(warehouse, ph,
-                // a.getTarget(), a.getPos(),
-                // a.getSize(), a.getMoveTime());
-                ArrayList<Int2D> p = PathFinding.aStar(warehouse, a.getTarget(), a.getPos(), a.getSize());
+                ArrayList<Int2D> p = PathFinding.aStarNoPathCollisions(warehouse, ph, a.getTarget(), a.getPos(),
+                        a.getSize(), a.getMoveTime());
+                // ArrayList<Int2D> p = PathFinding.aStar(warehouse, a.getTarget(), a.getPos(),
+                // a.getSize());
+                if (p.size() == 0) {
+                    p = PathFinding.moveOutOfWay(warehouse, ph, a.getPos(), a.getSize(), a.getMoveTime());
+                }
                 Path path = new Path(a.getPos());
                 path.addNewPositionPath(a.getPos(), p);
                 a.setPath(path);
                 ph.addAgentPath(a, path);
-                System.out.println("New path for " + a + ": " + p);
-            } else {
-                System.out.println("Did not make path for " + a + ", " + a.getPathPositionPath().size());
             }
         }
     }

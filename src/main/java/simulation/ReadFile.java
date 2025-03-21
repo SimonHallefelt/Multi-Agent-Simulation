@@ -67,6 +67,23 @@ public class ReadFile {
             }
         }
 
+        String defaultAlgo = "none";
+        String defaultSize = "1,1";
+        int defaultMoveTime = 1;
+        String defaultColor = "default";
+
+        if (obj.has("default")) {
+            JSONObject def = obj.getJSONObject("default");
+            if (def.has("algo"))
+                defaultAlgo = def.getString("algo");
+            if (def.has("size"))
+                defaultSize = def.getString("size");
+            if (def.has("moveTime"))
+                defaultMoveTime = def.getInt("moveTime");
+            if (def.has("color"))
+                defaultColor = def.getString("color");
+        }
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < jsonMap.get(y).size(); x++) {
                 String value = jsonMap.get(y).get(x);
@@ -84,16 +101,16 @@ public class ReadFile {
                     String[] colorString = { "" };
                     int moveTime;
                     if (o != null) {
-                        algo = o.has("algo") ? o.getString("algo") : "none";
-                        sizeString[0] = o.has("size") ? o.getString("size") : "1,1";
-                        moveTime = o.has("moveTime") ? o.getInt("moveTime") : 1;
-                        colorString[0] = o.has("color") ? o.getString("color") : "default";
+                        algo = o.has("algo") ? o.getString("algo") : defaultAlgo;
+                        sizeString[0] = o.has("size") ? o.getString("size") : defaultSize;
+                        moveTime = o.has("moveTime") ? o.getInt("moveTime") : defaultMoveTime;
+                        colorString[0] = o.has("color") ? o.getString("color") : defaultColor;
 
                     } else {
-                        algo = "none";
-                        sizeString[0] = "1,1";
-                        moveTime = 1;
-                        colorString[0] = "default";
+                        algo = defaultAlgo;
+                        sizeString[0] = defaultSize;
+                        moveTime = defaultMoveTime;
+                        colorString[0] = defaultColor;
 
                     }
                     sizeString = sizeString[0].split(",");

@@ -17,7 +17,7 @@ public class DefaultSetup implements FactorySetup {
         AgentFactory.registerAgent("aStarSmarter", () -> new AStarSmarter());
         AgentFactory.registerAgent("astar", () -> new AStarAgent());
         AgentFactory.registerAgent("pacman", () -> new PacmanAgent());
-        AgentFactory.registerAgent("randomWalk", () -> new RandomAgent());
+        AgentFactory.registerAgent("RandomWalk", () -> new RandomAgent());
         BrainFactory.registerBrain("astarBrain", () -> new AstarBrain());
     }
 

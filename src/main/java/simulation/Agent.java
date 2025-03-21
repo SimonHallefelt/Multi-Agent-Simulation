@@ -147,6 +147,7 @@ public abstract class Agent implements Steppable, Colorable {
             // path.setRemakePath(false);
         } else {
             path.setRemakePath(true);
+
             // path = new Path(pos);
             if (debug)
                 System.out.println(id + ": agent could not move to " + pos.add(dir) + "(" + dir + ")");
