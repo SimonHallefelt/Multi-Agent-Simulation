@@ -53,9 +53,14 @@ public class ReadFile {
         BrainFactory brainFactory = new BrainFactory();
         // this.score = 0;
 
+        // brain settings
         HashMap<String, JSONObject> agentTypes = new HashMap<>();
         ArrayList<Agent> AgentList = new ArrayList<>();
         ArrayList<Brain> BrainList = new ArrayList<>();
+
+        // task settings
+        double tasksPerStep = 1.0;
+        String taskGeneration = "random";
 
         if (obj.has("brains")) {
             for (Object o : obj.getJSONArray("brains").toList()) {
@@ -66,6 +71,7 @@ public class ReadFile {
                 }
             }
         }
+
 
         String defaultAlgo = "none";
         String defaultSize = "1,1";
@@ -82,6 +88,14 @@ public class ReadFile {
                 defaultMoveTime = def.getInt("moveTime");
             if (def.has("color"))
                 defaultColor = def.getString("color");
+        }
+
+        if (obj.has("task-settings")) {
+            JSONObject def = obj.getJSONObject("task-settings");
+            if (def.has("TasksPerStep")) 
+                tasksPerStep = def.getDouble("TasksPerStep");
+            if (def.has("taskGeneration")) 
+                taskGeneration = def.getString("taskGeneration");
         }
 
         for (int y = 0; y < height; y++) {
@@ -161,7 +175,7 @@ public class ReadFile {
                 }
             }
         }
-        return new FileData(map, agents, pickup, delivery, AgentList, BrainList);
+        return new FileData(map, agents, pickup, delivery, AgentList, BrainList, tasksPerStep, taskGeneration);
     }
 
     private Color getDefaultColor(String id) {
@@ -182,15 +196,19 @@ public class ReadFile {
         ArrayList<Int2D> delivery;
         ArrayList<Agent> agentList;
         ArrayList<Brain> brainList;
+        double tasksPerStep;
+        String taskGeneration;
 
         public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery,
-                ArrayList<Agent> agentList, ArrayList<Brain> brainList) {
+                ArrayList<Agent> agentList, ArrayList<Brain> brainList, double tasksPerStep, String taskGeneration) {
             this.map = map;
             this.agents = agents;
             this.pickup = pickup;
             this.delivery = delivery;
             this.agentList = agentList;
             this.brainList = brainList;
+            this.tasksPerStep = tasksPerStep;
+            this.taskGeneration = taskGeneration;
         }
     }
 }

@@ -14,7 +14,7 @@ public class Tasks {
     private ArrayList<Task> availableTasks = new ArrayList<>();
     private ArrayList<Task> impossibleTask = new ArrayList<>();
     private TaskConfiguration tc = TaskConfiguration.generateTasksUsingPickupAndDelivery;
-    private double generateTasksPerStep = 1.0;
+    private double TasksPerStep = 1.0;
     private long generatedTasks = 0;
     private long completedTasks = 0;
 
@@ -22,26 +22,26 @@ public class Tasks {
         this(warehouse, new ArrayList<>(), new ArrayList<>(), 1.0);
     }
 
-    public Tasks(Warehouse warehouse, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery, double generateTasksPerStep) {
+    public Tasks(Warehouse warehouse, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery, double TasksPerStep) {
         this.warehouse = warehouse;
         this.pickup = pickup;
         this.delivery = delivery;
-        this.generateTasksPerStep = generateTasksPerStep;
+        this.TasksPerStep = TasksPerStep;
     }
 
     public void setTaskList(ArrayList<Task> taskList) {
         this.taskList = taskList;
     }
 
-    public void setTaskConfiguration(int i) {
-        switch (i) {
-            case 0:
+    public void setTaskConfiguration(String s) {
+        switch (s) {
+            case "random":
                 tc = TaskConfiguration.generateTasksUsingPickupAndDelivery;
                 break;
-            case 1:
+            case "completeList":
                 tc = TaskConfiguration.completeTaskList;
                 break;
-            case 2:
+            case "selectTasksFromList":
                 tc = TaskConfiguration.selectTasksFromTaskList;
                 break;
             default:
@@ -50,7 +50,7 @@ public class Tasks {
     }
 
     public void generateTasks() {
-        while ((warehouse.schedule.getSteps() + 1) * generateTasksPerStep > generatedTasks) {
+        while ((warehouse.schedule.getSteps() + 1) * TasksPerStep > generatedTasks) {
             switch (tc) {
                 case generateTasksUsingPickupAndDelivery:
                     generateTasksUsingPickupAndDelivery();
@@ -182,12 +182,16 @@ public class Tasks {
         return target.x >= pos.x && target.x < pos.x + size.x && target.y >= pos.y && target.y < pos.y + size.y;
     }
 
-    public long getGeneratedTasks() {
+    public long getNumGeneratedTasks() {
         return generatedTasks;
     }
 
-    public long getCompletedTasks() {
+    public long getNumCompletedTasks() {
         return completedTasks;
+    }
+
+    public int getNumImpossibleTasks() {
+        return impossibleTask.size();
     }
 
     private class Task {
