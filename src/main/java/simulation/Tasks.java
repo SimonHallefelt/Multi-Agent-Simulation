@@ -50,7 +50,7 @@ public class Tasks {
     }
 
     public void generateTasks() {
-        while ((warehouse.schedule.getSteps()+1) * generateTasksPerStep > generatedTasks) {
+        while ((warehouse.schedule.getSteps() + 1) * generateTasksPerStep > generatedTasks) {
             switch (tc) {
                 case generateTasksUsingPickupAndDelivery:
                     generateTasksUsingPickupAndDelivery();
@@ -70,16 +70,17 @@ public class Tasks {
 
     public void generateTasksUsingPickupAndDelivery() {
         Int2D[] targets = new Int2D[] {
-            pickup.get(warehouse.random.nextInt(pickup.size())),
-            delivery.get(warehouse.random.nextInt(delivery.size()))
+                pickup.get(warehouse.random.nextInt(pickup.size())),
+                delivery.get(warehouse.random.nextInt(delivery.size()))
         };
         availableTasks.add(new Task(targets));
     }
 
     public void getFirstInTaskList() {
-        if(taskList.isEmpty()) {
+        if (taskList.isEmpty()) {
             Boolean noActiveTasks = !activeTasks.values().stream().map(a -> a.isEmpty()).anyMatch(a -> false);
-            if(availableTasks.isEmpty() && noActiveTasks) warehouse.kill();
+            if (availableTasks.isEmpty() && noActiveTasks)
+                warehouse.kill();
             return;
         }
         availableTasks.add(taskList.remove(0));
@@ -101,7 +102,7 @@ public class Tasks {
                 impossibleTask.add(t);
                 continue;
             }
-            possibleAgents.sort((a,b) -> timeToReach(a, t) - timeToReach(b, t));
+            possibleAgents.sort((a, b) -> timeToReach(a, t) - timeToReach(b, t));
             Agent a = possibleAgents.get(0);
 
             // assign task to agent
@@ -115,7 +116,7 @@ public class Tasks {
             }
             if (a.getTarget() == null) {
                 a.setTarget(t.getGoal());
-                a.makeInitialPath(warehouse);
+                a.makeDesirePath(warehouse);
             }
         }
     }
@@ -134,7 +135,7 @@ public class Tasks {
                     assignNextTask(a);
                 } else {
                     a.setTarget(goal.getGoal());
-                    a.makeInitialPath(warehouse);
+                    a.makeDesirePath(warehouse);
                 }
             }
         }
@@ -142,10 +143,11 @@ public class Tasks {
 
     public void assignNextTask(Agent a) {
         ArrayList<Task> goals = activeTasks.get(a);
-        if (goals == null || goals.isEmpty()) return;
+        if (goals == null || goals.isEmpty())
+            return;
         Task t = goals.get(0);
         a.setTarget(t.getGoal());
-        a.makeInitialPath(warehouse);
+        a.makeDesirePath(warehouse);
     }
 
     public boolean canPerform(Agent a, Task t) {
@@ -154,8 +156,9 @@ public class Tasks {
         for (Int2D target : t.getTargets()) {
             if (!reached(startPos, a.size, target)) {
                 path = PathFinding.aStar(warehouse, target, startPos, a.size, true);
-                if (path.isEmpty()) return false;
-                startPos = path.get(path.size()-1);
+                if (path.isEmpty())
+                    return false;
+                startPos = path.get(path.size() - 1);
             }
         }
         return true;
@@ -166,14 +169,14 @@ public class Tasks {
         Int2D startPos = a.pos;
         ArrayList<Task> agentTasks = activeTasks.get(a);
         if (agentTasks != null) {
-            for (Task ts: agentTasks) {
+            for (Task ts : agentTasks) {
                 TTR += ts.getCompletionDistance(startPos, a.size);
                 startPos = ts.getLastTarget();
             }
         }
         TTR += PathFinding.getDistance(startPos, t.getFirstTarget(), a.size);
         return TTR * a.moveTime;
-    } 
+    }
 
     public boolean reached(Int2D pos, Int2D size, Int2D target) {
         return target.x >= pos.x && target.x < pos.x + size.x && target.y >= pos.y && target.y < pos.y + size.y;
@@ -182,6 +185,7 @@ public class Tasks {
     public long getGeneratedTasks() {
         return generatedTasks;
     }
+
     public long getCompletedTasks() {
         return completedTasks;
     }
@@ -207,7 +211,7 @@ public class Tasks {
         }
 
         public Int2D getLastTarget() {
-            return targets[targets.length-1];
+            return targets[targets.length - 1];
         }
 
         public boolean reached(Int2D pos, Int2D size) {

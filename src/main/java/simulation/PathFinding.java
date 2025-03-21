@@ -16,53 +16,60 @@ public class PathFinding {
         double d = warehouse.random.nextDouble();
         boolean vert = (dir.x == 0);
         if (d < 0.25) {
-            if (vert) dir = new Int2D(1,0); 
-            else      dir = new Int2D(0,1);
-        }
-        else if (d < 0.5) {
-            if (vert) dir = new Int2D(-1,0); 
-            else      dir = new Int2D(0,-1);
+            if (vert)
+                dir = new Int2D(1, 0);
+            else
+                dir = new Int2D(0, 1);
+        } else if (d < 0.5) {
+            if (vert)
+                dir = new Int2D(-1, 0);
+            else
+                dir = new Int2D(0, -1);
         }
         return dir;
     }
 
     public static Int2D trueRandomWalk(Warehouse warehouse) {
-        Int2D[] directions = new Int2D[] {new Int2D(1,0), new Int2D(0,1), new Int2D(-1,0), new Int2D(0,-1)};
+        Int2D[] directions = new Int2D[] { new Int2D(1, 0), new Int2D(0, 1), new Int2D(-1, 0), new Int2D(0, -1) };
         int i = warehouse.random.nextInt(4);
         return directions[i];
     }
 
     public static Int2D randomAccessibleWalk(Warehouse warehouse, Int2D position, Int2D size) {
-        Int2D[] directions = new Int2D[] {new Int2D(1,0), new Int2D(0,1), new Int2D(-1,0), new Int2D(0,-1)};
+        Int2D[] directions = new Int2D[] { new Int2D(1, 0), new Int2D(0, 1), new Int2D(-1, 0), new Int2D(0, -1) };
         ArrayList<Int2D> viableDirections = new ArrayList<>();
-        for (Int2D d: directions) {
-            if (warehouse.canMove(position.add(d), d, size)) viableDirections.add(d);
+        for (Int2D d : directions) {
+            if (warehouse.canMove(position.add(d), d, size))
+                viableDirections.add(d);
         }
         int v = viableDirections.size();
-        if (v == 0) return new Int2D(0,0);
+        if (v == 0)
+            return new Int2D(0, 0);
         int s = warehouse.random.nextInt(viableDirections.size());
         return viableDirections.get(s);
     }
 
     public static Int2D randomUnobstructiveWalk(Warehouse warehouse, Int2D position, Int2D size, PathHandler ph) {
-        Int2D[] directions = new Int2D[] {new Int2D(1,0), new Int2D(0,1), new Int2D(-1,0), new Int2D(0,-1), new Int2D(0,0)};
+        Int2D[] directions = new Int2D[] { new Int2D(1, 0), new Int2D(0, 1), new Int2D(-1, 0), new Int2D(0, -1),
+                new Int2D(0, 0) };
         ArrayList<Int2D> viableDirections = new ArrayList<>();
-        for (Int2D d: directions) {
-            if (warehouse.canMove(position.add(d), d, size) && !ph.willTileBeClaimed(position.add(d),size)) viableDirections.add(d);
+        for (Int2D d : directions) {
+            if (warehouse.canMove(position.add(d), d, size) && !ph.willTileBeClaimed(position.add(d), size))
+                viableDirections.add(d);
         }
         int v = viableDirections.size();
-        if (v == 0) return randomAccessibleWalk(warehouse, position, size);
+        if (v == 0)
+            return randomAccessibleWalk(warehouse, position, size);
         int s = warehouse.random.nextInt(viableDirections.size());
         return viableDirections.get(s);
     }
 
     public static Int2D pacman(Warehouse warehouse, Int2D pos, Int2D target, Int2D direction, Int2D size) {
-        direction = direction.x == direction.y ? new Int2D(1,0) : direction;
+        direction = direction.x == direction.y ? new Int2D(1, 0) : direction;
         ArrayList<Int2D> dirs = new ArrayList<>(
-            Arrays.asList(direction, new Int2D(direction.y, direction.x), new Int2D(-direction.y, -direction.x))
-        );
+                Arrays.asList(direction, new Int2D(direction.y, direction.x), new Int2D(-direction.y, -direction.x)));
 
-        dirs.sort((d,o) -> getDistance(pos.add(d), target, size) - getDistance(pos.add(o), target, size));
+        dirs.sort((d, o) -> getDistance(pos.add(d), target, size) - getDistance(pos.add(o), target, size));
 
         for (Int2D dir : dirs) {
             if (warehouse.canMove(pos.add(dir), dir, size)) {
@@ -70,40 +77,44 @@ public class PathFinding {
             }
         }
 
-        return new Int2D(-direction.x,-direction.y);
+        return new Int2D(-direction.x, -direction.y);
     }
-    
-    public static ArrayList<Int2D> moveOutOfWay(Warehouse warehouse, PathHandler pathHandler, Int2D startPos, Int2D size, int moveTime) {
+
+    public static ArrayList<Int2D> moveOutOfWay(Warehouse warehouse, PathHandler pathHandler, Int2D startPos,
+            Int2D size, int moveTime) {
         Int2D endPos = startPos;
         Int2D[] dirs = new Int2D[] {
-            new Int2D(1,0),
-            new Int2D(-1,0),
-            new Int2D(0,1),
-            new Int2D(0,-1)
+                new Int2D(1, 0),
+                new Int2D(-1, 0),
+                new Int2D(0, 1),
+                new Int2D(0, -1)
         };
         HashMap<Int2D, Int2D> reached = new HashMap<>();
         AStarNode startNode = new AStarNode(0, 0, startPos, startPos);
         PriorityQueue<AStarNode> pq = new PriorityQueue<>();
         pq.add(startNode);
-        
+
         while (!pq.isEmpty()) {
             AStarNode node = pq.poll();
             Int2D pos = node.pos;
             if (!reached.containsKey(pos)) {
                 reached.put(pos, node.oldPos);
-                //if (targetReached(pos, size, target)) {
-                if (!pathHandler.willTileBeClaimed(pos, size)) {
+                // if (targetReached(pos, size, target)) {
+                if (!pathHandler.willTileBeClaimed(pos, size, true)) {
                     endPos = pos;
                     break;
                 }
 
                 for (Int2D dir : dirs) {
                     Int2D newPos = pos.add(dir);
-                    if (warehouse.canMove(newPos, dir, size, true) && 
-                    !reached.containsKey(newPos) && 
-                    pathHandler.isTileClaimed(newPos,node.previousCost,size,moveTime)) {
-                        int safety = node.previousCost * moveTime - pathHandler.nextClaim(newPos);//Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
-                        AStarNode newNode = new AStarNode(safety, node.previousCost+1, pos, newPos);
+                    if (warehouse.canMove(newPos, dir, size, true) &&
+                            !reached.containsKey(newPos) &&
+                            pathHandler.isTileClaimed(newPos, node.previousCost, size, moveTime)) {
+                        int safety = node.previousCost * moveTime - pathHandler.nextClaim(newPos);// Math.abs(newPos.x -
+                                                                                                  // target.x) +
+                                                                                                  // Math.abs(newPos.y -
+                                                                                                  // target.y);
+                        AStarNode newNode = new AStarNode(safety, node.previousCost + 1, pos, newPos);
                         pq.add(newNode);
                     }
                 }
@@ -117,23 +128,24 @@ public class PathFinding {
             pos = reached.get(pos);
         }
         Collections.reverse(steps);
-        
+
         return steps;
     }
 
-    public static ArrayList<Int2D> aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size, boolean noAgents) {
+    public static ArrayList<Int2D> aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size,
+            boolean noAgents) {
         Int2D endPos = startPos;
         Int2D[] dirs = new Int2D[] {
-            new Int2D(1,0),
-            new Int2D(-1,0),
-            new Int2D(0,1),
-            new Int2D(0,-1)
+                new Int2D(1, 0),
+                new Int2D(-1, 0),
+                new Int2D(0, 1),
+                new Int2D(0, -1)
         };
         HashMap<Int2D, Int2D> reached = new HashMap<>();
         AStarNode startNode = new AStarNode(0, 0, startPos, startPos);
         PriorityQueue<AStarNode> pq = new PriorityQueue<>();
         pq.add(startNode);
-        
+
         while (!pq.isEmpty()) {
             AStarNode node = pq.poll();
             Int2D pos = node.pos;
@@ -146,10 +158,11 @@ public class PathFinding {
 
                 for (Int2D dir : dirs) {
                     Int2D newPos = pos.add(dir);
-                    if (warehouse.canMove(newPos, dir, size, noAgents) && 
-                    !reached.containsKey(newPos)) {
+                    if (warehouse.canMove(newPos, dir, size, noAgents) &&
+                            !reached.containsKey(newPos)) {
                         int dist = Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
-                        AStarNode newNode = new AStarNode(dist + node.previousCost+1, node.previousCost+1, pos, newPos);
+                        AStarNode newNode = new AStarNode(dist + node.previousCost + 1, node.previousCost + 1, pos,
+                                newPos);
                         pq.add(newNode);
                     }
                 }
@@ -163,7 +176,7 @@ public class PathFinding {
             pos = reached.get(pos);
         }
         Collections.reverse(steps);
-        
+
         return steps;
     }
 
@@ -171,14 +184,15 @@ public class PathFinding {
         return aStar(warehouse, target, startPos, size, false);
     }
 
-    public static ArrayList<Int2D> aStarNoPathCollisions(Warehouse warehouse, PathHandler othersPaths, Int2D target, Int2D startPos, 
-                                                         Int2D size, int moveTime) {
+    public static ArrayList<Int2D> aStarNoPathCollisions(Warehouse warehouse, PathHandler othersPaths, Int2D target,
+            Int2D startPos,
+            Int2D size, int moveTime) {
         Int3D[] dirs = new Int3D[] {
-            new Int3D(1,0,moveTime),
-            new Int3D(-1,0,moveTime),
-            new Int3D(0,1,moveTime),
-            new Int3D(0,-1,moveTime),
-            new Int3D(0,0,1)
+                new Int3D(1, 0, moveTime),
+                new Int3D(-1, 0, moveTime),
+                new Int3D(0, 1, moveTime),
+                new Int3D(0, -1, moveTime),
+                new Int3D(0, 0, 1)
         };
         HashSet<Int3D> reached = new HashSet<>();
         AStarNodeNoPathCollision startNode = new AStarNodeNoPathCollision(0, 0, null, startPos);
@@ -196,17 +210,20 @@ public class PathFinding {
                 }
 
                 for (Int3D dir : dirs) {
-                    Int2D newPos = node.pos.add(dir.x,dir.y);
-                    if (warehouse.canMove(newPos, new Int2D(dir.x,dir.y), size, true) && 
-                    !reached.contains(new Int3D(newPos, node.previousCost+dir.z))) {
+                    Int2D newPos = node.pos.add(dir.x, dir.y);
+                    if (warehouse.canMove(newPos, new Int2D(dir.x, dir.y), size, true) &&
+                            !reached.contains(new Int3D(newPos, node.previousCost + dir.z))) {
                         if (othersPaths.isTileClaimed(node.pos, node.previousCost, size, dir.z) ||
-                        othersPaths.isTileClaimed(newPos, node.previousCost, size, dir.z)) continue;
+                                othersPaths.isTileClaimed(newPos, node.previousCost, size, dir.z))
+                            continue;
 
-                        reachedCounter.put(newPos, reachedCounter.getOrDefault(newPos, 0)+1);
-                        if (reachedCounter.get(newPos) > moveTime*10) continue;
+                        reachedCounter.put(newPos, reachedCounter.getOrDefault(newPos, 0) + 1);
+                        if (reachedCounter.get(newPos) > moveTime * 10)
+                            continue;
 
                         int dist = Math.abs(newPos.x - target.x) + Math.abs(newPos.y - target.y);
-                        pq.add(new AStarNodeNoPathCollision(dist + node.previousCost+dir.z, node.previousCost+dir.z, node, newPos));
+                        pq.add(new AStarNodeNoPathCollision(dist + node.previousCost + dir.z, node.previousCost + dir.z,
+                                node, newPos));
                     }
                 }
             }
@@ -221,7 +238,6 @@ public class PathFinding {
         Collections.reverse(steps);
         return steps;
     }
-
 
     private static class AStarNode implements Comparable<AStarNode> {
         // cost to reach, cost before, old position, new position
@@ -244,7 +260,7 @@ public class PathFinding {
     private static class AStarNodeNoPathCollision implements Comparable<AStarNodeNoPathCollision> {
         // cost to reach, cost before, old position, new position
         int cost, previousCost;
-        AStarNodeNoPathCollision previousNode; 
+        AStarNodeNoPathCollision previousNode;
         Int2D pos;
 
         public AStarNodeNoPathCollision(int cost, int previousCost, AStarNodeNoPathCollision previousNode, Int2D pos) {
@@ -266,14 +282,16 @@ public class PathFinding {
     }
 
     public static boolean targetReached(Int3D pos, Int2D size, Int2D target) {
-        return targetReached(new Int2D(pos.x,pos.y), size, target);
+        return targetReached(new Int2D(pos.x, pos.y), size, target);
     }
 
     public static int getDistance(Int2D start, Int2D finish, Int2D size) {
         int dx = start.x - finish.x;
         int dy = start.y - finish.y;
-        if (dx < 0) dx = Math.min(dx + size.x - 1,0);
-        if (dy < 0) dy = Math.min(dy + size.y - 1,0);
+        if (dx < 0)
+            dx = Math.min(dx + size.x - 1, 0);
+        if (dy < 0)
+            dy = Math.min(dy + size.y - 1, 0);
         return Math.abs(dx) + Math.abs(dy);
     }
 }

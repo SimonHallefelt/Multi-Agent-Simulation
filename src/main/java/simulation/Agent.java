@@ -22,6 +22,7 @@ public abstract class Agent implements Steppable, Colorable {
     protected Int2D size = new Int2D(1, 1);
     protected Color color = Color.GRAY;
     protected Path path = new Path(pos);
+    protected Path desirePath = null;
     private int timeToCompletedMovement;
     private String id = "Agent";
     protected Boolean moveIfBlocking = false;
@@ -139,6 +140,8 @@ public abstract class Agent implements Steppable, Colorable {
             dir = new Int2D(0, 0);
 
         if (warehouse.move(this, dir)) {
+            removeTag("stuck");
+            desirePath = null;
             isMoving = true;
             if (dir.x != 0 || dir.y != 0)
                 timeToCompletedMovement = this.moveTime;
@@ -147,7 +150,7 @@ public abstract class Agent implements Steppable, Colorable {
             // path.setRemakePath(false);
         } else {
             path.setRemakePath(true);
-
+            addTag("stuck");
             // path = new Path(pos);
             if (debug)
                 System.out.println(id + ": agent could not move to " + pos.add(dir) + "(" + dir + ")");
@@ -183,22 +186,15 @@ public abstract class Agent implements Steppable, Colorable {
     public Path makePath(Warehouse warehouse, PathHandler pathHandler) {
         Path path = new Path(pos);
         path.addStep(PathFinding.randomAccessibleWalk(warehouse, pos, size));
-        if (debug)
-            System.out.println(id + ": created initial path " + path);
         return path;
     }
 
-    public void makeInitialPath(Warehouse warehouse) {
-        /**
-         * if (!this.path.isEmpty())
-         * return;
-         * this.path = new Path(pos);
-         * this.path.addNewPositionPath(this.pos, PathFinding.aStar(warehouse, target,
-         * pos, size, true));
-         * this.path.setRemakePath(true);
-         * if (debug)
-         * System.out.println("made new initial path");
-         */
+    public void makeDesirePath(Warehouse warehouse) {
+        this.desirePath = new Path(pos);
+        this.desirePath.addNewPositionPath(this.pos, PathFinding.aStar(warehouse, target, pos, size, true));
+        if (debug)
+            System.out.println("made new initial path");
+
     }
 
     public void moveComplete() {
@@ -241,6 +237,10 @@ public abstract class Agent implements Steppable, Colorable {
 
     public ArrayList<Int2D> getPathPositionPath() {
         return this.path.getPositionPath();
+    }
+
+    public ArrayList<Int2D> getDesirePositionPath() {
+        return this.desirePath.getPositionPath();
     }
 
     public ArrayList<Trail> getTrails() {

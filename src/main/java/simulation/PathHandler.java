@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import sim.util.Int2D;
-import sim.util.Int3D;
 
 public class PathHandler {
     HashMap<Agent, Path> agentPathMap = new HashMap<>();
-    HashMap<Agent, HashSet<Int3D>> agent3DMap = new HashMap<>();
+    HashMap<Agent, Path> agentDesireMap = new HashMap<>();
     HashMap<Int2D, HashSet<Integer>> tileTimeMap = new HashMap<>();
+    HashMap<Int2D, HashSet<Integer>> tileTimeMapDesired = new HashMap<>();
     boolean cooked = true;
 
     public PathHandler() {
@@ -23,15 +23,24 @@ public class PathHandler {
 
     public PathHandler(Warehouse w, Agent ignore) {
         Path p;
-        for (Agent a: w.getAgentList()) {
-            if (a == ignore) continue;
+        for (Agent a : w.getAgentList()) {
+            if (a == ignore)
+                continue;
             p = a.path;
             addAgentPath(a, p);
+            if (a.desirePath != null) {
+                addAgentDesire(a, a.desirePath);
+            }
         }
     }
 
     public void addAgentPath(Agent a, Path p) {
         agentPathMap.put(a, p);
+        cooked = false;
+    }
+
+    public void addAgentDesire(Agent a, Path p) {
+        agentDesireMap.put(a, p);
         cooked = false;
     }
 
@@ -41,76 +50,47 @@ public class PathHandler {
     }
 
     private void updateValues() {
-        if (cooked) return;
+        if (cooked)
+            return;
         cooked = true;
         tileTimeMap.clear();
+        tileTimeMapDesired.clear();
         HashMap<Int2D, HashSet<Integer>> map;
-        HashSet<Int3D> set;
-        for (Agent a: agentPathMap.keySet()) {
+        for (Agent a : agentPathMap.keySet()) {
             ArrayList<Int2D> p = agentPathMap.get(a).getPositionPath();
-            map = generatePathMap(p, a.size, a.pos, a.moveTime, a.getDelay());
-            for (Int2D k: map.keySet()) {
-                tileTimeMap.merge(k, map.get(k), (s1,s2) -> {s1.addAll(s2); return s1;});
+            map = generatePathMap(p, a.size, a.pos, a.moveTime, a.getDelay(), a.hasTag("stuck"));
+            for (Int2D k : map.keySet()) {
+                tileTimeMap.merge(k, map.get(k), (s1, s2) -> {
+                    s1.addAll(s2);
+                    return s1;
+                });
             }
-            set = generatePathSet(p, a.size, a.pos, a.moveTime, a.getDelay());
-            agent3DMap.put(a, set);
         }
-        //System.out.println(tileTimeMap);
-    }
-    
-    private HashSet<Int3D> generatePathSet(ArrayList<Int2D> positionPath, Int2D size, Int2D previous, int moveTime, int delay) {
-        HashSet<Int3D> set = new HashSet<>();
-        Int2D delta;
-        //int elapsedTime = delay;
-        /** */
-        int elapsedTime = delay - moveTime;
-        for (int i = 0; i < moveTime; i++) {
-            for (int x = 0; x < size.x; x++) {
-                for (int y = 0; y < size.y; y++) {
-                    delta = new Int2D(x,y);
-                    set.add(new Int3D(previous.add(delta),elapsedTime));
-                }
+        for (Agent a : agentDesireMap.keySet()) {
+            ArrayList<Int2D> p = agentDesireMap.get(a).getPositionPath();
+            map = generatePathMap(p, a.size, a.pos, a.moveTime, a.getDelay(), false);
+            for (Int2D k : map.keySet()) {
+                tileTimeMap.merge(k, map.get(k), (s1, s2) -> {
+                    s1.addAll(s2);
+                    return s1;
+                });
             }
-            elapsedTime++;
         }
-        /** */
-        for (Int2D p: positionPath) {
-            for (int i = 0; i < moveTime; i++) {
-                for (int x = 0; x < size.x; x++) {
-                    for (int y = 0; y < size.y; y++) {
-                        delta = new Int2D(x,y);
-                        set.add(new Int3D(previous.add(delta),elapsedTime));
-                        set.add(new Int3D(p.add(delta),elapsedTime));
-                    }
-                }
-                elapsedTime++;
-                if (p == previous) break;
-            }
-            previous = p;
-        }
-        for (int i = 0; i < moveTime; i++) {
-            for (int x = 0; x < size.x; x++) {
-                for (int y = 0; y < size.y; y++) {
-                    delta = new Int2D(x,y);
-                    set.add(new Int3D(previous.add(delta),elapsedTime));
-                }
-            }
-            elapsedTime++;
-        }
-        return set;
+        // System.out.println(tileTimeMap);
     }
 
-    private HashMap<Int2D, HashSet<Integer>> generatePathMap(ArrayList<Int2D> positionPath, Int2D size, Int2D previous, int moveTime, int delay) {
+    private HashMap<Int2D, HashSet<Integer>> generatePathMap(ArrayList<Int2D> positionPath, Int2D size, Int2D previous,
+            int moveTime, int delay, boolean stayPut) {
         HashMap<Int2D, HashSet<Integer>> map = new HashMap<>();
         HashSet<Integer> set;
         Int2D delta;
-        //int elapsedTime = delay;
+        // int elapsedTime = delay;
         /** */
         int elapsedTime = delay - moveTime;
         for (int i = 0; i < moveTime; i++) {
             for (int x = 0; x < size.x; x++) {
                 for (int y = 0; y < size.y; y++) {
-                    delta = new Int2D(x,y);
+                    delta = new Int2D(x, y);
                     set = map.get(previous.add(delta));
                     if (set == null) {
                         set = new HashSet<>();
@@ -122,11 +102,11 @@ public class PathHandler {
             elapsedTime++;
         }
         /** */
-        for (Int2D p: positionPath) {
+        for (Int2D p : positionPath) {
             for (int i = 0; i < moveTime; i++) {
                 for (int x = 0; x < size.x; x++) {
                     for (int y = 0; y < size.y; y++) {
-                        delta = new Int2D(x,y);
+                        delta = new Int2D(x, y);
                         set = map.get(previous.add(delta));
                         if (set == null) {
                             set = new HashSet<>();
@@ -142,14 +122,17 @@ public class PathHandler {
                     }
                 }
                 elapsedTime++;
-                if (p == previous) break;
+                if (p == previous)
+                    break;
             }
             previous = p;
         }
+        if (stayPut)
+            elapsedTime = Integer.MAX_VALUE;
         for (int i = 0; i < moveTime; i++) {
             for (int x = 0; x < size.x; x++) {
                 for (int y = 0; y < size.y; y++) {
-                    delta = new Int2D(x,y);
+                    delta = new Int2D(x, y);
                     set = map.get(previous.add(delta));
                     if (set == null) {
                         set = new HashSet<>();
@@ -158,55 +141,69 @@ public class PathHandler {
                     set.add(elapsedTime);
                 }
             }
+            if (stayPut)
+                break;
             elapsedTime++;
         }
         return map;
     }
 
-    public boolean isTileClaimed(Int2D tile, int timeFromNow) {
+    private boolean isTileClaimed(Int2D tile, int timeFromNow, boolean considerDesire) {
         updateValues();
         HashSet<Integer> times = tileTimeMap.get(tile);
-        if (times == null) return false;
-        return times.contains(timeFromNow);
+        if (considerDesire) {
+            HashSet<Integer> desireTimes = tileTimeMap.get(tile);
+            if (times == null)
+                times = desireTimes;
+            else if (desireTimes != null)
+                times.addAll(desireTimes);
+        }
+        if (times == null)
+            return false;
+        return times.contains(timeFromNow) || times.contains(Integer.MAX_VALUE);
     }
 
-    public boolean isTileClaimed(Int2D tile, int timeFromNow, Int2D size) {
+    private boolean isTileClaimed(Int2D tile, int timeFromNow, Int2D size, boolean considerDesire) {
         for (int x = 0; x < size.x; x++) {
             for (int y = 0; y < size.y; y++) {
-                Int2D delta = new Int2D(x,y);
-                if (isTileClaimed(tile.add(delta), timeFromNow)) return true;
+                Int2D delta = new Int2D(x, y);
+                if (isTileClaimed(tile.add(delta), timeFromNow, considerDesire))
+                    return true;
             }
         }
         return false;
     }
 
-    public boolean isTileClaimed(Int2D tile, int timeFromNow, int moveTime) {
+    public boolean isTileClaimed(Int2D tile, int timeFromNow, Int2D size, int moveTime, boolean considerDesire) {
         for (int i = 0; i < moveTime; i++) {
-            if (isTileClaimed(tile, timeFromNow+i)) return true;
+            if (isTileClaimed(tile, timeFromNow + i, size, considerDesire))
+                return true;
         }
         return false;
     }
 
     public boolean isTileClaimed(Int2D tile, int timeFromNow, Int2D size, int moveTime) {
-        for (int i = 0; i < moveTime; i++) {
-            if (isTileClaimed(tile, timeFromNow+i, size)) return true;
-        }
-        return false;
+        return isTileClaimed(tile, timeFromNow, size, moveTime, false);
     }
 
-    public boolean willTileBeClaimed(Int2D tile) {
+    private boolean willTileBeClaimed(Int2D tile, boolean considerDesire) {
         updateValues();
         return tileTimeMap.containsKey(tile);
     }
 
-    public boolean willTileBeClaimed(Int2D tile, Int2D size) {
+    public boolean willTileBeClaimed(Int2D tile, Int2D size, boolean considerDesire) {
         for (int x = 0; x < size.x; x++) {
             for (int y = 0; y < size.y; y++) {
-                Int2D delta = new Int2D(x,y);
-                if (willTileBeClaimed(tile.add(delta))) return true;
+                Int2D delta = new Int2D(x, y);
+                if (willTileBeClaimed(tile.add(delta), considerDesire))
+                    return true;
             }
         }
         return false;
+    }
+
+    public boolean willTileBeClaimed(Int2D tile, Int2D size) {
+        return willTileBeClaimed(tile, size, false);
     }
 
     public int nextClaim(Int2D tile) {
@@ -215,7 +212,8 @@ public class PathHandler {
             HashSet<Integer> set = tileTimeMap.get(tile);
             int smallest = Integer.MAX_VALUE;
             for (int i : set) {
-                if (smallest > i) smallest = i;
+                if (smallest > i)
+                    smallest = i;
             }
             return smallest;
         }
@@ -225,14 +223,14 @@ public class PathHandler {
     @SuppressWarnings("unchecked")
     public PathHandler clone() {
         PathHandler ph = new PathHandler();
-        ph.agentPathMap = (HashMap<Agent,Path>) agentPathMap.clone();
-        ph.tileTimeMap = (HashMap<Int2D,HashSet<Integer>>) tileTimeMap.clone();
+        ph.agentPathMap = (HashMap<Agent, Path>) agentPathMap.clone();
+        ph.tileTimeMap = (HashMap<Int2D, HashSet<Integer>>) tileTimeMap.clone();
         return ph;
     }
 
     public void printDiagnostics() {
-        for(Agent a: agentPathMap.keySet()) {
-            System.out.println(a + ": " +agentPathMap.get(a));
+        for (Agent a : agentPathMap.keySet()) {
+            System.out.println(a + ": " + agentPathMap.get(a));
         }
     }
 }
