@@ -37,7 +37,7 @@ public class Warehouse extends SimState {
     // String file_path = "resources\\warehouse_simple.json";
 
     // static String default_file_path = "resources\\warehouse_3.json";
-    static String default_file_path = "src\\main\\resources\\warehouse_1_brain.json";
+    static String default_file_path = "src\\main\\resources\\warehouse_5.json";
     // static String default_file_path = "src\\main\\resources\\warehouse_3.json";
 
     public Warehouse(long seed) {
@@ -158,7 +158,9 @@ public class Warehouse extends SimState {
         this.width = map.getWidth();
         this.height = map.getHeight();
 
-        this.tasks = new Tasks(this, pickup, delivery, 1.0);
+        this.tasks = new Tasks(this, pickup, delivery, fd.tasksPerStep);
+        this.tasks.setTaskConfiguration(fd.taskGeneration);
+        
         this.score = 0;
 
         for (Agent a : this.AgentList) {
@@ -190,8 +192,7 @@ public class Warehouse extends SimState {
         long elapsedTime = System.currentTimeMillis() - startTime;
         System.out.println("Elapsed time in milliseconds: " + elapsedTime);
         System.out.println("Number of steps: " + this.schedule.getSteps());
-        System.out.println("Number of tasks generated: " + this.tasks.getGeneratedTasks());
-        System.out.println("Number of tasks completed: " + this.tasks.getCompletedTasks());
+        System.out.println("Number of tasks generated/completed/impossible: " + this.tasks.getNumGeneratedTasks() + "/" + this.tasks.getNumCompletedTasks() + "/" + this.tasks.getNumImpossibleTasks());
         System.out.println("Seed: " + this.seed());
         System.out.println("warehouse: " + this.file_path);
         System.out.println("--------------------------");
