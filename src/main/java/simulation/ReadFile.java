@@ -61,6 +61,7 @@ public class ReadFile {
         // task settings
         double tasksPerStep = 1.0;
         String taskGeneration = "random";
+        ArrayList<Tasks.Task> taskList = new ArrayList<>();
 
         if (obj.has("brains")) {
             for (Object o : obj.getJSONArray("brains").toList()) {
@@ -96,6 +97,19 @@ public class ReadFile {
                 tasksPerStep = def.getDouble("TasksPerStep");
             if (def.has("taskGeneration")) 
                 taskGeneration = def.getString("taskGeneration");
+            if (def.has("taskList")) {
+                Tasks tasks = new Tasks(null);
+                JSONArray JSONtasks = def.getJSONArray("taskList");
+                for (int i = 0; i < JSONtasks.length(); i++) {
+                    ArrayList<Int2D> goals = new ArrayList<>();
+                    for (Object o : JSONtasks.getJSONArray(i).toList()) {
+                        String[] goal = o.toString().split(",");
+                        Int2D pos = new Int2D(Integer.parseInt(goal[0]), Integer.parseInt(goal[1]));
+                        goals.add(pos);
+                    }
+                    taskList.add(tasks.makeTask(goals));
+                }
+            }
         }
 
         for (int y = 0; y < height; y++) {
@@ -175,7 +189,7 @@ public class ReadFile {
                 }
             }
         }
-        return new FileData(map, agents, pickup, delivery, AgentList, BrainList, tasksPerStep, taskGeneration);
+        return new FileData(map, agents, pickup, delivery, AgentList, BrainList, tasksPerStep, taskGeneration, taskList);
     }
 
     private Color getDefaultColor(String id) {
@@ -198,9 +212,11 @@ public class ReadFile {
         ArrayList<Brain> brainList;
         double tasksPerStep;
         String taskGeneration;
+        ArrayList<Tasks.Task> taskList;
 
         public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery,
-                ArrayList<Agent> agentList, ArrayList<Brain> brainList, double tasksPerStep, String taskGeneration) {
+                ArrayList<Agent> agentList, ArrayList<Brain> brainList, double tasksPerStep, String taskGeneration,
+                ArrayList<Tasks.Task> taskList) {
             this.map = map;
             this.agents = agents;
             this.pickup = pickup;
@@ -209,6 +225,7 @@ public class ReadFile {
             this.brainList = brainList;
             this.tasksPerStep = tasksPerStep;
             this.taskGeneration = taskGeneration;
+            this.taskList = taskList;
         }
     }
 }
