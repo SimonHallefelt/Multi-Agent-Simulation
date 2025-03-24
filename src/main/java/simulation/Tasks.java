@@ -56,6 +56,7 @@ public class Tasks {
                     generateTasksUsingPickupAndDelivery();
                     break;
                 case completeTaskList:
+                    if (taskList.isEmpty()) return;
                     getFirstInTaskList();
                     break;
                 case selectTasksFromTaskList:
@@ -92,8 +93,12 @@ public class Tasks {
 
     public void assignTasks(ArrayList<Agent> AgentList) {
         ArrayList<Agent> availableAgents = (ArrayList) AgentList.clone();
-        int size = availableTasks.size();
-        for (int i = 0; i < size; i++) {
+        Boolean noActiveTasks = activeTasks.values().stream().map(a -> a == null || a.isEmpty()).allMatch(a -> a == true);
+        if(taskList.isEmpty() && availableTasks.isEmpty() && noActiveTasks) {
+            warehouse.kill();
+            return;
+        }
+        for (int i = 0; i < availableTasks.size(); i++) {
             Task t = availableTasks.remove(0);
             // select best agent for task
             ArrayList<Agent> possibleAgents = (ArrayList) availableAgents.clone();
@@ -182,6 +187,10 @@ public class Tasks {
         return target.x >= pos.x && target.x < pos.x + size.x && target.y >= pos.y && target.y < pos.y + size.y;
     }
 
+    public Task makeTask(ArrayList<Int2D> goals) {
+        return new Task(goals.toArray(new Int2D[0]));
+    }
+
     public long getNumGeneratedTasks() {
         return generatedTasks;
     }
@@ -194,7 +203,7 @@ public class Tasks {
         return impossibleTask.size();
     }
 
-    private class Task {
+    public class Task {
         private Int2D[] targets;
         private int targetIndex = 0;
 
