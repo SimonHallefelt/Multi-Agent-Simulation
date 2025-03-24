@@ -13,7 +13,9 @@ public class ParticleAcceleratorTest {
         while (state.schedule.getSteps() < 1000);
         state.finish();
 
-        assertTrue(state.getScore() >= 208);
+        int expected = 208;
+
+        assertTrue(state.getScore() >= expected, "Warehouse3 has lower performance than expected: " + state.getScore() + "(expected " + expected + ")");
     }
 
 }
