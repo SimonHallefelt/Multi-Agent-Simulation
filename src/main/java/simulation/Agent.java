@@ -240,7 +240,8 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
     public ArrayList<Int2D> getDesirePositionPath() {
-        return this.desirePath.getPositionPath();
+        if (this.desirePath == null) return null;
+        else return this.desirePath.getPositionPath();
     }
 
     public ArrayList<Trail> getTrails() {
