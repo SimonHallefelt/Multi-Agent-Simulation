@@ -1,6 +1,7 @@
 package simulation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.PrintWriter;
@@ -52,6 +53,17 @@ public class warehouseTest {
             fail("Exception during test: " + sw.toString());
         }
         assertEquals(0, status);
+    }
+
+    @Test void test_2_warehouse() {
+        Warehouse state = new Warehouse(0, "src\\test\\resources\\warehouse_3.json");
+        state.start();
+        do
+            if (!state.schedule.step(state)) break;
+        while (state.schedule.getSteps() < 1000);
+        state.finish();
+
+        assertTrue(true);
     }
 
     // Custom exception for exit

@@ -23,8 +23,7 @@ public class Warehouse extends SimState {
     private int score;
     public AgentFactory factory = new AgentFactory();
     long startTime;
-
-    private Tasks tasks;
+    Tasks tasks;
 
     // String file_path = "resources\\warehouse_1.json";
     // String file_path = "resources\\warehouse_1_size_test.json";
