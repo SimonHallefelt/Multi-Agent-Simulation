@@ -180,9 +180,11 @@ public class ReadFile {
                         break;
                     case "E":
                         pickup.add(new Int2D(x, y));
+                        map.set(x, y, 2);
                         break;
                     case "D":
                         delivery.add(new Int2D(x, y));
+                        map.set(x, y, 3);
                         break;
                     default:
                         break;
