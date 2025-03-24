@@ -147,13 +147,8 @@ public abstract class Agent implements Steppable, Colorable {
         if (warehouse.move(this, dir)) {
             desirePath = null;
             isMoving = true;
-            if (dir.x != 0 || dir.y != 0) {
-                timeToCompletedMovement = this.moveTime;
-            }
-            else {
-                if (path.peek() == null) addTag("stuck");
-                timeToCompletedMovement = 1;
-            }
+            if (dir.x != 0 || dir.y != 0) timeToCompletedMovement = this.moveTime;
+            else timeToCompletedMovement = 1;
             // path.setRemakePath(false);
         } else {
             path.setRemakePath(true);
