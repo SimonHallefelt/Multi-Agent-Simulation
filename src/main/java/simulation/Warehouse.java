@@ -205,4 +205,8 @@ public class Warehouse extends SimState {
         doLoop(Warehouse.class, args);
         System.exit(0);
     }
+
+    public int getScore() {
+        return score;
+    }
 }

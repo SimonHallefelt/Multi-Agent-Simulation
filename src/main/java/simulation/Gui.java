@@ -46,8 +46,8 @@ public class Gui extends GUIState {
         color = new Color[4];
         color[0] = Color.WHITE;
         color[1] = Color.BLACK;
-        color[2] = Color.yellow;
-        color[3] = Color.green;
+        color[2] = new Color(255,255,200);//Color.yellow;
+        color[3] = new Color(200,255,200);
         simpleColorMap = new SimpleColorMap(color);
         warehousePortrayal.setMap(simpleColorMap);
 
