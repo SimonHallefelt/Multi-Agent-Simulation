@@ -28,9 +28,7 @@ public class PathHandler {
                 continue;
             p = a.path;
             addAgentPath(a, p);
-            if (a.desirePath != null) {
-                addAgentDesire(a, a.desirePath);
-            }
+            if (a.desirePath != null) addAgentDesire(a, a.desirePath);
         }
     }
 

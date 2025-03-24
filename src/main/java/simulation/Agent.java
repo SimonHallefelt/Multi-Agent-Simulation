@@ -126,8 +126,13 @@ public abstract class Agent implements Steppable, Colorable {
             newPath = noTarget(warehouse, pathHandler);
         } else if (path.isEmpty()) {
             newPath = makePath(warehouse, pathHandler);
-            if (newPath == null)
+            if (newPath == null) {
+                addTag("stuck");
                 path = noTarget(warehouse, pathHandler);
+            }
+            else {
+                removeTag("stuck");
+            }
         }
         if (newPath != null) {
             path = newPath;
@@ -140,20 +145,22 @@ public abstract class Agent implements Steppable, Colorable {
             dir = new Int2D(0, 0);
 
         if (warehouse.move(this, dir)) {
-            removeTag("stuck");
             desirePath = null;
             isMoving = true;
-            if (dir.x != 0 || dir.y != 0)
+            if (dir.x != 0 || dir.y != 0) {
                 timeToCompletedMovement = this.moveTime;
-            else
+            }
+            else {
+                if (path.peek() == null) addTag("stuck");
                 timeToCompletedMovement = 1;
+            }
             // path.setRemakePath(false);
         } else {
             path.setRemakePath(true);
+            makeDesirePath(warehouse);
             addTag("stuck");
             // path = new Path(pos);
-            if (debug)
-                System.out.println(id + ": agent could not move to " + pos.add(dir) + "(" + dir + ")");
+            if (debug) System.out.println(id + ": agent could not move to " + pos.add(dir) + "(" + dir + ")");
             timeToCompletedMovement = 1;
         }
         if (debug)
@@ -190,10 +197,11 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
     public void makeDesirePath(Warehouse warehouse) {
+        if (target == null) return;
         this.desirePath = new Path(pos);
         this.desirePath.addNewPositionPath(this.pos, PathFinding.aStar(warehouse, target, pos, size, true));
         if (debug)
-            System.out.println("made new initial path");
+            System.out.println("made new desire path");
 
     }
 
