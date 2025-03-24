@@ -54,7 +54,7 @@ public class PathFinding {
                 new Int2D(0, 0) };
         ArrayList<Int2D> viableDirections = new ArrayList<>();
         for (Int2D d : directions) {
-            if (warehouse.canMove(position.add(d), d, size) && !ph.willTileBeClaimed(position.add(d), size))
+            if (warehouse.canMove(position.add(d), d, size) && !ph.willTileBeClaimed(position.add(d), size, true))
                 viableDirections.add(d);
         }
         int v = viableDirections.size();
