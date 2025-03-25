@@ -193,7 +193,11 @@ public class ReadFile {
                 }
             }
         }
-        return new FileData(map, agents, pickup, delivery, AgentList, BrainList, tasksPerStep, taskGeneration, taskList);
+
+        FileData fd = new FileData(map, agents, AgentList, pickup, delivery);
+        fd.addTaskSettings(tasksPerStep, taskGeneration, taskList);
+        fd.addBrains(BrainList);
+        return fd;
     }
 
     // TSPLIB-extended
@@ -219,7 +223,6 @@ public class ReadFile {
             locations.add(pos);
         }
         HashSet<Int2D> locationsUsed = new HashSet<>();
-
 
         // obstacles
         ArrayList<ArrayList<Int2D>> obstacles = new ArrayList<>();
@@ -264,10 +267,10 @@ public class ReadFile {
             map.set(location.x, location.y, 2);
         }
 
+        FileData fd = new FileData(map, new SparseGrid2D(warehouseSize.x, warehouseSize.y), 
+        new ArrayList<>(), pickup, depots);
 
-        return new FileData(map, new SparseGrid2D(warehouseSize.x, warehouseSize.y), 
-        pickup, depots, new ArrayList<>(), new ArrayList<>(), 
-        1, "random", new ArrayList<>());
+        return fd;
     }
 
     private Color getDefaultColor(String id) {
@@ -301,18 +304,28 @@ public class ReadFile {
         String taskGeneration;
         ArrayList<Tasks.Task> taskList;
 
-        public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery,
-                ArrayList<Agent> agentList, ArrayList<Brain> brainList, double tasksPerStep, String taskGeneration,
-                ArrayList<Tasks.Task> taskList) {
+        public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Agent> agentList, 
+        ArrayList<Int2D> pickup, ArrayList<Int2D> delivery) {
             this.map = map;
             this.agents = agents;
+            this.agentList = agentList;
             this.pickup = pickup;
             this.delivery = delivery;
-            this.agentList = agentList;
-            this.brainList = brainList;
+            this.tasksPerStep = 1;
+            this.taskGeneration = "random";
+            this.taskList = new ArrayList<>();
+            this.brainList = new ArrayList<>();
+        }
+
+        public void addTaskSettings(double tasksPerStep, String taskGeneration,
+        ArrayList<Tasks.Task> taskList) {
             this.tasksPerStep = tasksPerStep;
             this.taskGeneration = taskGeneration;
             this.taskList = taskList;
+        }
+
+        public void addBrains(ArrayList<Brain> brainList) {
+            this.brainList = brainList;
         }
     }
 }
