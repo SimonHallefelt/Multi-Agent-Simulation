@@ -17,7 +17,7 @@ public class Warehouse extends SimState {
     public SparseGrid2D agents; // = new SparseGrid2D(width, height);
 
     private ArrayList<Agent> AgentList;
-    public ArrayList<Brain> BrainList;
+    private ArrayList<Brain> BrainList;
     private ArrayList<Int2D> pickup;
     private ArrayList<Int2D> delivery;
     private int score;
@@ -215,5 +215,9 @@ public class Warehouse extends SimState {
             if (!schedule.step(this)) break;
         while (schedule.getSteps() < 1000);
         finish();
+    }
+
+    public ArrayList<Brain> getBrainList() {
+        return BrainList;
     }
 }

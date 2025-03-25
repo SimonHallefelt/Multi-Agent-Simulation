@@ -9,7 +9,6 @@ public class Path {
     private ArrayList<Int2D> positionPath = new ArrayList<>();
     private Int2D endPos;
     private Boolean remakePath = false;
-    private Int2D poppedDir;
 
     public Path(Int2D startPos) {
         endPos = startPos == null ? new Int2D(0, 0) : startPos;
@@ -19,6 +18,12 @@ public class Path {
         steps.add(dir);
         endPos = endPos.add(dir);
         positionPath.add(endPos);
+    }
+
+    public void addPos(Int2D pos) {
+        positionPath.add(pos);
+        steps.add(pos.subtract(endPos));
+        endPos = pos;
     }
 
     public void addNewStepPath(Int2D pos, ArrayList<Int2D> stepPath) {
@@ -64,8 +69,13 @@ public class Path {
         return steps.get(0);
     }
 
+    public int size() {
+        return positionPath.size();
+    }
+
+    @SuppressWarnings("unchecked")
     public ArrayList<Int2D> getPositionPath() {
-        return positionPath;
+        return (ArrayList<Int2D>) positionPath.clone();
     }
 
     public Boolean getRemakePath() {

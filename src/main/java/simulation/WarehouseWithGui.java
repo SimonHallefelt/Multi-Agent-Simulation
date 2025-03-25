@@ -13,7 +13,7 @@ import java.awt.Graphics2D;
 import sim.util.gui.SimpleColorMap;
 import simulation.interfaces.Colorable;
 
-public class Gui extends GUIState {
+public class WarehouseWithGui extends GUIState {
     public Display2D display;
     public JFrame displayFrame;
     ValueGridPortrayal2D warehousePortrayal = new ValueGridPortrayal2D("floor_typ");
@@ -24,7 +24,7 @@ public class Gui extends GUIState {
 
     public static void main(String[] args) {
         Warehouse warehouse = new Warehouse(System.currentTimeMillis());
-        Gui vid = new Gui(warehouse);
+        WarehouseWithGui vid = new WarehouseWithGui(warehouse);
         Console c = new Console(vid);
         c.setVisible(true);
     }
@@ -88,11 +88,11 @@ public class Gui extends GUIState {
         display = null;
     }
 
-    public Gui() {
+    public WarehouseWithGui() {
         super(new Warehouse(System.currentTimeMillis()));
     }
 
-    public Gui(SimState state) {
+    public WarehouseWithGui(SimState state) {
         super(state);
     }
 

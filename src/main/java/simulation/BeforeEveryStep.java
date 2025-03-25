@@ -9,7 +9,7 @@ public class BeforeEveryStep implements Steppable {
     public void step(SimState state) {
         Warehouse warehouse = (Warehouse) state;
         // System.out.println("Time to think!");
-        for (Brain b : warehouse.BrainList) {
+        for (Brain b : warehouse.getBrainList()) {
             // System.out.println("Thinking...");
             b.think(warehouse);
         }
