@@ -25,7 +25,7 @@ public class Warehouse extends SimState {
     long startTime;
     Tasks tasks;
 
-    static String default_file_path = "src\\main\\resources\\Conventional\\tsplib_parent.json";
+    static String default_file_path = "src\\main\\resources\\Conventional\\warehouseLayout.json";
     // static String default_file_path = "src\\main\\resources\\warehouse_3.json";
     // static String default_file_path = "src\\main\\resources\\warehouse_5_completeList.json";
     String file_path;

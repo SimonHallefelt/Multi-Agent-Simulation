@@ -296,13 +296,13 @@ public class ReadFile {
     public class FileData {
         IntGrid2D map;
         SparseGrid2D agents;
+        ArrayList<Agent> agentList;
         ArrayList<Int2D> pickup;
         ArrayList<Int2D> delivery;
-        ArrayList<Agent> agentList;
-        ArrayList<Brain> brainList;
         double tasksPerStep;
         String taskGeneration;
         ArrayList<Tasks.Task> taskList;
+        ArrayList<Brain> brainList;
 
         public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Agent> agentList, 
         ArrayList<Int2D> pickup, ArrayList<Int2D> delivery) {
