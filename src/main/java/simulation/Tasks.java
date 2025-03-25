@@ -71,8 +71,8 @@ public class Tasks {
 
     public void generateTasksUsingPickupAndDelivery() {
         Int2D[] targets = new Int2D[] {
-                pickup.get(warehouse.random.nextInt(pickup.size())),
-                delivery.get(warehouse.random.nextInt(delivery.size()))
+            pickup.get(warehouse.random.nextInt(pickup.size())),
+            delivery.get(warehouse.random.nextInt(delivery.size()))
         };
         availableTasks.add(new Task(targets));
     }

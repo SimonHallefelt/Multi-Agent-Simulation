@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.IOException;
@@ -217,13 +218,8 @@ public class ReadFile {
             Int2D pos = new Int2D(location.getInt(0), location.getInt(1));
             locations.add(pos);
         }
+        HashSet<Int2D> locationsUsed = new HashSet<>();
 
-        // depots
-        ArrayList<Int2D> depots = new ArrayList<>();
-        for (Object o : obj.getJSONArray("DEPOTS").toList()) {
-            int location = Integer.parseInt(o.toString());
-            depots.add(locations.get(location));
-        }
 
         // obstacles
         ArrayList<ArrayList<Int2D>> obstacles = new ArrayList<>();
@@ -233,14 +229,17 @@ public class ReadFile {
             for (Object o : OBSTACLES.getJSONArray(i+1+"")) {
                 int location = Integer.parseInt(o.toString());
                 obstacle.add(locations.get(location));
+                locationsUsed.add(locations.get(location));
             }
             obstacles.add(obstacle);
         }
 
         // make map
         Int2D warehouseSize = new Int2D(80, 80); // temporary assumption (change this)
+        ArrayList<Int2D> pickup = new ArrayList<>();
+        ArrayList<Int2D> depots = new ArrayList<>();
         IntGrid2D map = new IntGrid2D(warehouseSize.x, warehouseSize.y);
-        for (ArrayList<Int2D> o : obstacles) {
+        for (ArrayList<Int2D> o : obstacles) { // add obstacles
             if (!isRectangle(o)) {
                 System.out.println("Exception: Walls must be straight");
                 System.exit(2);
@@ -253,9 +252,21 @@ public class ReadFile {
                 }
             }
         }
+        for (Object o : obj.getJSONArray("DEPOTS").toList()) { // add depots
+            int location = Integer.parseInt(o.toString());
+            Int2D pos = locations.get(location);
+            depots.add(pos);
+            locationsUsed.add(pos);
+            map.set(pos.x, pos.y, 3);
+        }
+        for (Int2D location : locations) { // add pickup
+            if (locationsUsed.contains(location)) continue;
+            map.set(location.x, location.y, 2);
+        }
+
 
         return new FileData(map, new SparseGrid2D(warehouseSize.x, warehouseSize.y), 
-        new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 
+        pickup, depots, new ArrayList<>(), new ArrayList<>(), 
         1, "random", new ArrayList<>());
     }
 
