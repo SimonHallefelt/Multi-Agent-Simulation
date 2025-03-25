@@ -137,11 +137,15 @@ public class Warehouse extends SimState {
     }
 
     public void readFile(String path, String inputFormat) {
+        readFile(path, inputFormat, "src\\main\\resources\\Conventional\\instances\\basic.json");
+    }
+
+    public void readFile(String path, String inputFormat, String instance) {
         ReadFile rf = new ReadFile();
         ReadFile.FileData fd;
         switch (inputFormat.toLowerCase()) {
             case "standard":
-                fd = rf.readStandardFormat(path);
+                fd = rf.readStandardFormat(path, instance);
                 break;
             default:
                 fd = rf.simpleMapJson(path);

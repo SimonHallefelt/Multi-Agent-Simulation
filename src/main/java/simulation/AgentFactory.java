@@ -15,6 +15,9 @@ public class AgentFactory {
     }
 
     public Agent createAgent(String id, int x, int y, String algo, int moveTime, Int2D size) {
+        return createAgent(id, x, y, algo, moveTime, size, amount);
+    }
+    public Agent createAgent(String id, int x, int y, String algo, int moveTime, Int2D size, int agentNumber) {
         amount++;
         Agent a;
         if (agents.containsKey(algo)) {
@@ -24,7 +27,7 @@ public class AgentFactory {
             System.out.println("WARING: unknown agent type " + algo + "!");
             a =  new RandomAgent();
         }
-        a.setId("agent-" + algo + "-" + id + "-" + amount);
+        a.setId("agent-" + algo + "-" + id + "-" + agentNumber);
         a.setPosition(x, y);
         a.setMoveTime(moveTime);
         a.setSize(size);

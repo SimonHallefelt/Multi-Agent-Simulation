@@ -201,10 +201,10 @@ public class ReadFile {
     }
 
     // TSPLIB-extended
-    public FileData readStandardFormat(String path) { 
+    public FileData readStandardFormat(String warehouseLayout, String instance) { 
         JSONObject obj = null;
         try {
-            obj = new JSONObject(new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8));
+            obj = new JSONObject(new String(Files.readAllBytes(Paths.get(warehouseLayout)), StandardCharsets.UTF_8));
         } catch (JSONException e) {
             e.printStackTrace();
             System.exit(1);
@@ -238,7 +238,8 @@ public class ReadFile {
         }
 
         // make map
-        Int2D warehouseSize = new Int2D(80, 80); // temporary assumption (change this)
+        JSONArray size_xy = obj.getJSONArray("size_xy");
+        Int2D warehouseSize = new Int2D(size_xy.getInt(0), size_xy.getInt(1));
         ArrayList<Int2D> pickup = new ArrayList<>();
         ArrayList<Int2D> depots = new ArrayList<>();
         IntGrid2D map = new IntGrid2D(warehouseSize.x, warehouseSize.y);
@@ -264,13 +265,105 @@ public class ReadFile {
         }
         for (Int2D location : locations) { // add pickup
             if (locationsUsed.contains(location)) continue;
+            pickup.add(location);
             map.set(location.x, location.y, 2);
         }
 
-        FileData fd = new FileData(map, new SparseGrid2D(warehouseSize.x, warehouseSize.y), 
-        new ArrayList<>(), pickup, depots);
+
+        // instance
+        try {
+            obj = new JSONObject(new String(Files.readAllBytes(Paths.get(instance)), StandardCharsets.UTF_8));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        // default agent type
+        AgentType defaultAgentType = new AgentType();
+        if (obj.has("default")) {
+            JSONObject def = obj.getJSONObject("default");
+            if(def.has("algo")) defaultAgentType.setAlgo(def.getString("algo"));
+            if(def.has("size")) defaultAgentType.setSize(def.getString("size"));
+            if(def.has("moveTime")) defaultAgentType.setMoveTime(def.getInt("moveTime"));
+            if(def.has("color")) defaultAgentType.setColor(def.getString("color"));
+        } 
+
+        // agent types
+        HashMap<Integer, AgentType> agentTypes = new HashMap<>();
+        JSONObject AgentTypesJSON = obj.getJSONObject("agent-types");
+        for (int i = 0; i < AgentTypesJSON.length(); i++) {
+            JSONObject agentTypeJSON = AgentTypesJSON.getJSONObject(i+"");
+            AgentType agentType = new AgentType();
+            agentType.setAlgo(agentTypeJSON.has("algo") ? agentTypeJSON.getString("algo") : defaultAgentType.algo);
+            agentType.setSize(agentTypeJSON.has("size") ? agentTypeJSON.getString("size") : defaultAgentType.size);
+            agentType.setMoveTime(agentTypeJSON.has("moveTime") ? agentTypeJSON.getInt("moveTime") : defaultAgentType.moveTime);
+            agentType.setColor(agentTypeJSON.has("color") ? agentTypeJSON.getString("color") : defaultAgentType.color);
+            agentTypes.put(i, agentType);
+        }
+
+        // agents
+        SparseGrid2D agents = new SparseGrid2D(warehouseSize.x, warehouseSize.y); 
+        ArrayList<Agent> agentList = new ArrayList<>();
+        JSONObject agentsJSON = obj.getJSONObject("agents");
+        for (int i = 0; i < agentsJSON.length(); i++) {
+            JSONObject agentJson = agentsJSON.getJSONObject(i+"");
+            int type = agentJson.has("agent_type") ? agentJson.getInt("agent_type") : 0;
+            String[] stringPos = agentJson.getString("initial_xy_pos").split(",");
+            Int2D pos = new Int2D(Integer.parseInt(stringPos[0]), Integer.parseInt(stringPos[1]));
+            Agent a = makeAgent(agentTypes.get(type), defaultAgentType, type, pos, i);
+            agents.setObjectLocation(a, pos);
+            agentList.add(a);
+            for (int y = pos.y; y < pos.y + a.size.y; y++) { // make sure the agent size is correct and stop duplicates
+                for (int x = pos.x; x < pos.x + a.size.x; x++) {
+                    if (x != pos.x || y != pos.y) {
+                        Agent.AgentClone ag = a.makeAgentClone();
+                        agents.setObjectLocation(ag, x, y);
+                    }
+                    if (map.get(pos.x, pos.y) == 1) {
+                        System.out.println("agent: " + i + " is spawning on a wall");
+                        System.exit(1);
+                    }
+                }
+            }
+        }
+
+        // brains
+        BrainFactory brainFactory = new BrainFactory();
+
+
+        FileData fd = new FileData(map, agents, agentList, pickup, depots);
 
         return fd;
+    }
+
+    private Agent makeAgent(AgentType agentType, AgentType defaultAgentType, int type, Int2D pos, int agentNumber) {
+        if (agentType == null) {
+            agentType = defaultAgentType;
+        }
+        String algo = agentType.algo;
+        String[] sizeString = { agentType.size };
+        int moveTime = agentType.moveTime;
+        String[] colorString = { agentType.color };
+        
+        sizeString = sizeString[0].split(",");
+        Int2D size = new Int2D(Integer.parseInt(sizeString[0]), Integer.parseInt(sizeString[1]));
+        AgentFactory factory = new AgentFactory();
+        Agent a = factory.createAgent(type+"", pos.x, pos.y, algo, moveTime, size, agentNumber);
+        if (colorString[0].equals("default")) {
+            Color color = getDefaultColor(type+"");
+            a.setColor(color);
+        } else {
+            colorString = colorString[0].split(",");
+            Color color = new Color(Integer.parseInt(colorString[0]), Integer.parseInt(colorString[1]),
+                    Integer.parseInt(colorString[2]));
+            a.setColor(color);
+        }
+        
+
+        return a;
     }
 
     private Color getDefaultColor(String id) {
@@ -303,6 +396,7 @@ public class ReadFile {
         String taskGeneration;
         ArrayList<Tasks.Task> taskList;
         ArrayList<Brain> brainList;
+        long seed;
 
         public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Agent> agentList, 
         ArrayList<Int2D> pickup, ArrayList<Int2D> delivery) {
@@ -315,6 +409,7 @@ public class ReadFile {
             this.taskGeneration = "random";
             this.taskList = new ArrayList<>();
             this.brainList = new ArrayList<>();
+            this.seed = System.currentTimeMillis();
         }
 
         public void addTaskSettings(double tasksPerStep, String taskGeneration,
@@ -326,6 +421,30 @@ public class ReadFile {
 
         public void addBrains(ArrayList<Brain> brainList) {
             this.brainList = brainList;
+        }
+
+        public void addSeed(long seed) {
+            this.seed = seed;
+        }
+    }
+
+    private class AgentType {
+        String algo = "none";
+        String size = "1,1";
+        int moveTime = 1;
+        String color = "default";
+
+        public void setAlgo(String algo) {
+            this.algo = algo;
+        }
+        public void setSize(String size) {
+            this.size = size;
+        }
+        public void setMoveTime(int moveTime) {
+            this.moveTime = moveTime;
+        }
+        public void setColor(String color) {
+            this.color = color;
         }
     }
 }
