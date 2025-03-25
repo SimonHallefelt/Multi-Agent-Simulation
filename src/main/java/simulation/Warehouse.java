@@ -25,19 +25,11 @@ public class Warehouse extends SimState {
     long startTime;
     Tasks tasks;
 
-    // String file_path = "resources\\warehouse_1.json";
-    // String file_path = "resources\\warehouse_1_size_test.json";
-    // String file_path = "resources\\warehouse_1_lonely.json";
-    // String file_path = "resources\\warehouse_2.json";
-    // String file_path = "resources\\warehouse_2_no_path_collision.json";
-    String file_path = "resources\\warehouse_3.json";
-    // String file_path = "resources\\warehouse_4.json";
-    // String file_path = "resources\\warehouse_4_smart.json";
-    // String file_path = "resources\\warehouse_simple.json";
-
-    static String default_file_path = "src\\main\\resources\\warehouse_3.json";
-    // static String default_file_path = "src\\main\\resources\\warehouse_5_completeList.json";
+    static String default_file_path = "src\\main\\resources\\Conventional\\tsplib_parent.json";
     // static String default_file_path = "src\\main\\resources\\warehouse_3.json";
+    // static String default_file_path = "src\\main\\resources\\warehouse_5_completeList.json";
+    String file_path;
+    String inputFormat = "Standard";
 
     public Warehouse(long seed) {
         this(seed, default_file_path);
@@ -47,7 +39,7 @@ public class Warehouse extends SimState {
         super(seed);
         this.file_path = file_path;
         new DefaultSetup().injectAgents();
-        this.readFile(file_path);
+        this.readFile(file_path, inputFormat);
     }
 
     public void addTrail(Agent.Trail t, Int2D pos) {
@@ -144,9 +136,18 @@ public class Warehouse extends SimState {
         tasks.assignTasks(AgentList);
     }
 
-    public void readFile(String path) {
+    public void readFile(String path, String inputFormat) {
         ReadFile rf = new ReadFile();
-        ReadFile.FileData fd = rf.simpleMapJson(path);
+        ReadFile.FileData fd;
+        switch (inputFormat.toLowerCase()) {
+            case "standard":
+                fd = rf.readStandardFormat(path);
+                break;
+            default:
+                fd = rf.simpleMapJson(path);
+                break;
+        }
+        
 
         this.map = fd.map;
         this.agents = fd.agents;
@@ -178,7 +179,7 @@ public class Warehouse extends SimState {
 
     public void start() {
         super.start();
-        this.readFile(file_path);
+        this.readFile(file_path, inputFormat);
         startTime = System.currentTimeMillis();
     }
 

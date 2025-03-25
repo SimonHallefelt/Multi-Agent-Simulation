@@ -63,7 +63,7 @@ public class Gui extends GUIState {
 
         // reschedule the displayer
         display.reset();
-        display.setBackdrop(Color.white);
+        display.setBackdrop(Color.black);
         // redraw the display
         display.repaint();
     }

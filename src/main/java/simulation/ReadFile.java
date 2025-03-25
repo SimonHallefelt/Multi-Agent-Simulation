@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import jogamp.opengl.glu.error.Error;
 import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
 import sim.util.Int2D;
@@ -194,6 +195,70 @@ public class ReadFile {
         return new FileData(map, agents, pickup, delivery, AgentList, BrainList, tasksPerStep, taskGeneration, taskList);
     }
 
+    // TSPLIB-extended
+    public FileData readStandardFormat(String path) { 
+        JSONObject obj = null;
+        try {
+            obj = new JSONObject(new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        // locations
+        ArrayList<Int2D> locations = new ArrayList<>();
+        int NUM_LOCATIONS = obj.getInt("NUM_LOCATIONS");
+        JSONObject LOCATION_COORD_SECTION = obj.getJSONObject("LOCATION_COORD_SECTION");
+        for (int i = 0; i < NUM_LOCATIONS; i++) {
+            JSONArray location = LOCATION_COORD_SECTION.getJSONArray(i+"");
+            Int2D pos = new Int2D(location.getInt(0), location.getInt(1));
+            locations.add(pos);
+        }
+
+        // depots
+        ArrayList<Int2D> depots = new ArrayList<>();
+        for (Object o : obj.getJSONArray("DEPOTS").toList()) {
+            int location = Integer.parseInt(o.toString());
+            depots.add(locations.get(location));
+        }
+
+        // obstacles
+        ArrayList<ArrayList<Int2D>> obstacles = new ArrayList<>();
+        JSONObject OBSTACLES = obj.getJSONObject("OBSTACLES");
+        for (int i = 0; i < OBSTACLES.length(); i++) {
+            ArrayList<Int2D> obstacle = new ArrayList<>();
+            for (Object o : OBSTACLES.getJSONArray(i+1+"")) {
+                int location = Integer.parseInt(o.toString());
+                obstacle.add(locations.get(location));
+            }
+            obstacles.add(obstacle);
+        }
+
+        // make map
+        Int2D warehouseSize = new Int2D(80, 80); // temporary assumption (change this)
+        IntGrid2D map = new IntGrid2D(warehouseSize.x, warehouseSize.y);
+        for (ArrayList<Int2D> o : obstacles) {
+            if (!isRectangle(o)) {
+                System.out.println("Exception: Walls must be straight");
+                System.exit(2);
+            }
+            Int2D p1 = o.get(0);
+            Int2D p3 = o.get(2);
+            for (int y = Math.min(p1.y, p3.y); y <= Math.max(p1.y, p3.y); y++) {
+                for (int x = Math.min(p1.x, p3.x); x <= Math.max(p1.x, p3.x); x++) {
+                    map.set(x, y, 1);
+                }
+            }
+        }
+
+        return new FileData(map, new SparseGrid2D(warehouseSize.x, warehouseSize.y), 
+        new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 
+        1, "random", new ArrayList<>());
+    }
+
     private Color getDefaultColor(String id) {
         if (defaultColorIndex.containsKey(id))
             return defaultColorIndex.get(id);
@@ -203,6 +268,15 @@ public class ReadFile {
         if (colorIndex >= defaultColors.length)
             colorIndex = 0;
         return defaultColorIndex.get(id);
+    }
+
+    // assumption, shape is point_1 -> point_2 -> point_3 -> point_4 -> point_1
+    private Boolean isRectangle(ArrayList<Int2D> rec) {
+        if (rec.size() > 4) return false;
+        return isRectangle(rec.get(0), rec.get(1), rec.get(2), rec.get(3));
+    }
+    private Boolean isRectangle(Int2D p1, Int2D p2, Int2D p3, Int2D p4) {
+        return p1.subtract(p2).equals(p4.subtract(p3)) && p1.subtract(p4).equals(p2.subtract(p3));
     }
 
     public class FileData {
