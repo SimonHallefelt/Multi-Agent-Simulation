@@ -1,5 +1,5 @@
 {
-    "size_xy" : [80,80],
+    "size_xy" : [80,70],
     "NUM_DEPOTS": 2,
     "NUM_LOCATIONS": 310,
     "num_pickup_locations_warehouse": 220,

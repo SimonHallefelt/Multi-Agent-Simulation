@@ -215,9 +215,8 @@ public class ReadFile {
 
         // locations
         ArrayList<Int2D> locations = new ArrayList<>();
-        int NUM_LOCATIONS = obj.getInt("NUM_LOCATIONS");
         JSONObject LOCATION_COORD_SECTION = obj.getJSONObject("LOCATION_COORD_SECTION");
-        for (int i = 0; i < NUM_LOCATIONS; i++) {
+        for (int i = 0; i < LOCATION_COORD_SECTION.length(); i++) {
             JSONArray location = LOCATION_COORD_SECTION.getJSONArray(i+"");
             Int2D pos = new Int2D(location.getInt(0), location.getInt(1));
             locations.add(pos);
@@ -313,21 +312,8 @@ public class ReadFile {
             int type = agentJson.has("agent_type") ? agentJson.getInt("agent_type") : 0;
             String[] stringPos = agentJson.getString("initial_xy_pos").split(",");
             Int2D pos = new Int2D(Integer.parseInt(stringPos[0]), Integer.parseInt(stringPos[1]));
-            Agent a = makeAgent(agentTypes.get(type), defaultAgentType, type, pos, i);
-            agents.setObjectLocation(a, pos);
+            Agent a = makeAgent(agentTypes.get(type), defaultAgentType, type, pos, i, map, agents);
             agentList.add(a);
-            for (int y = pos.y; y < pos.y + a.size.y; y++) { // make sure the agent size is correct and stop duplicates
-                for (int x = pos.x; x < pos.x + a.size.x; x++) {
-                    if (x != pos.x || y != pos.y) {
-                        Agent.AgentClone ag = a.makeAgentClone();
-                        agents.setObjectLocation(ag, x, y);
-                    }
-                    if (map.get(pos.x, pos.y) == 1) {
-                        System.out.println("agent: " + i + " is spawning on a wall");
-                        System.exit(1);
-                    }
-                }
-            }
         }
 
         // brains
@@ -339,7 +325,8 @@ public class ReadFile {
         return fd;
     }
 
-    private Agent makeAgent(AgentType agentType, AgentType defaultAgentType, int type, Int2D pos, int agentNumber) {
+    private Agent makeAgent(AgentType agentType, AgentType defaultAgentType, int type, 
+    Int2D pos, int agentNumber, IntGrid2D map, SparseGrid2D agents) {
         if (agentType == null) {
             agentType = defaultAgentType;
         }
@@ -361,8 +348,19 @@ public class ReadFile {
                     Integer.parseInt(colorString[2]));
             a.setColor(color);
         }
-        
-
+        agents.setObjectLocation(a, pos);
+        for (int y = pos.y; y < pos.y + a.size.y; y++) {
+            for (int x = pos.x; x < pos.x + a.size.x; x++) {
+                if (x != pos.x || y != pos.y) {
+                    Agent.AgentClone ag = a.makeAgentClone();
+                    agents.setObjectLocation(ag, x, y);
+                }
+                if (map.get(pos.x, pos.y) == 1) {
+                    System.out.println("agent: " + agentNumber + " is spawning on a wall");
+                    System.exit(1);
+                }
+            }
+        }
         return a;
     }
 

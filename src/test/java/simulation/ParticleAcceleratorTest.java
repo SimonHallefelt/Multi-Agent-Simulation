@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 public class ParticleAcceleratorTest {
     @Test
     void particleAcceleratorTest() {
-        Warehouse state = new Warehouse(-929937372, "src\\main\\resources\\warehouse_3.json");
+        Warehouse state = new Warehouse(-929937372, "simple", "src\\main\\resources\\warehouse_3.json");
         state.start();
         do
             if (!state.schedule.step(state)) break;

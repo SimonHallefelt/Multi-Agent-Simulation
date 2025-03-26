@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 public class TasksTest {
 
     @Test void test_1_completeList() {
-        Warehouse state = new Warehouse(0, "src\\test\\resources\\warehouse_5_completeList.json");
+        Warehouse state = new Warehouse(0, "simple", "src\\test\\resources\\warehouse_5_completeList.json");
         state.start();
         do
             if (!state.schedule.step(state)) break;
