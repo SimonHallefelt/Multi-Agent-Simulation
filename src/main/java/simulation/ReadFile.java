@@ -26,7 +26,7 @@ public class ReadFile {
             Color.YELLOW, Color.ORANGE, Color.PINK, Color.GRAY, Color.DARK_GRAY };
     private int colorIndex = 0;
 
-    public FileData simpleMapJson(String path) {
+    public FileData simpleFormat(String path) {
         JSONObject obj = null;
         try {
             obj = new JSONObject(new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8));
@@ -56,7 +56,7 @@ public class ReadFile {
         // this.score = 0;
 
         // brain settings
-        HashMap<String, JSONObject> agentTypes = new HashMap<>();
+        HashMap<String, AgentType> agentTypes = new HashMap<>();
         ArrayList<Agent> AgentList = new ArrayList<>();
         ArrayList<Brain> BrainList = new ArrayList<>();
 
@@ -75,22 +75,13 @@ public class ReadFile {
             }
         }
 
-
-        String defaultAlgo = "none";
-        String defaultSize = "1,1";
-        int defaultMoveTime = 1;
-        String defaultColor = "default";
-
+        AgentType defaultAgentType = new AgentType();
         if (obj.has("default")) {
             JSONObject def = obj.getJSONObject("default");
-            if (def.has("algo"))
-                defaultAlgo = def.getString("algo");
-            if (def.has("size"))
-                defaultSize = def.getString("size");
-            if (def.has("moveTime"))
-                defaultMoveTime = def.getInt("moveTime");
-            if (def.has("color"))
-                defaultColor = def.getString("color");
+            if(def.has("algo")) defaultAgentType.setAlgo(def.getString("algo"));
+            if(def.has("size")) defaultAgentType.setSize(def.getString("size"));
+            if(def.has("moveTime")) defaultAgentType.setMoveTime(def.getInt("moveTime"));
+            if(def.has("color")) defaultAgentType.setColor(def.getString("color"));
         }
 
         if (obj.has("task-settings")) {
@@ -119,45 +110,24 @@ public class ReadFile {
                 String value = jsonMap.get(y).get(x);
                 String[] split = value.split("-");
                 if (split[0].chars().allMatch(Character::isDigit)) { // if it is numberic, create an agent here
-                    JSONObject o = agentTypes.get(split[0]);
-                    if (o == null) {
-                        o = obj.getJSONObject(split[0]);
+                    AgentType agentType = agentTypes.get(split[0]);
+                    if (agentType == null) {
+                        JSONObject o = obj.getJSONObject(split[0]);
                         if (o != null) {
-                            agentTypes.put(split[0], o);
+                            agentType = new AgentType();
+                            agentType.setAlgo(o.has("algo") ? o.getString("algo") : defaultAgentType.algo);
+                            agentType.setSize(o.has("size") ? o.getString("size") : defaultAgentType.size);
+                            agentType.setMoveTime(o.has("moveTime") ? o.getInt("moveTime") : defaultAgentType.moveTime);
+                            agentType.setColor(o.has("color") ? o.getString("color") : defaultAgentType.color);
+                            agentTypes.put(split[0], agentType);
                         }
                     }
-                    String algo;
-                    String[] sizeString = { "" };
-                    String[] colorString = { "" };
-                    int moveTime;
-                    if (o != null) {
-                        algo = o.has("algo") ? o.getString("algo") : defaultAlgo;
-                        sizeString[0] = o.has("size") ? o.getString("size") : defaultSize;
-                        moveTime = o.has("moveTime") ? o.getInt("moveTime") : defaultMoveTime;
-                        colorString[0] = o.has("color") ? o.getString("color") : defaultColor;
-
-                    } else {
-                        algo = defaultAlgo;
-                        sizeString[0] = defaultSize;
-                        moveTime = defaultMoveTime;
-                        colorString[0] = defaultColor;
-
-                    }
-                    sizeString = sizeString[0].split(",");
-                    Int2D size = new Int2D(Integer.parseInt(sizeString[0]), Integer.parseInt(sizeString[1]));
-                    Agent a = factory.createAgent(split[0], x, y, algo, moveTime, size);
-                    if (colorString[0].equals("default")) {
-                        Color color = getDefaultColor(split[0]);
-                        a.setColor(color);
-                    } else {
-                        colorString = colorString[0].split(",");
-                        Color color = new Color(Integer.parseInt(colorString[0]), Integer.parseInt(colorString[1]),
-                                Integer.parseInt(colorString[2]));
-                        a.setColor(color);
-                    }
-                    agents.setObjectLocation(a, x, y);
-                    for (int yy = y; yy < y + size.y; yy++) { // make sure the agent size is correct and stop duplicates
-                        for (int xx = x; xx < x + size.x; xx++) {
+                    Agent a = makeAgent(agentType, defaultAgentType, Integer.parseInt(split[0]), new Int2D(x,y), AgentList.size(), map, agents);
+                    AgentList.add(a);
+                    
+                    // stop agent duplicates
+                    for (int yy = y; yy < y + a.size.y; yy++) { 
+                        for (int xx = x; xx < x + a.size.x; xx++) {
                             if (xx == x && yy == y)
                                 continue;
                             String value2 = jsonMap.get(yy).get(xx);
@@ -166,12 +136,9 @@ public class ReadFile {
                                 throw new IllegalArgumentException(
                                         "should have been an agent at this position (" + xx + ", " + yy + ")");
                             }
-                            Agent.AgentClone ag = a.makeAgentClone();
-                            agents.setObjectLocation(ag, xx, yy);
                             jsonMap.get(yy).set(xx, split2.length > 1 ? split2[1] : ".");
                         }
                     }
-                    AgentList.add(a);
                 }
                 if (split.length > 1) {
                     value = split[1];
@@ -201,7 +168,7 @@ public class ReadFile {
     }
 
     // TSPLIB-extended
-    public FileData readStandardFormat(String warehouseLayout, String instance) { 
+    public FileData standardFormat(String warehouseLayout, String instance) { 
         JSONObject obj = null;
         try {
             obj = new JSONObject(new String(Files.readAllBytes(Paths.get(warehouseLayout)), StandardCharsets.UTF_8));

@@ -8,9 +8,9 @@ import simulation.ReadFile.FileData;
 
 public class ReadFileTest {
 
-    @Test void test_1_simpleMapJson() {
+    @Test void test_1_simpleFormat() {
         ReadFile rf = new ReadFile();
-        FileData fd = rf.simpleMapJson("src\\test\\resources\\warehouse_3.json");
+        FileData fd = rf.simpleFormat("src\\test\\resources\\warehouse_3.json");
 
         assertEquals(fd.agentList.size(), 11);
         assertEquals(fd.brainList.size(), 0);

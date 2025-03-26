@@ -151,15 +151,15 @@ public class Warehouse extends SimState {
         switch (inputFormat.toLowerCase()) {
             case "standard":
                 System.out.println("inputFormat: standard");
-                fd = rf.readStandardFormat(path, instance);
+                fd = rf.standardFormat(path, instance);
                 break;
             case "simple":
                 System.out.println("inputFormat: simple");
-                fd = rf.simpleMapJson(path);
+                fd = rf.simpleFormat(path);
                 break;
             default:
                 System.out.println("inputFormat: " + inputFormat.toLowerCase() + " selected default");
-                fd = rf.simpleMapJson(path);
+                fd = rf.simpleFormat(path);
                 break;
         }
         
