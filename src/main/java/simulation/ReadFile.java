@@ -428,7 +428,7 @@ public class ReadFile {
         }
 
         public void addBrains(ArrayList<Brain> brainList) {
-            System.out.println("FileData, brains add: " + brainList.size());
+            if(brainList.isEmpty()) System.out.println("Warning, FileData->addBrains: no brains add");
             this.brainList = brainList;
         }
 
