@@ -116,9 +116,10 @@ public abstract class Agent implements Steppable, Colorable {
 
     @Override
     public void step(SimState state) {
-        desirePath = null;
         if (isMoving)
             return;
+        desirePath = null;
+        Int2D newPos;
         Warehouse warehouse = (Warehouse) state;
         if (path.getRemakePath())
             path = new Path(pos);
@@ -141,12 +142,13 @@ public abstract class Agent implements Steppable, Colorable {
             if (debug)
                 System.out.println(id + ": " + getPathList());
         }
-        dir = path.pop();
+        newPos = path.pop();
         // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
-        if (dir == null)
-            dir = new Int2D(0, 0);
+        if (newPos == null)
+            newPos = pos;
 
-        if (warehouse.move(this, dir)) {
+        dir = newPos.subtract(pos);
+        if (warehouse.move(this, newPos)) {
             isMoving = true;
             if (dir.x != 0 || dir.y != 0) timeToCompletedMovement = this.moveTime;
             else timeToCompletedMovement = 1;
@@ -156,7 +158,7 @@ public abstract class Agent implements Steppable, Colorable {
             makeDesirePath(warehouse);
             addTag("stuck");
             // path = new Path(pos);
-            if (debug) System.out.println(id + ": agent could not move to " + pos.add(dir) + "(" + dir + ")");
+            if (debug) System.out.println(id + ": agent could not move to " + newPos + "(" + pos + ")");
             timeToCompletedMovement = 1;
         }
         if (debug)
