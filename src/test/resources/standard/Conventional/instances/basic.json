@@ -59,8 +59,5 @@
     "task_settings" : {
         "TasksPerStep" : "1",
         "taskGeneration" : "random"
-    },
-    "brains" : [
-        "astarBrain"
-    ]
+    }
 }

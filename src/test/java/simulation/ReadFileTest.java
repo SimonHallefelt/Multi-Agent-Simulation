@@ -35,7 +35,7 @@ public class ReadFileTest {
         FileData fd = rf.readInput(warehouseLayout, instance);
 
         assertEquals(10, fd.agentList.size());
-        assertEquals(1, fd.brainList.size());
+        assertEquals(0, fd.brainList.size());
         assertEquals(70, fd.map.getHeight());
         assertEquals(80, fd.map.getWidth());
         assertEquals(fd.agents.getHeight(), fd.map.getHeight());

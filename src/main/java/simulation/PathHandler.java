@@ -44,6 +44,7 @@ public class PathHandler {
 
     public void removeAgent(Agent a) {
         agentPathMap.remove(a);
+        agentDesireMap.remove(a);
         cooked = false;
     }
 
