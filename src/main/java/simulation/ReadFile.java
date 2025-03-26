@@ -15,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import jogamp.opengl.glu.error.Error;
 import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
 import sim.util.Int2D;
@@ -25,9 +24,14 @@ public class ReadFile {
     private Color[] defaultColors = new Color[] { Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA,
             Color.YELLOW, Color.ORANGE, Color.PINK, Color.GRAY, Color.DARK_GRAY };
     private int colorIndex = 0;
+    private AgentFactory factory = new AgentFactory();
+    JSONObject obj = null;
 
-    public FileData simpleFormat(String path) {
-        JSONObject obj = null;
+    public FileData readInput(String path) {
+        return readInput(path, null);
+    }
+
+    public FileData readInput(String path, String instance) {
         try {
             obj = new JSONObject(new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8));
         } catch (JSONException e) {
@@ -37,6 +41,22 @@ public class ReadFile {
             e.printStackTrace();
             System.exit(1);
         }
+        
+        String inputFormat = obj.getString("format");
+        switch (inputFormat.toLowerCase()) {
+            case "standard":
+                System.out.println("inputFormat: standard");
+                return standardFormat(path, instance);
+            case "simple":
+                System.out.println("inputFormat: simple");
+                return simpleFormat(path);
+            default:
+                System.out.println("inputFormat: " + inputFormat.toLowerCase() + " selected default");
+                return simpleFormat(path);
+        }
+    }
+
+    public FileData simpleFormat(String path) {
         List<ArrayList<String>> jsonMap = new ArrayList<>();
         int width = 0;
         for (Object o : obj.getJSONArray("map").toList()) {
@@ -51,7 +71,6 @@ public class ReadFile {
         // Tasks tasks = new Tasks(this);
         ArrayList<Int2D> pickup = new ArrayList<>();
         ArrayList<Int2D> delivery = new ArrayList<>();
-        AgentFactory factory = new AgentFactory();
         BrainFactory brainFactory = new BrainFactory();
         // this.score = 0;
 
@@ -169,17 +188,6 @@ public class ReadFile {
 
     // TSPLIB-extended
     public FileData standardFormat(String warehouseLayout, String instance) { 
-        JSONObject obj = null;
-        try {
-            obj = new JSONObject(new String(Files.readAllBytes(Paths.get(warehouseLayout)), StandardCharsets.UTF_8));
-        } catch (JSONException e) {
-            e.printStackTrace();
-            System.exit(1);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
         // locations
         ArrayList<Int2D> locations = new ArrayList<>();
         JSONObject LOCATION_COORD_SECTION = obj.getJSONObject("LOCATION_COORD_SECTION");
@@ -283,11 +291,47 @@ public class ReadFile {
             agentList.add(a);
         }
 
+        // task-settings
+        double tasksPerStep = 1.0;
+        String taskGeneration = "random";
+        ArrayList<Tasks.Task> taskList = new ArrayList<>();
+        if (obj.has("task-settings")) {
+            JSONObject def = obj.getJSONObject("task-settings");
+            if (def.has("TasksPerStep")) 
+                tasksPerStep = def.getDouble("TasksPerStep");
+            if (def.has("taskGeneration")) 
+                taskGeneration = def.getString("taskGeneration");
+            if (def.has("taskList")) {
+                Tasks tasks = new Tasks(null);
+                JSONArray JSONtasks = def.getJSONArray("taskList");
+                for (int i = 0; i < JSONtasks.length(); i++) {
+                    ArrayList<Int2D> goals = new ArrayList<>();
+                    for (Object o : JSONtasks.getJSONArray(i).toList()) {
+                        String[] goal = o.toString().split(",");
+                        Int2D pos = new Int2D(Integer.parseInt(goal[0]), Integer.parseInt(goal[1]));
+                        goals.add(pos);
+                    }
+                    taskList.add(tasks.makeTask(goals));
+                }
+            }
+        }
+
         // brains
         BrainFactory brainFactory = new BrainFactory();
-
+        ArrayList<Brain> BrainList = new ArrayList<>();
+        if (obj.has("brains")) {
+            for (Object o : obj.getJSONArray("brains").toList()) {
+                String name = o.toString();
+                Brain b = brainFactory.createBrain(name);
+                if (b != null) {
+                    BrainList.add(b);
+                }
+            }
+        }
 
         FileData fd = new FileData(map, agents, agentList, pickup, depots);
+        fd.addTaskSettings(tasksPerStep, taskGeneration, taskList);
+        fd.addBrains(BrainList);
 
         return fd;
     }
@@ -304,7 +348,6 @@ public class ReadFile {
         
         sizeString = sizeString[0].split(",");
         Int2D size = new Int2D(Integer.parseInt(sizeString[0]), Integer.parseInt(sizeString[1]));
-        AgentFactory factory = new AgentFactory();
         Agent a = factory.createAgent(type+"", pos.x, pos.y, algo, moveTime, size, agentNumber);
         if (colorString[0].equals("default")) {
             Color color = getDefaultColor(type+"");

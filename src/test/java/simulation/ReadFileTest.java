@@ -10,7 +10,7 @@ public class ReadFileTest {
 
     @Test void test_1_simpleFormat() {
         ReadFile rf = new ReadFile();
-        FileData fd = rf.simpleFormat("src\\test\\resources\\warehouse_3.json");
+        FileData fd = rf.readInput("src\\test\\resources\\simple\\warehouse_3.json");
 
         assertEquals(fd.agentList.size(), 11);
         assertEquals(fd.brainList.size(), 0);

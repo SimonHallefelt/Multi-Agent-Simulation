@@ -1,4 +1,5 @@
 {
+    "format" : "standard",
     "size_xy" : [80,70],
     "NUM_DEPOTS": 2,
     "NUM_LOCATIONS": 310,

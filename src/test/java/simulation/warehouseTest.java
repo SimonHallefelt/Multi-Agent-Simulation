@@ -56,7 +56,7 @@ public class warehouseTest {
     }
 
     @Test void test_2_warehouse() {
-        Warehouse state = new Warehouse(0, "simple", "src\\test\\resources\\warehouse_3.json");
+        Warehouse state = new Warehouse(0, "src\\test\\resources\\simple\\warehouse_3.json");
         state.start();
         do
             if (!state.schedule.step(state)) break;

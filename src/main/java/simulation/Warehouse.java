@@ -29,22 +29,16 @@ public class Warehouse extends SimState {
     // static String default_file_path = "src\\main\\resources\\warehouse_3.json";
     // static String default_file_path = "src\\main\\resources\\warehouse_5_completeList.json";
     String file_path;
-    String inputFormat = "Standard";
 
     public Warehouse(long seed) {
-        this(seed, "Standard", default_file_path);
+        this(seed, default_file_path);
     }
 
     public Warehouse(long seed, String file_path) {
-        this(seed, "Standard", file_path);
-    }
-
-    public Warehouse(long seed, String inputFormat, String file_path) {
         super(seed);
         this.file_path = file_path;
-        this.inputFormat = inputFormat;
         new DefaultSetup().injectAgents();
-        this.readFile(inputFormat, file_path);
+        this.readFile(file_path);
     }
 
     public void addTrail(Agent.Trail t, Int2D pos) {
@@ -141,28 +135,13 @@ public class Warehouse extends SimState {
         tasks.assignTasks(AgentList);
     }
 
-    public void readFile(String inputFormat, String path) {
-        readFile(inputFormat, path, "src\\main\\resources\\Conventional\\instances\\basic.json");
+    public void readFile(String path) {
+        readFile(path, "src\\main\\resources\\Conventional\\instances\\basic.json");
     }
 
-    public void readFile(String inputFormat, String path, String instance) {
+    public void readFile(String path, String instance) {
         ReadFile rf = new ReadFile();
-        ReadFile.FileData fd;
-        switch (inputFormat.toLowerCase()) {
-            case "standard":
-                System.out.println("inputFormat: standard");
-                fd = rf.standardFormat(path, instance);
-                break;
-            case "simple":
-                System.out.println("inputFormat: simple");
-                fd = rf.simpleFormat(path);
-                break;
-            default:
-                System.out.println("inputFormat: " + inputFormat.toLowerCase() + " selected default");
-                fd = rf.simpleFormat(path);
-                break;
-        }
-        
+        ReadFile.FileData fd = rf.readInput(path, instance);;
 
         this.map = fd.map;
         this.agents = fd.agents;
@@ -194,7 +173,7 @@ public class Warehouse extends SimState {
 
     public void start() {
         super.start();
-        this.readFile(this.inputFormat, this.file_path);
+        this.readFile(this.file_path);
         startTime = System.currentTimeMillis();
     }
 
