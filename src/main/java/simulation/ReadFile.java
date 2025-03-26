@@ -25,7 +25,7 @@ public class ReadFile {
             Color.YELLOW, Color.ORANGE, Color.PINK, Color.GRAY, Color.DARK_GRAY };
     private int colorIndex = 0;
     private AgentFactory factory = new AgentFactory();
-    JSONObject obj = null;
+    private JSONObject obj = null;
 
     public FileData readInput(String path) {
         return readInput(path, null);
@@ -318,20 +318,20 @@ public class ReadFile {
 
         // brains
         BrainFactory brainFactory = new BrainFactory();
-        ArrayList<Brain> BrainList = new ArrayList<>();
+        ArrayList<Brain> brainList = new ArrayList<>();
         if (obj.has("brains")) {
             for (Object o : obj.getJSONArray("brains").toList()) {
                 String name = o.toString();
                 Brain b = brainFactory.createBrain(name);
                 if (b != null) {
-                    BrainList.add(b);
+                    brainList.add(b);
                 }
             }
         }
 
         FileData fd = new FileData(map, agents, agentList, pickup, depots);
         fd.addTaskSettings(tasksPerStep, taskGeneration, taskList);
-        fd.addBrains(BrainList);
+        fd.addBrains(brainList);
 
         return fd;
     }
@@ -428,6 +428,7 @@ public class ReadFile {
         }
 
         public void addBrains(ArrayList<Brain> brainList) {
+            System.out.println("FileData, brains add: " + brainList.size());
             this.brainList = brainList;
         }
 

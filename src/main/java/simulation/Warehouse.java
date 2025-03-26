@@ -196,6 +196,7 @@ public class Warehouse extends SimState {
         System.out.println("Number of tasks generated/completed/impossible: " + this.tasks.getNumGeneratedTasks() + "/"
                 + this.tasks.getNumCompletedTasks() + "/" + this.tasks.getNumImpossibleTasks());
         System.out.println("Seed: " + this.seed());
+        System.out.println("Brains: " + this.BrainList.size());
         System.out.println("warehouse: " + this.file_path);
         System.out.println("--------------------------");
     }
