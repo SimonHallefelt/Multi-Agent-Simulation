@@ -25,20 +25,29 @@ public class Warehouse extends SimState {
     long startTime;
     Tasks tasks;
 
+    String file_path;
     static String default_file_path = "src\\main\\resources\\Conventional\\warehouseLayout.json";
     // static String default_file_path = "src\\main\\resources\\warehouse_3.json";
     // static String default_file_path = "src\\main\\resources\\warehouse_5_completeList.json";
-    String file_path;
+
+    String instance_path;
+    static String default_instance_path = "src\\main\\resources\\Conventional\\instances\\basic.json";
+
 
     public Warehouse(long seed) {
         this(seed, default_file_path);
     }
 
     public Warehouse(long seed, String file_path) {
+        this(seed, file_path, default_instance_path);
+    }
+
+    public Warehouse(long seed, String file_path, String instance_path) {
         super(seed);
         this.file_path = file_path;
+        this.instance_path = instance_path;
         new DefaultSetup().injectAgents();
-        this.readFile(file_path);
+        this.readFile(file_path, instance_path);
     }
 
     public void addTrail(Agent.Trail t, Int2D pos) {
@@ -135,10 +144,6 @@ public class Warehouse extends SimState {
         tasks.assignTasks(AgentList);
     }
 
-    public void readFile(String path) {
-        readFile(path, "src\\main\\resources\\Conventional\\instances\\basic.json");
-    }
-
     public void readFile(String path, String instance) {
         ReadFile rf = new ReadFile();
         ReadFile.FileData fd = rf.readInput(path, instance);;
@@ -173,7 +178,7 @@ public class Warehouse extends SimState {
 
     public void start() {
         super.start();
-        this.readFile(this.file_path);
+        this.readFile(this.file_path, this.instance_path);
         startTime = System.currentTimeMillis();
     }
 
