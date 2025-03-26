@@ -27,7 +27,7 @@ public class PathTest {
         path.addNewPositionPath(pos, (ArrayList<Int2D>) positionPath.clone());
 
         for (Int2D newPos : positionPath) {
-            pos = pos.add(path.pop());
+            pos = path.pop();
             assertTrue(pos.equals(newPos));
         }
     }

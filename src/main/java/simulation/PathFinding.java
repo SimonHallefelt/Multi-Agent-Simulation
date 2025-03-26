@@ -57,7 +57,6 @@ public class PathFinding {
             if (warehouse.canMove(position, d, size) && !ph.willTileBeClaimed(d, size, true))
                 viableDirections.add(d);
         }
-        if (position.equals(new Int2D(1,3))) System.out.println(viableDirections);
         int v = viableDirections.size();
         if (v == 0) return randomAccessibleWalk(warehouse, position, size);
         int s = warehouse.random.nextInt(viableDirections.size());
