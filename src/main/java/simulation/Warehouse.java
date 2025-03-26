@@ -85,54 +85,58 @@ public class Warehouse extends SimState {
         return isWall(pos) || (!noAgents && isAgentPresent(pos));
     }
 
-    public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize, boolean noAgents) {
+    public boolean canMove(Int2D oldPos, Int2D newPos, Int2D agentSize, boolean noAgents) {
+        Int2D delta = newPos.subtract(oldPos);
         if (delta.x == 0 && delta.y == 0)
             return true;
+        if (newPos.distance(oldPos) > 1.0) {
+            System.out.println("Teleportation attempted: " + oldPos + " -> " + newPos);
+            return false;
+        }
         int size = delta.x == 0 ? agentSize.x : agentSize.y;
         if (delta.x != 0) {
             int x = delta.x > 0 ? agentSize.x - 1 : 0;
             for (int d = 0; d < size; d++) {
-                if (isOccupied(pos.add(x, d), noAgents))
+                if (isOccupied(newPos.add(x, d), noAgents))
                     return false;
             }
         } else {
             int y = delta.y > 0 ? agentSize.y - 1 : 0;
             for (int d = 0; d < size; d++) {
-                if (isOccupied(pos.add(d, y), noAgents))
+                if (isOccupied(newPos.add(d, y), noAgents))
                     return false;
             }
         }
         return true;
     }
 
-    public boolean canMove(Int2D pos, Int2D delta, Int2D agentSize) {
-        return canMove(pos, delta, agentSize, false);
+    public boolean canMove(Int2D oldPos, Int2D newPos, Int2D agentSize) {
+        return canMove(oldPos, newPos, agentSize, false);
     }
 
-    public boolean move(Agent a, Int2D delta) {
-        Int2D loc = agents.getObjectLocation(a);
-        Int2D pos = loc.add(delta);
+    public boolean move(Agent a, Int2D newPos) {
+        Int2D oldPos = agents.getObjectLocation(a);
         Int2D agentSize = a.getAgentSize();
-        if (!canMove(pos, delta, agentSize))
+        if (!canMove(oldPos, newPos, agentSize))
             return false;
-        a.setPosition(pos);
+        a.setPosition(newPos);
         ArrayList<Agent.AgentClone> agentClones = a.getAgentClones();
-        ArrayList<Int2D> oldPositions = new ArrayList<>(Arrays.asList(loc));
+        ArrayList<Int2D> oldPositions = new ArrayList<>(Arrays.asList(oldPos));
         for (int x = 0; x < agentSize.x; x++) {
             for (int y = 0; y < agentSize.y; y++) {
                 if (x == 0 && y == 0) {
-                    agents.setObjectLocation(a, pos);
+                    agents.setObjectLocation(a, newPos);
                 } else {
                     AgentClone ac = agentClones.get(x + y * agentSize.x - 1);
                     oldPositions.add(agents.getObjectLocation(ac));
-                    agents.setObjectLocation(ac, pos.x + x, pos.y + y);
+                    agents.setObjectLocation(ac, newPos.x + x, newPos.y + y);
                 }
             }
         }
-        for (Int2D oldPos : oldPositions) {
-            a.makeTrail(this, oldPos);
+        for (Int2D op : oldPositions) {
+            a.makeTrail(this, op);
         }
-        tasks.reachedTarget(a, pos);
+        tasks.reachedTarget(a, newPos);
         return true;
     }
 

@@ -18,7 +18,7 @@ public class AstarBrain extends Brain {
         List<Agent> agents = warehouse.getAgentList();
         PathHandler ph = new PathHandler(warehouse);
         for (Agent a : agents) {
-            if (a.getPathPositionPath().size() == 0 && a.getTarget() != null) {
+            if (a.getPathList().size() == 0 && a.getTarget() != null) {
                 ph.removeAgent(a);
                 ArrayList<Int2D> p = PathFinding.aStarNoPathCollisions(warehouse, ph, a.getTarget(), a.getPos(),
                         a.getSize(), a.getMoveTime());

@@ -2,6 +2,7 @@ package simulation;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -115,6 +116,7 @@ public abstract class Agent implements Steppable, Colorable {
 
     @Override
     public void step(SimState state) {
+        desirePath = null;
         if (isMoving)
             return;
         Warehouse warehouse = (Warehouse) state;
@@ -137,7 +139,7 @@ public abstract class Agent implements Steppable, Colorable {
         if (newPath != null) {
             path = newPath;
             if (debug)
-                System.out.println(id + ": " + getPathPositionPath());
+                System.out.println(id + ": " + getPathList());
         }
         dir = path.pop();
         // System.out.println ("pos: " + pos + " dir: " + dir + " target: " + target);
@@ -145,7 +147,6 @@ public abstract class Agent implements Steppable, Colorable {
             dir = new Int2D(0, 0);
 
         if (warehouse.move(this, dir)) {
-            desirePath = null;
             isMoving = true;
             if (dir.x != 0 || dir.y != 0) timeToCompletedMovement = this.moveTime;
             else timeToCompletedMovement = 1;
@@ -165,7 +166,6 @@ public abstract class Agent implements Steppable, Colorable {
 
     public Path noTarget(Warehouse warehouse, PathHandler pathHandler) {
         Path path = new Path(pos);
-        path.addStep(new Int2D(0, 0));
         return path;
     }
 
@@ -187,7 +187,7 @@ public abstract class Agent implements Steppable, Colorable {
 
     public Path makePath(Warehouse warehouse, PathHandler pathHandler) {
         Path path = new Path(pos);
-        path.addStep(PathFinding.randomAccessibleWalk(warehouse, pos, size));
+        path.addPos(PathFinding.randomAccessibleWalk(warehouse, pos, size));
         return path;
     }
 
@@ -238,13 +238,13 @@ public abstract class Agent implements Steppable, Colorable {
         return this.dir;
     }
 
-    public ArrayList<Int2D> getPathPositionPath() {
-        return this.path.getPositionPath();
+    public List<Int2D> getPathList() {
+        return this.path.getList();
     }
 
-    public ArrayList<Int2D> getDesirePositionPath() {
+    public List<Int2D> getDesirePathList() {
         if (this.desirePath == null) return null;
-        else return this.desirePath.getPositionPath();
+        else return this.desirePath.getList();
     }
 
     public ArrayList<Trail> getTrails() {

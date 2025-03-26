@@ -3,6 +3,7 @@ package simulation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import sim.util.Int2D;
 
@@ -55,7 +56,7 @@ public class PathHandler {
         tileTimeMapDesired.clear();
         HashMap<Int2D, HashSet<Integer>> map;
         for (Agent a : agentPathMap.keySet()) {
-            ArrayList<Int2D> p = agentPathMap.get(a).getPositionPath();
+            List<Int2D> p = agentPathMap.get(a).getList();
             map = generatePathMap(p, a.size, a.pos, a.moveTime, a.getDelay(), a.hasTag("stuck"));
             for (Int2D k : map.keySet()) {
                 tileTimeMap.merge(k, map.get(k), (s1, s2) -> {
@@ -65,7 +66,7 @@ public class PathHandler {
             }
         }
         for (Agent a : agentDesireMap.keySet()) {
-            ArrayList<Int2D> p = agentDesireMap.get(a).getPositionPath();
+            List<Int2D> p = agentDesireMap.get(a).getList();
             map = generatePathMap(p, a.size, a.pos, a.moveTime, a.getDelay(), false);
             for (Int2D k : map.keySet()) {
                 tileTimeMap.merge(k, map.get(k), (s1, s2) -> {
@@ -77,7 +78,7 @@ public class PathHandler {
         // System.out.println(tileTimeMap);
     }
 
-    private HashMap<Int2D, HashSet<Integer>> generatePathMap(ArrayList<Int2D> positionPath, Int2D size, Int2D previous,
+    private HashMap<Int2D, HashSet<Integer>> generatePathMap(List<Int2D> positionPath, Int2D size, Int2D previous,
             int moveTime, int delay, boolean stayPut) {
         HashMap<Int2D, HashSet<Integer>> map = new HashMap<>();
         HashSet<Integer> set;
@@ -216,6 +217,19 @@ public class PathHandler {
             return smallest;
         }
         return Integer.MAX_VALUE;
+    }
+
+    public int nextClaim(Int2D tile, Int2D size) {
+        int smallest = Integer.MAX_VALUE;
+        int c;
+        for (int x = 0; x < size.x; x++) {
+            for (int y = 0; y < size.y; y++) {
+                Int2D delta = new Int2D(x,y);
+                c = nextClaim(tile.add(delta));
+                if (c < smallest) smallest = c;
+            }
+        }
+        return smallest;
     }
 
     @SuppressWarnings("unchecked")

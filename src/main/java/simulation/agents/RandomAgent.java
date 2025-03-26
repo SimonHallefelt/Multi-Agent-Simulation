@@ -11,7 +11,7 @@ public class RandomAgent extends Agent {
     @Override
     public Path makePath(Warehouse warehouse, PathHandler pathHandler) {
         Path path = new Path(pos);
-        path.addStep(PathFinding.randomWalk(warehouse, this.dir));
+        path.addPos(PathFinding.randomWalk(warehouse, pos, dir));
         return path;
     }
 

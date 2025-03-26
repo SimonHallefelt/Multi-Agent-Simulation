@@ -20,7 +20,7 @@ public class PathFindingTests {
         }};
 
         for (int i = 0; i < n; i++) {
-            Int2D key = PathFinding.trueRandomWalk(warehouse);
+            Int2D key = PathFinding.trueRandomWalk(warehouse, new Int2D(0,0));
             counter.put(key, counter.get(key)+1);
         }
         

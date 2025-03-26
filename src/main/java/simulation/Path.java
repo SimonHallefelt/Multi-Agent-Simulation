@@ -1,12 +1,12 @@
 package simulation;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import sim.util.Int2D;
 
 public class Path {
     private ArrayList<Int2D> steps = new ArrayList<>();
-    private ArrayList<Int2D> positionPath = new ArrayList<>();
     private Int2D endPos;
     private Boolean remakePath = false;
 
@@ -14,52 +14,19 @@ public class Path {
         endPos = startPos == null ? new Int2D(0, 0) : startPos;
     }
 
-    public void addStep(Int2D dir) {
-        steps.add(dir);
-        endPos = endPos.add(dir);
-        positionPath.add(endPos);
-    }
-
     public void addPos(Int2D pos) {
-        positionPath.add(pos);
-        steps.add(pos.subtract(endPos));
+        steps.add(pos);
         endPos = pos;
     }
 
-    public void addNewStepPath(Int2D pos, ArrayList<Int2D> stepPath) {
-        this.steps = stepPath;
-        generatePositionPathFromSteps(pos);
-    }
-
     public void addNewPositionPath(Int2D pos, ArrayList<Int2D> positionPath) {
-        this.positionPath = positionPath;
+        this.steps = positionPath;
         endPos = positionPath.size() != 0 ? positionPath.get(positionPath.size() - 1) : pos;
-        generateStepsFromPositionPath(pos);
-    }
-
-    private void generateStepsFromPositionPath(Int2D pos) {
-        steps = new ArrayList<>();
-        Int2D nextPos;
-        for (int i = 0; i < positionPath.size(); i++) {
-            nextPos = this.positionPath.get(i);
-            steps.add(nextPos.subtract(pos));
-            pos = nextPos;
-        }
-    }
-
-    private void generatePositionPathFromSteps(Int2D pos) {
-        positionPath = new ArrayList<>();
-        for (Int2D step : steps) {
-            pos = pos.add(step);
-            positionPath.add(pos);
-        }
-        endPos = positionPath.get(positionPath.size() - 1);
     }
 
     public Int2D pop() {
         if (steps.isEmpty())
             return null;
-        positionPath.remove(0);
         return steps.remove(0);
     }
 
@@ -70,12 +37,12 @@ public class Path {
     }
 
     public int size() {
-        return positionPath.size();
+        return steps.size();
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<Int2D> getPositionPath() {
-        return (ArrayList<Int2D>) positionPath.clone();
+    public List<Int2D> getList() {
+        return (ArrayList<Int2D>) steps.clone();
     }
 
     public Boolean getRemakePath() {
@@ -92,7 +59,7 @@ public class Path {
 
     public String toString() {
         String s = "";
-        for (Int2D p : positionPath) {
+        for (Int2D p : steps) {
             s += p;
         }
         return s;
