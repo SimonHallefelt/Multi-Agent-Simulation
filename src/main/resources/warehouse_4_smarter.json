@@ -1,4 +1,5 @@
 {
+    "format" : "simple",
     "map" : [
         "# # E E E # # E E E # # E E E # # E E E # # E E E # # E E E E # # 4-E 4-E E # #",
         "# # E . E # # E . E # # E . E # # E . E # # E . E # # E . 1 E # # 4-E 4 E # #",

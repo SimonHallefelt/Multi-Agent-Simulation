@@ -1,8 +1,9 @@
 {
-    "DEPOTS": [
-        "0",
-        "1"
-    ],
+    "format" : "standard",
+    "size_xy" : [80,70],
+    "NUM_DEPOTS": 2,
+    "NUM_LOCATIONS": 310,
+    "num_pickup_locations_warehouse": 220,
     "LOCATION_COORD_SECTION": {
         "0": [
             20,
@@ -1245,8 +1246,10 @@
             24
         ]
     },
-    "NUM_DEPOTS": 2,
-    "NUM_LOCATIONS": 310,
+    "DEPOTS": [
+        "0",
+        "1"
+    ],
     "OBSTACLES": {
         "1": [
             222,
@@ -1380,23 +1383,5 @@
             256,
             257
         ]
-    },
-    "TYPE": "OBP",
-    "VEH_DEPOT_SECTION": {
-        "1": [
-            0,
-            1
-        ]
-    },
-    "depotSection": {
-        "0": [
-            20,
-            5
-        ],
-        "1": [
-            50,
-            5
-        ]
-    },
-    "num_pick_locs_warehouse": 220
+    }
 }

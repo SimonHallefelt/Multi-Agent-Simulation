@@ -25,29 +25,29 @@ public class Warehouse extends SimState {
     long startTime;
     Tasks tasks;
 
-    // String file_path = "resources\\warehouse_1.json";
-    // String file_path = "resources\\warehouse_1_size_test.json";
-    // String file_path = "resources\\warehouse_1_lonely.json";
-    // String file_path = "resources\\warehouse_2.json";
-    // String file_path = "resources\\warehouse_2_no_path_collision.json";
-    String file_path = "resources\\warehouse_3.json";
-    // String file_path = "resources\\warehouse_4.json";
-    // String file_path = "resources\\warehouse_4_smart.json";
-    // String file_path = "resources\\warehouse_simple.json";
-
-    static String default_file_path = "src\\main\\resources\\warehouse_3.json";
-    // static String default_file_path = "src\\main\\resources\\warehouse_5_completeList.json";
+    String file_path;
+    static String default_file_path = "src\\main\\resources\\Conventional\\warehouseLayout.json";
     // static String default_file_path = "src\\main\\resources\\warehouse_3.json";
+    // static String default_file_path = "src\\main\\resources\\warehouse_5_completeList.json";
+
+    String instance_path;
+    static String default_instance_path = "src\\main\\resources\\Conventional\\instances\\basic.json";
+
 
     public Warehouse(long seed) {
         this(seed, default_file_path);
     }
 
     public Warehouse(long seed, String file_path) {
+        this(seed, file_path, default_instance_path);
+    }
+
+    public Warehouse(long seed, String file_path, String instance_path) {
         super(seed);
         this.file_path = file_path;
+        this.instance_path = instance_path;
         new DefaultSetup().injectAgents();
-        this.readFile(file_path);
+        this.readFile(file_path, instance_path);
     }
 
     public void addTrail(Agent.Trail t, Int2D pos) {
@@ -148,9 +148,9 @@ public class Warehouse extends SimState {
         tasks.assignTasks(AgentList);
     }
 
-    public void readFile(String path) {
+    public void readFile(String path, String instance) {
         ReadFile rf = new ReadFile();
-        ReadFile.FileData fd = rf.simpleMapJson(path);
+        ReadFile.FileData fd = rf.readInput(path, instance);;
 
         this.map = fd.map;
         this.agents = fd.agents;
@@ -182,7 +182,7 @@ public class Warehouse extends SimState {
 
     public void start() {
         super.start();
-        this.readFile(file_path);
+        this.readFile(this.file_path, this.instance_path);
         startTime = System.currentTimeMillis();
     }
 
@@ -200,6 +200,7 @@ public class Warehouse extends SimState {
         System.out.println("Number of tasks generated/completed/impossible: " + this.tasks.getNumGeneratedTasks() + "/"
                 + this.tasks.getNumCompletedTasks() + "/" + this.tasks.getNumImpossibleTasks());
         System.out.println("Seed: " + this.seed());
+        System.out.println("Brains: " + this.BrainList.size());
         System.out.println("warehouse: " + this.file_path);
         System.out.println("--------------------------");
     }
