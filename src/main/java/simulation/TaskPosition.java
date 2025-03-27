@@ -1,5 +1,6 @@
 package simulation;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
@@ -84,6 +85,13 @@ public class TaskPosition {
     }
 
     public static Agent getCompatibleAgent(Warehouse w, List<TaskPosition> tasks) {
-        return null;
+        Set<Agent> possible = new HashSet<>(tasks.get(0).accessibleAgents);
+        for (int i = 1; i < tasks.size(); i++) {
+            Set<Agent> possible2 = tasks.get(i).accessibleAgents;
+            possible.removeIf(t -> !possible2.contains(t));
+        }
+        int size = possible.size();
+        if (size <= 0) return null;
+        return possible.stream().skip(w.random.nextInt(size)).findFirst().orElse(null);
     }
 }
