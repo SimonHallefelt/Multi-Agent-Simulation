@@ -83,7 +83,7 @@ public class ReadFile {
         double tasksPerStep = 1.0;
         String taskGeneration = "random";
         String addDeliveryAndSupply = "no";
-        ArrayList<Tasks.Task> taskList = new ArrayList<>();
+        ArrayList<ArrayList<Int2D>> taskList = new ArrayList<>();
 
         if (obj.has("brains")) {
             for (Object o : obj.getJSONArray("brains").toList()) {
@@ -113,7 +113,6 @@ public class ReadFile {
             if (def.has("addDeliveryAndSupply")) 
                 addDeliveryAndSupply = def.getString("addDeliveryAndSupply");
             if (def.has("taskList")) {
-                Tasks tasks = new Tasks(null);
                 JSONArray JSONtasks = def.getJSONArray("taskList");
                 for (int i = 0; i < JSONtasks.length(); i++) {
                     ArrayList<Int2D> goals = new ArrayList<>();
@@ -122,7 +121,7 @@ public class ReadFile {
                         Int2D pos = new Int2D(Integer.parseInt(goal[0]), Integer.parseInt(goal[1]));
                         goals.add(pos);
                     }
-                    taskList.add(tasks.makeTask(goals));
+                    taskList.add(goals);
                 }
             }
         }
@@ -298,7 +297,7 @@ public class ReadFile {
         double tasksPerStep = 1.0;
         String taskGeneration = "random";
         String addDeliveryAndSupply = "no";
-        ArrayList<Tasks.Task> taskList = new ArrayList<>();
+        ArrayList<ArrayList<Int2D>> taskList = new ArrayList<>();
         if (obj.has("task-settings")) {
             JSONObject def = obj.getJSONObject("task-settings");
             if (def.has("tasksPerStep")) 
@@ -308,7 +307,6 @@ public class ReadFile {
             if (def.has("addDeliveryAndSupply")) 
                 addDeliveryAndSupply = def.getString("addDeliveryAndSupply");
             if (def.has("taskList")) {
-                Tasks tasks = new Tasks(null);
                 JSONArray JSONtasks = def.getJSONArray("taskList");
                 for (int i = 0; i < JSONtasks.length(); i++) {
                     ArrayList<Int2D> goals = new ArrayList<>();
@@ -317,7 +315,7 @@ public class ReadFile {
                         Int2D pos = locations.get(goal);
                         goals.add(pos);
                     }
-                    taskList.add(tasks.makeTask(goals));
+                    taskList.add(goals);
                 }
             }
         }
@@ -410,7 +408,7 @@ public class ReadFile {
         double tasksPerStep;
         String taskGeneration;
         String addDeliveryAndSupply;
-        ArrayList<Tasks.Task> taskList;
+        ArrayList<ArrayList<Int2D>> taskList;
         ArrayList<Brain> brainList;
         long seed;
 
@@ -430,7 +428,7 @@ public class ReadFile {
         }
 
         public void addTaskSettings(double tasksPerStep, String taskGeneration,
-        String addDeliveryAndSupply, ArrayList<Tasks.Task> taskList) {
+        String addDeliveryAndSupply, ArrayList<ArrayList<Int2D>> taskList) {
             this.tasksPerStep = tasksPerStep;
             this.taskGeneration = taskGeneration;
             this.addDeliveryAndSupply = addDeliveryAndSupply;

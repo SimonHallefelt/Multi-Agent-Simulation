@@ -30,12 +30,15 @@ public class Tasks {
         this.TasksPerStep = TasksPerStep;
     }
 
-    public void setTaskList(ArrayList<Task> taskList) {
-        this.taskList = taskList;
-    }
-
     public void setAddDeliveryAndSupply(String addDeliveryAndSupply) {
         this.addDeliveryAndSupply = addDeliveryAndSupply;
+    }
+
+    public void setTaskList(ArrayList<ArrayList<Int2D>> taskList) {
+        this.taskList = new ArrayList<>();
+        for (ArrayList<Int2D> task : taskList) {
+            this.taskList.add(makeTask(task));
+        }
     }
 
     public void setTaskConfiguration(String s) {
@@ -192,8 +195,19 @@ public class Tasks {
         return target.x >= pos.x && target.x < pos.x + size.x && target.y >= pos.y && target.y < pos.y + size.y;
     }
 
-    public Task makeTask(ArrayList<Int2D> goals) {
-        return new Task(goals.toArray(new Int2D[0]));
+    private Task makeTask(ArrayList<Int2D> goals) {
+        switch (addDeliveryAndSupply) {
+            case "no":
+                return new Task(goals.toArray(new Int2D[0]));
+            case "addDeliveryPoint":
+                Int2D lastPos = goals.get(goals.size()-1);
+                if(!delivery.contains(lastPos)) {
+                    goals.add(delivery.get(warehouse.random.nextInt(delivery.size())));
+                }
+                return new Task(goals.toArray(new Int2D[0]));
+            default:
+                return new Task(goals.toArray(new Int2D[0]));
+        }
     }
 
     public long getNumGeneratedTasks() {
@@ -208,7 +222,7 @@ public class Tasks {
         return impossibleTask.size();
     }
 
-    public class Task {
+    private class Task {
         private Int2D[] targets;
         private int targetIndex = 0;
 
