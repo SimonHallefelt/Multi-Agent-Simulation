@@ -31,7 +31,7 @@
         "moveTime" : "1"
     },
     "task-settings" : {
-        "TasksPerStep" : "0.5",
+        "tasksPerStep" : "0.5",
         "taskGeneration" : "completeList",
         "taskList" : [
             ["3,0","0,4"],

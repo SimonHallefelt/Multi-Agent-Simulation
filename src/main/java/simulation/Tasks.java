@@ -17,6 +17,7 @@ public class Tasks {
     private double TasksPerStep = 1.0;
     private long generatedTasks = 0;
     private long completedTasks = 0;
+    private String addDeliveryAndSupply = "no";
 
     public Tasks(Warehouse warehouse) {
         this(warehouse, new ArrayList<>(), new ArrayList<>(), 1.0);
@@ -31,6 +32,10 @@ public class Tasks {
 
     public void setTaskList(ArrayList<Task> taskList) {
         this.taskList = taskList;
+    }
+
+    public void setAddDeliveryAndSupply(String addDeliveryAndSupply) {
+        this.addDeliveryAndSupply = addDeliveryAndSupply;
     }
 
     public void setTaskConfiguration(String s) {
