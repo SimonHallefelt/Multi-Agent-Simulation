@@ -1,4 +1,4 @@
-package simulation.injectors;
+package simulation.setup;
 
 import simulation.AgentFactory;
 import simulation.BrainFactory;

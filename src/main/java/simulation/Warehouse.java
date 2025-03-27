@@ -3,7 +3,7 @@ package simulation;
 import sim.engine.*;
 import sim.util.*;
 import simulation.Agent.AgentClone;
-import simulation.injectors.DefaultSetup;
+import simulation.setup.DefaultSetup;
 import sim.field.grid.*;
 
 import java.util.ArrayList;

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import simulation.injectors.DefaultSetup;
+import simulation.setup.DefaultSetup;
 
 public class BrainTest {
 
