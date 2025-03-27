@@ -19,7 +19,7 @@ public class Warehouse extends SimState {
     private ArrayList<Agent> AgentList;
     private ArrayList<Brain> BrainList;
     private ArrayList<Int2D> pickup;
-    private ArrayList<Int2D> delivery;
+    private ArrayList<Int2D> depot;
     private int score;
     public AgentFactory factory = new AgentFactory();
     long startTime;
@@ -31,8 +31,8 @@ public class Warehouse extends SimState {
     // static String default_file_path = "src\\main\\resources\\warehouse_5_completeList.json";
 
     String instance_path;
-    static String default_instance_path = "src\\main\\resources\\Conventional\\instances\\basic.json";
-
+    // static String default_instance_path = "src\\main\\resources\\Conventional\\instances\\basic.json";
+    static String default_instance_path = "src\\test\\resources\\standard\\Conventional\\instances\\completeTaskList.json";
 
     public Warehouse(long seed) {
         this(seed, default_file_path);
@@ -155,15 +155,16 @@ public class Warehouse extends SimState {
         this.map = fd.map;
         this.agents = fd.agents;
         this.pickup = fd.pickup;
-        this.delivery = fd.delivery;
+        this.depot = fd.depot;
         this.AgentList = fd.agentList;
         this.BrainList = fd.brainList;
 
         this.width = map.getWidth();
         this.height = map.getHeight();
 
-        this.tasks = new Tasks(this, pickup, delivery, fd.tasksPerStep);
+        this.tasks = new Tasks(this, pickup, fd.depot, fd.supply, fd.tasksPerStep);
         this.tasks.setTaskConfiguration(fd.taskGeneration);
+        this.tasks.setAddDepotAndSupply(fd.addDepotAndSupply);
         this.tasks.setTaskList(fd.taskList);
 
         this.score = 0;

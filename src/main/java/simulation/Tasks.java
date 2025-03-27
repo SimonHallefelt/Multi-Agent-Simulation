@@ -8,7 +8,8 @@ import sim.util.Int2D;
 public class Tasks {
     private Warehouse warehouse;
     private ArrayList<Int2D> pickup;
-    private ArrayList<Int2D> delivery;
+    private ArrayList<Int2D> depot;
+    private ArrayList<Int2D> supply;
     private HashMap<Agent, ArrayList<Task>> activeTasks = new HashMap<>();
     private ArrayList<Task> taskList = new ArrayList<>();
     private ArrayList<Task> availableTasks = new ArrayList<>();
@@ -17,20 +18,29 @@ public class Tasks {
     private double TasksPerStep = 1.0;
     private long generatedTasks = 0;
     private long completedTasks = 0;
+    private String addDeliveryAndSupply = "no";
 
     public Tasks(Warehouse warehouse) {
-        this(warehouse, new ArrayList<>(), new ArrayList<>(), 1.0);
+        this(warehouse, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 1.0);
     }
 
-    public Tasks(Warehouse warehouse, ArrayList<Int2D> pickup, ArrayList<Int2D> delivery, double TasksPerStep) {
+    public Tasks(Warehouse warehouse, ArrayList<Int2D> pickup, ArrayList<Int2D> depot, ArrayList<Int2D> supply, double TasksPerStep) {
         this.warehouse = warehouse;
         this.pickup = pickup;
-        this.delivery = delivery;
+        this.depot = depot;
+        this.supply = supply;
         this.TasksPerStep = TasksPerStep;
     }
 
-    public void setTaskList(ArrayList<Task> taskList) {
-        this.taskList = taskList;
+    public void setAddDepotAndSupply(String addDeliveryAndSupply) {
+        this.addDeliveryAndSupply = addDeliveryAndSupply;
+    }
+
+    public void setTaskList(ArrayList<ArrayList<Int2D>> taskList) {
+        this.taskList = new ArrayList<>();
+        for (ArrayList<Int2D> task : taskList) {
+            this.taskList.add(makeTask(task));
+        }
     }
 
     public void setTaskConfiguration(String s) {
@@ -53,7 +63,7 @@ public class Tasks {
         while ((warehouse.schedule.getSteps() + 1) * TasksPerStep > generatedTasks) {
             switch (tc) {
                 case generateTasksUsingPickupAndDelivery:
-                    generateTasksUsingPickupAndDelivery();
+                    generateTasksUsingPickupAndDepot();
                     break;
                 case completeTaskList:
                     if (taskList.isEmpty()) return;
@@ -69,10 +79,10 @@ public class Tasks {
         }
     }
 
-    public void generateTasksUsingPickupAndDelivery() {
+    public void generateTasksUsingPickupAndDepot() {
         Int2D[] targets = new Int2D[] {
             pickup.get(warehouse.random.nextInt(pickup.size())),
-            delivery.get(warehouse.random.nextInt(delivery.size()))
+            depot.get(warehouse.random.nextInt(depot.size()))
         };
         availableTasks.add(new Task(targets));
     }
@@ -187,8 +197,25 @@ public class Tasks {
         return target.x >= pos.x && target.x < pos.x + size.x && target.y >= pos.y && target.y < pos.y + size.y;
     }
 
-    public Task makeTask(ArrayList<Int2D> goals) {
-        return new Task(goals.toArray(new Int2D[0]));
+    private Task makeTask(ArrayList<Int2D> goals) {
+        switch (addDeliveryAndSupply) {
+            case "no":
+                return new Task(goals.toArray(new Int2D[0]));
+                case "addDeliveryPoint":
+                Int2D lastPos = goals.get(goals.size()-1);
+                if(!depot.contains(lastPos)) {
+                    goals.add(depot.get(warehouse.random.nextInt(depot.size())));
+                }
+                return new Task(goals.toArray(new Int2D[0]));
+            case "addSupplyPoint":
+                Int2D firstPos = goals.get(0);
+                if(!supply.contains(firstPos)) {
+                    goals.add(0, supply.get(warehouse.random.nextInt(supply.size())));
+                }
+                return new Task(goals.toArray(new Int2D[0]));
+            default:
+                return new Task(goals.toArray(new Int2D[0]));
+        }
     }
 
     public long getNumGeneratedTasks() {
@@ -203,7 +230,7 @@ public class Tasks {
         return impossibleTask.size();
     }
 
-    public class Task {
+    private class Task {
         private Int2D[] targets;
         private int targetIndex = 0;
 
