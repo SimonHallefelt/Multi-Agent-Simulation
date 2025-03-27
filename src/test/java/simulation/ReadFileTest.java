@@ -22,7 +22,7 @@ public class ReadFileTest {
         assertEquals(fd.agents.getWidth(), fd.map.getWidth());
 
         assertEquals(fd.pickup.size(), 13);
-        assertEquals(fd.delivery.size(), 13);
+        assertEquals(fd.depot.size(), 13);
         assertEquals(fd.tasksPerStep, 1);
         assertTrue(fd.taskList.isEmpty());
     }
@@ -42,7 +42,8 @@ public class ReadFileTest {
         assertEquals(fd.agents.getWidth(), fd.map.getWidth());
 
         assertEquals(220, fd.pickup.size());
-        assertEquals(2, fd.delivery.size());
+        assertEquals(2, fd.depot.size());
+        assertEquals(2, fd.supply.size());
         assertEquals(1, fd.tasksPerStep);
         assertTrue(fd.taskList.isEmpty());
     }

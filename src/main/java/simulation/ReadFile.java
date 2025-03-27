@@ -71,6 +71,7 @@ public class ReadFile {
         // Tasks tasks = new Tasks(this);
         ArrayList<Int2D> pickup = new ArrayList<>();
         ArrayList<Int2D> delivery = new ArrayList<>();
+        ArrayList<Int2D> supply = new ArrayList<>();
         BrainFactory brainFactory = new BrainFactory();
         // this.score = 0;
 
@@ -182,7 +183,7 @@ public class ReadFile {
             }
         }
 
-        FileData fd = new FileData(map, agents, AgentList, pickup, delivery);
+        FileData fd = new FileData(map, agents, AgentList, pickup, delivery, supply);
         fd.addTaskSettings(tasksPerStep, taskGeneration, addDeliveryAndSupply, taskList);
         fd.addBrains(BrainList);
         return fd;
@@ -218,6 +219,7 @@ public class ReadFile {
         Int2D warehouseSize = new Int2D(size_xy.getInt(0), size_xy.getInt(1));
         ArrayList<Int2D> pickup = new ArrayList<>();
         ArrayList<Int2D> depots = new ArrayList<>();
+        ArrayList<Int2D> supply = new ArrayList<>();
         IntGrid2D map = new IntGrid2D(warehouseSize.x, warehouseSize.y);
         for (ArrayList<Int2D> o : obstacles) { // add obstacles
             if (!isRectangle(o)) {
@@ -232,12 +234,23 @@ public class ReadFile {
                 }
             }
         }
-        for (Object o : obj.getJSONArray("DEPOTS").toList()) { // add depots
-            int location = Integer.parseInt(o.toString());
-            Int2D pos = locations.get(location);
-            depots.add(pos);
-            locationsUsed.add(pos);
-            map.set(pos.x, pos.y, 3);
+        if (obj.has("DEPOTS")) { // add depots
+            for (Object o : obj.getJSONArray("DEPOTS").toList()) {
+                int location = Integer.parseInt(o.toString());
+                Int2D pos = locations.get(location);
+                depots.add(pos);
+                locationsUsed.add(pos);
+                map.set(pos.x, pos.y, 3);
+            }
+        }
+        if (obj.has("SUPPLY")) { // add supply station
+            for (Object o : obj.getJSONArray("SUPPLY").toList()) {
+                int location = Integer.parseInt(o.toString());
+                Int2D pos = locations.get(location);
+                supply.add(pos);
+                locationsUsed.add(pos);
+                map.set(pos.x, pos.y, 3);
+            }
         }
         for (Int2D location : locations) { // add pickup
             if (locationsUsed.contains(location)) continue;
@@ -334,7 +347,7 @@ public class ReadFile {
             }
         }
 
-        FileData fd = new FileData(map, agents, agentList, pickup, depots);
+        FileData fd = new FileData(map, agents, agentList, pickup, depots, supply);
         fd.addTaskSettings(tasksPerStep, taskGeneration, addDeliveryAndSupply, taskList);
         fd.addBrains(brainList);
 
@@ -404,24 +417,27 @@ public class ReadFile {
         SparseGrid2D agents;
         ArrayList<Agent> agentList;
         ArrayList<Int2D> pickup;
-        ArrayList<Int2D> delivery;
+        ArrayList<Int2D> depot;
+        ArrayList<Int2D> supply;
         double tasksPerStep;
         String taskGeneration;
-        String addDeliveryAndSupply;
+        String addDepotAndSupply;
         ArrayList<ArrayList<Int2D>> taskList;
         ArrayList<Brain> brainList;
         long seed;
 
         public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Agent> agentList, 
-        ArrayList<Int2D> pickup, ArrayList<Int2D> delivery) {
+        ArrayList<Int2D> pickup, ArrayList<Int2D> depot, ArrayList<Int2D> supply) {
             this.map = map;
             this.agents = agents;
             this.agentList = agentList;
             this.pickup = pickup;
-            this.delivery = delivery;
+            this.depot = depot;
+            this.supply = supply;
+
             this.tasksPerStep = 1;
             this.taskGeneration = "random";
-            this.addDeliveryAndSupply = "no";
+            this.addDepotAndSupply = "no";
             this.taskList = new ArrayList<>();
             this.brainList = new ArrayList<>();
             this.seed = System.currentTimeMillis();
@@ -431,7 +447,7 @@ public class ReadFile {
         String addDeliveryAndSupply, ArrayList<ArrayList<Int2D>> taskList) {
             this.tasksPerStep = tasksPerStep;
             this.taskGeneration = taskGeneration;
-            this.addDeliveryAndSupply = addDeliveryAndSupply;
+            this.addDepotAndSupply = addDeliveryAndSupply;
             this.taskList = taskList;
         }
 

@@ -2,6 +2,7 @@
     "format" : "standard",
     "size_xy" : [80,70],
     "NUM_DEPOTS": 2,
+    "NUM_SUPPLY": 2,
     "NUM_LOCATIONS": 310,
     "num_pickup_locations_warehouse": 220,
     "LOCATION_COORD_SECTION": {
@@ -1247,6 +1248,10 @@
         ]
     },
     "DEPOTS": [
+        "0",
+        "1"
+    ],
+    "SUPPLY": [
         "0",
         "1"
     ],

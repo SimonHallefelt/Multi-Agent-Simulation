@@ -41,4 +41,22 @@ public class TasksTest {
 
         assertTrue(state.schedule.getSteps() < 10000);
     }
+
+    @Test void test_1_addSupply() {
+        String warehouseLayout = "src\\test\\resources\\standard\\Conventional\\warehouseLayout.json";
+        String instance = "src\\test\\resources\\standard\\Conventional\\instances\\addSupply.json";
+        Warehouse state = new Warehouse(0, warehouseLayout, instance);
+        state.start();
+        do
+            if (!state.schedule.step(state)) break;
+        while (state.schedule.getSteps() < 10000);
+        state.finish();
+
+        assertEquals(24, state.tasks.getNumGeneratedTasks());
+        assertEquals(24, state.tasks.getNumCompletedTasks());
+        assertEquals(0, state.tasks.getNumImpossibleTasks());
+        assertEquals(131, state.getScore());
+
+        assertTrue(state.schedule.getSteps() < 10000);
+    }
 }
