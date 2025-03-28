@@ -300,7 +300,7 @@ public class PathFinding {
             }
             for(Int2D dir : dirs) {
                 Int2D newPos = pos.add(dir);
-                if(warehouse.canMove(pos, newPos, size) && !visited.contains(newPos)){
+                if(warehouse.canMove(pos, newPos, size, true) && !visited.contains(newPos)){
                     possibleRouts.add(newPos);
                     visited.add(newPos);
                 }
