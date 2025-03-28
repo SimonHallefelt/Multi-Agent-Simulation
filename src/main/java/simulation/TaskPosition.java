@@ -41,7 +41,7 @@ public class TaskPosition {
                 this.type = Type.depot;
                 break;
             default:
-                System.out.println("Simon did something wrong");
+                System.out.println("Did not give correct type, pos: " + position);
                 this.type = Type.supply;
                 break;
         }

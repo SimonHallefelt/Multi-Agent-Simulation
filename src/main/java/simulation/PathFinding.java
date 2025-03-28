@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 import sim.util.Int2D;
 import sim.util.Int3D;
@@ -276,8 +278,36 @@ public class PathFinding {
         }
     }
 
-    public static List<Int2D> getAccessiblePoints(Warehouse warehouse, Int2D pos, Int2D size, List<Int2D> targets) {
-        return null;
+    public static List<Int2D> getAccessiblePoints(Warehouse warehouse, Int2D startPos, Int2D size, List<Int2D> targets) {
+        Queue<Int2D> possibleRouts = new LinkedList<>();
+        HashSet<Int2D> visited = new HashSet<>();
+        List<Int2D> reached = new ArrayList<>();
+        Int2D[] dirs = new Int2D[] {
+            new Int2D(1, 0),
+            new Int2D(-1, 0),
+            new Int2D(0, 1),
+            new Int2D(0, -1)
+        };
+        possibleRouts.add(startPos);
+        visited.add(startPos);
+
+        while(!possibleRouts.isEmpty()){
+            Int2D pos = possibleRouts.poll();
+            for (Int2D target : targets) {
+                if(targetReached(pos, size, target)) {
+                    reached.add(target);
+                }
+            }
+            for(Int2D dir : dirs) {
+                Int2D newPos = pos.add(dir);
+                if(warehouse.canMove(pos, newPos, size) && !visited.contains(newPos)){
+                    possibleRouts.add(newPos);
+                    visited.add(newPos);
+                }
+            }
+        }
+
+        return reached;
     }
 
     public static boolean targetReached(Int2D pos, Int2D size, Int2D target) {
