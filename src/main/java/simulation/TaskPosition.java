@@ -3,6 +3,9 @@ package simulation;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import sim.util.Int2D;
+
 import java.util.List;
 import java.util.Random;
 
@@ -18,13 +21,15 @@ enum Type {
  * task positions are accessible from it (by at least one other agent)
  */
 public class TaskPosition {
-    private Set<Agent> accessibleAgents = new HashSet();
-    private Set<TaskPosition> accessibleSupply = new HashSet();
-    private Set<TaskPosition> accessibleItemStorage = new HashSet();
-    private Set<TaskPosition> accessibleDepot = new HashSet();
+    private Set<Agent> accessibleAgents = new HashSet<>();
+    private Set<TaskPosition> accessibleSupply = new HashSet<>();
+    private Set<TaskPosition> accessibleItemStorage = new HashSet<>();
+    private Set<TaskPosition> accessibleDepot = new HashSet<>();
     private Type type;
+    private final Int2D position;
 
-    public TaskPosition(String type) {
+    public TaskPosition(String type, Int2D position) {
+        this.position = position;
         switch (type.toLowerCase()) {
             case "supply":
                 this.type = Type.supply;

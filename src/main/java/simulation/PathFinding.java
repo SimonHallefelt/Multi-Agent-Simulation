@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.PriorityQueue;
 
 import sim.util.Int2D;
@@ -273,6 +274,10 @@ public class PathFinding {
         public int compareTo(AStarNodeNoPathCollision other) {
             return Integer.compare(this.cost, other.cost);
         }
+    }
+
+    public static List<Int2D> getAccessiblePoints(Warehouse warehouse, Int2D pos, Int2D size, List<Int2D> targets) {
+        return null;
     }
 
     public static boolean targetReached(Int2D pos, Int2D size, Int2D target) {
