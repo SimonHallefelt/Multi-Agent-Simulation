@@ -1,8 +1,8 @@
 package simulation;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import sim.util.Int2D;
 
@@ -21,10 +21,10 @@ enum Type {
  * task positions are accessible from it (by at least one other agent)
  */
 public class TaskPosition {
-    private Set<Agent> accessibleAgents = new HashSet<>();
-    private Set<TaskPosition> accessibleSupply = new HashSet<>();
-    private Set<TaskPosition> accessibleItemStorage = new HashSet<>();
-    private Set<TaskPosition> accessibleDepot = new HashSet<>();
+    private List<Agent> accessibleAgents = new ArrayList<>();
+    private List<TaskPosition> accessibleSupply = new ArrayList<>();
+    private List<TaskPosition> accessibleItemStorage = new ArrayList<>();
+    private List<TaskPosition> accessibleDepot = new ArrayList<>();
     private Type type;
     private final Int2D position;
 
@@ -78,25 +78,41 @@ public class TaskPosition {
     }
 
     public TaskPosition getAccessibleItemStorage(Warehouse w) {
-        int size = accessibleSupply.size();
+        int size = accessibleItemStorage.size();
         if (size <= 0) return null;
         return accessibleItemStorage.stream().skip(w.random.nextInt(size)).findFirst().orElse(null);
     }
 
     public TaskPosition getAccessibleDepot(Warehouse w) {
-        int size = accessibleSupply.size();
+        int size = accessibleDepot.size();
         if (size <= 0) return null;
         return accessibleDepot.stream().skip(w.random.nextInt(size)).findFirst().orElse(null);
     }
 
     public static Agent getCompatibleAgent(Warehouse w, List<TaskPosition> tasks) {
-        Set<Agent> possible = new HashSet<>(tasks.get(0).accessibleAgents);
+        System.out.println();
+        System.out.println(tasks.get(0));
+        if (tasks.get(0) == null) return null;
+        List<Agent> possible = new ArrayList<>(tasks.get(0).accessibleAgents);
+        System.out.println(possible);
+
         for (int i = 1; i < tasks.size(); i++) {
-            Set<Agent> possible2 = tasks.get(i).accessibleAgents;
+            System.out.println(tasks.get(i));
+            if (tasks.get(i) == null) return null;
+            List<Agent> possible2 = tasks.get(i).accessibleAgents;
+            System.out.println(possible2);
             possible.removeIf(t -> !possible2.contains(t));
         }
         int size = possible.size();
         if (size <= 0) return null;
         return possible.stream().skip(w.random.nextInt(size)).findFirst().orElse(null);
+    }
+
+    public Int2D getPosition() {
+        return position;
+    }
+
+    public String toString() {
+        return "Taskposition:" + position; 
     }
 }

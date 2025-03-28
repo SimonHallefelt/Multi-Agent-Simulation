@@ -1,6 +1,7 @@
 package simulation;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,10 +58,10 @@ public class ReadFile {
     }
 
     public FileData simpleFormat(String path) {
-        List<ArrayList<String>> jsonMap = new ArrayList<>();
+        List<List<String>> jsonMap = new ArrayList<>();
         int width = 0;
         for (Object o : obj.getJSONArray("map").toList()) {
-            ArrayList<String> list = new ArrayList<String>(Arrays.asList(o.toString().split(" ")));
+            List<String> list = new ArrayList<String>(Arrays.asList(o.toString().split(" ")));
             width = Math.max(width, list.size());
             jsonMap.add(list);
         }
@@ -69,22 +70,26 @@ public class ReadFile {
         IntGrid2D map = new IntGrid2D(width, height);
         SparseGrid2D agents = new SparseGrid2D(width, height);
         // Tasks tasks = new Tasks(this);
-        ArrayList<Int2D> pickup = new ArrayList<>();
-        ArrayList<Int2D> delivery = new ArrayList<>();
-        ArrayList<Int2D> supply = new ArrayList<>();
+        
+        List<Int2D> positions = new ArrayList<>();
+        Map<Int2D, TaskPosition> tpMap = new HashMap<>();
+        List<TaskPosition> itemStorage = new ArrayList<>();
+        List<TaskPosition> depots = new ArrayList<>();
+        List<TaskPosition> supply = new ArrayList<>();
+
         BrainFactory brainFactory = new BrainFactory();
         // this.score = 0;
 
         // brain settings
         HashMap<String, AgentType> agentTypes = new HashMap<>();
-        ArrayList<Agent> AgentList = new ArrayList<>();
-        ArrayList<Brain> BrainList = new ArrayList<>();
+        List<Agent> AgentList = new ArrayList<>();
+        List<Brain> BrainList = new ArrayList<>();
 
         // task settings
         double tasksPerStep = 1.0;
         String taskGeneration = "random";
         String addDeliveryAndSupply = "no";
-        ArrayList<ArrayList<Int2D>> taskList = new ArrayList<>();
+        List<List<TaskPosition>> taskList = new ArrayList<>();
 
         if (obj.has("brains")) {
             for (Object o : obj.getJSONArray("brains").toList()) {
@@ -116,11 +121,16 @@ public class ReadFile {
             if (def.has("taskList")) {
                 JSONArray JSONtasks = def.getJSONArray("taskList");
                 for (int i = 0; i < JSONtasks.length(); i++) {
-                    ArrayList<Int2D> goals = new ArrayList<>();
+                    List<TaskPosition> goals = new ArrayList<>();
                     for (Object o : JSONtasks.getJSONArray(i).toList()) {
                         String[] goal = o.toString().split(",");
                         Int2D pos = new Int2D(Integer.parseInt(goal[0]), Integer.parseInt(goal[1]));
-                        goals.add(pos);
+                        TaskPosition tp = tpMap.get(pos);
+                        if (tp == null) {
+                            tp = new TaskPosition("itemStorage", pos);
+                            tpMap.put(pos, tp);
+                        }
+                        goals.add(tp);
                     }
                     taskList.add(goals);
                 }
@@ -165,16 +175,26 @@ public class ReadFile {
                 if (split.length > 1) {
                     value = split[1];
                 }
+                Int2D pos;
+                TaskPosition tp;
                 switch (value) {
                     case "#":
                         map.set(x, y, 1);
                         break;
                     case "E":
-                        pickup.add(new Int2D(x, y));
+                        pos = new Int2D(x, y);
+                        tp = new TaskPosition("itemstorage", pos);
+                        positions.add(pos);
+                        itemStorage.add(tp);
+                        tpMap.put(pos, tp);
                         map.set(x, y, 2);
                         break;
                     case "D":
-                        delivery.add(new Int2D(x, y));
+                        pos = new Int2D(x, y);
+                        tp = new TaskPosition("depot", pos);
+                        positions.add(pos);
+                        depots.add(tp);
+                        tpMap.put(pos, tp);
                         map.set(x, y, 3);
                         break;
                     default:
@@ -183,7 +203,7 @@ public class ReadFile {
             }
         }
 
-        FileData fd = new FileData(map, agents, AgentList, pickup, delivery, supply);
+        FileData fd = new FileData(map, agents, AgentList, itemStorage, depots, supply, positions, tpMap);
         fd.addTaskSettings(tasksPerStep, taskGeneration, addDeliveryAndSupply, taskList);
         fd.addBrains(BrainList);
         return fd;
@@ -192,7 +212,7 @@ public class ReadFile {
     // TSPLIB-extended
     public FileData standardFormat(String warehouseLayout, String instance) { 
         // locations
-        ArrayList<Int2D> locations = new ArrayList<>();
+        List<Int2D> locations = new ArrayList<>();
         JSONObject LOCATION_COORD_SECTION = obj.getJSONObject("LOCATION_COORD_SECTION");
         for (int i = 0; i < LOCATION_COORD_SECTION.length(); i++) {
             JSONArray location = LOCATION_COORD_SECTION.getJSONArray(i+"");
@@ -202,10 +222,10 @@ public class ReadFile {
         HashSet<Int2D> locationsUsed = new HashSet<>();
 
         // obstacles
-        ArrayList<ArrayList<Int2D>> obstacles = new ArrayList<>();
+        List<List<Int2D>> obstacles = new ArrayList<>();
         JSONObject OBSTACLES = obj.getJSONObject("OBSTACLES");
         for (int i = 0; i < OBSTACLES.length(); i++) {
-            ArrayList<Int2D> obstacle = new ArrayList<>();
+            List<Int2D> obstacle = new ArrayList<>();
             for (Object o : OBSTACLES.getJSONArray(i+1+"")) {
                 int location = Integer.parseInt(o.toString());
                 obstacle.add(locations.get(location));
@@ -217,11 +237,13 @@ public class ReadFile {
         // make map
         JSONArray size_xy = obj.getJSONArray("size_xy");
         Int2D warehouseSize = new Int2D(size_xy.getInt(0), size_xy.getInt(1));
-        ArrayList<Int2D> pickup = new ArrayList<>();
-        ArrayList<Int2D> depots = new ArrayList<>();
-        ArrayList<Int2D> supply = new ArrayList<>();
+        List<Int2D> positions = new ArrayList<>();
+        Map<Int2D, TaskPosition> tpMap = new HashMap<>();
+        List<TaskPosition> itemStorage = new ArrayList<>();
+        List<TaskPosition> depots = new ArrayList<>();
+        List<TaskPosition> supply = new ArrayList<>();
         IntGrid2D map = new IntGrid2D(warehouseSize.x, warehouseSize.y);
-        for (ArrayList<Int2D> o : obstacles) { // add obstacles
+        for (List<Int2D> o : obstacles) { // add obstacles
             if (!isRectangle(o)) {
                 System.out.println("Exception: Walls must be straight");
                 System.exit(2);
@@ -237,24 +259,39 @@ public class ReadFile {
         if (obj.has("DEPOTS")) { // add depots
             for (Object o : obj.getJSONArray("DEPOTS").toList()) {
                 int location = Integer.parseInt(o.toString());
+
                 Int2D pos = locations.get(location);
-                depots.add(pos);
+                TaskPosition tp = new TaskPosition("depot", pos);
+                positions.add(pos);
+                depots.add(tp);
+                tpMap.put(pos, tp);
                 locationsUsed.add(pos);
+
                 map.set(pos.x, pos.y, 3);
             }
         }
         if (obj.has("SUPPLY")) { // add supply station
             for (Object o : obj.getJSONArray("SUPPLY").toList()) {
                 int location = Integer.parseInt(o.toString());
+                
                 Int2D pos = locations.get(location);
-                supply.add(pos);
+                TaskPosition tp = new TaskPosition("supply", pos);
+                positions.add(pos);
+                supply.add(tp);
+                tpMap.put(pos, tp);
                 locationsUsed.add(pos);
+                
                 map.set(pos.x, pos.y, 3);
             }
         }
-        for (Int2D location : locations) { // add pickup
+        for (Int2D location : locations) { // add itemStorage
             if (locationsUsed.contains(location)) continue;
-            pickup.add(location);
+
+            TaskPosition tp = new TaskPosition("itemstorage", location);
+            positions.add(location);
+            itemStorage.add(tp);
+            tpMap.put(location, tp);
+            
             map.set(location.x, location.y, 2);
         }
 
@@ -295,7 +332,7 @@ public class ReadFile {
 
         // agents
         SparseGrid2D agents = new SparseGrid2D(warehouseSize.x, warehouseSize.y); 
-        ArrayList<Agent> agentList = new ArrayList<>();
+        List<Agent> agentList = new ArrayList<>();
         JSONObject agentsJSON = obj.getJSONObject("agents");
         for (int i = 0; i < agentsJSON.length(); i++) {
             JSONObject agentJson = agentsJSON.getJSONObject(i+"");
@@ -310,7 +347,7 @@ public class ReadFile {
         double tasksPerStep = 1.0;
         String taskGeneration = "random";
         String addDeliveryAndSupply = "no";
-        ArrayList<ArrayList<Int2D>> taskList = new ArrayList<>();
+        List<List<TaskPosition>> taskList = new ArrayList<>();
         if (obj.has("task-settings")) {
             JSONObject def = obj.getJSONObject("task-settings");
             if (def.has("tasksPerStep")) 
@@ -322,21 +359,29 @@ public class ReadFile {
             if (def.has("taskList")) {
                 JSONArray JSONtasks = def.getJSONArray("taskList");
                 for (int i = 0; i < JSONtasks.length(); i++) {
-                    ArrayList<Int2D> goals = new ArrayList<>();
+                    List<TaskPosition> goals = new ArrayList<>();
                     for (Object o : JSONtasks.getJSONArray(i).toList()) {
                         int goal = Integer.parseInt(o.toString());
                         Int2D pos = locations.get(goal);
-                        goals.add(pos);
+                        TaskPosition tp = tpMap.get(pos);
+                        if (tp == null) {
+                            tp = new TaskPosition("itemStorage", pos);
+                            tpMap.put(pos, tp);
+                            itemStorage.add(tp);
+                            positions.add(pos);
+                        }
+                        goals.add(tp);
                     }
                     taskList.add(goals);
                 }
             }
         }
+
         System.out.println("tasksPerStep: " + tasksPerStep + ", taskGeneration: " + taskGeneration);
 
         // brains
         BrainFactory brainFactory = new BrainFactory();
-        ArrayList<Brain> brainList = new ArrayList<>();
+        List<Brain> brainList = new ArrayList<>();
         if (obj.has("brains")) {
             for (Object o : obj.getJSONArray("brains").toList()) {
                 String name = o.toString();
@@ -347,7 +392,7 @@ public class ReadFile {
             }
         }
 
-        FileData fd = new FileData(map, agents, agentList, pickup, depots, supply);
+        FileData fd = new FileData(map, agents, agentList, itemStorage, depots, supply, positions, tpMap);
         fd.addTaskSettings(tasksPerStep, taskGeneration, addDeliveryAndSupply, taskList);
         fd.addBrains(brainList);
 
@@ -404,7 +449,7 @@ public class ReadFile {
     }
 
     // assumption, shape is point_1 -> point_2 -> point_3 -> point_4 -> point_1
-    private Boolean isRectangle(ArrayList<Int2D> rec) {
+    private Boolean isRectangle(List<Int2D> rec) {
         if (rec.size() > 4) return false;
         return isRectangle(rec.get(0), rec.get(1), rec.get(2), rec.get(3));
     }
@@ -415,25 +460,30 @@ public class ReadFile {
     public class FileData {
         IntGrid2D map;
         SparseGrid2D agents;
-        ArrayList<Agent> agentList;
-        ArrayList<Int2D> pickup;
-        ArrayList<Int2D> depot;
-        ArrayList<Int2D> supply;
+        List<Agent> agentList;
+        List<TaskPosition> supply;
+        List<TaskPosition> itemStorage;
+        List<TaskPosition> depot;
+        List<Int2D> positions;
+        Map<Int2D, TaskPosition> tpMap;
         double tasksPerStep;
         String taskGeneration;
         String addDepotAndSupply;
-        ArrayList<ArrayList<Int2D>> taskList;
-        ArrayList<Brain> brainList;
+        List<List<TaskPosition>> taskList;
+        List<Brain> brainList;
         long seed;
 
-        public FileData(IntGrid2D map, SparseGrid2D agents, ArrayList<Agent> agentList, 
-        ArrayList<Int2D> pickup, ArrayList<Int2D> depot, ArrayList<Int2D> supply) {
+        public FileData(IntGrid2D map, SparseGrid2D agents, List<Agent> agentList, 
+        List<TaskPosition> itemStorage, List<TaskPosition> depot, List<TaskPosition> supply, 
+        List<Int2D> positions, Map<Int2D, TaskPosition> tpMap) {
             this.map = map;
             this.agents = agents;
             this.agentList = agentList;
-            this.pickup = pickup;
+            this.itemStorage = itemStorage;
             this.depot = depot;
             this.supply = supply;
+            this.positions = positions;
+            this.tpMap = tpMap;
 
             this.tasksPerStep = 1;
             this.taskGeneration = "random";
@@ -444,14 +494,14 @@ public class ReadFile {
         }
 
         public void addTaskSettings(double tasksPerStep, String taskGeneration,
-        String addDeliveryAndSupply, ArrayList<ArrayList<Int2D>> taskList) {
+        String addDeliveryAndSupply, List<List<TaskPosition>> taskList) {
             this.tasksPerStep = tasksPerStep;
             this.taskGeneration = taskGeneration;
             this.addDepotAndSupply = addDeliveryAndSupply;
             this.taskList = taskList;
         }
 
-        public void addBrains(ArrayList<Brain> brainList) {
+        public void addBrains(List<Brain> brainList) {
             if(brainList.isEmpty()) System.out.println("Warning, FileData->addBrains: no brains added");
             this.brainList = brainList;
         }

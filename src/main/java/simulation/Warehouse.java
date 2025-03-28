@@ -8,6 +8,9 @@ import sim.field.grid.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Warehouse extends SimState {
     public int height;
@@ -16,18 +19,18 @@ public class Warehouse extends SimState {
     public IntGrid2D map; // = new IntGrid2D(width, height);
     public SparseGrid2D agents; // = new SparseGrid2D(width, height);
 
-    private ArrayList<Agent> AgentList;
-    private ArrayList<Brain> BrainList;
-    private ArrayList<Int2D> pickup;
-    private ArrayList<Int2D> depot;
+    private List<Agent> AgentList;
+    private List<Brain> BrainList;
+    private List<TaskPosition> itemStorage;
+    private List<TaskPosition> depot;
     private int score;
     public AgentFactory factory = new AgentFactory();
     long startTime;
     Tasks tasks;
 
     String file_path;
-    static String default_file_path = "src\\main\\resources\\Conventional\\warehouseLayout.json";
-    // static String default_file_path = "src\\main\\resources\\warehouse_3.json";
+    // static String default_file_path = "src\\main\\resources\\Conventional\\warehouseLayout.json";
+    static String default_file_path = "src\\test\\resources\\simple\\warehouse_5_completeList.json";
     // static String default_file_path = "src\\main\\resources\\warehouse_5_completeList.json";
 
     String instance_path;
@@ -77,7 +80,7 @@ public class Warehouse extends SimState {
         return agents.numObjectsAtLocation(pos) > 0;
     }
 
-    public ArrayList<Agent> getAgentList() {
+    public List<Agent> getAgentList() {
         return AgentList;
     }
 
@@ -154,15 +157,29 @@ public class Warehouse extends SimState {
 
         this.map = fd.map;
         this.agents = fd.agents;
-        this.pickup = fd.pickup;
+        this.itemStorage = fd.itemStorage;
         this.depot = fd.depot;
         this.AgentList = fd.agentList;
         this.BrainList = fd.brainList;
+        System.out.println(fd.positions);
+
+
+        for (Agent a: AgentList) {
+            System.out.println(a);
+            List<Int2D> accessible = PathFinding.getAccessiblePoints(this, a.pos, a.size, fd.positions);
+            System.out.println(accessible);
+
+            List<TaskPosition> accessibleTP = accessible.stream().map(e -> fd.tpMap.get(e)).collect(Collectors.toList());
+            for (TaskPosition tp: accessibleTP) {
+                tp.addAgent(a);
+                tp.addTaskPositions(accessibleTP);
+            }
+        }
 
         this.width = map.getWidth();
         this.height = map.getHeight();
 
-        this.tasks = new Tasks(this, pickup, fd.depot, fd.supply, fd.tasksPerStep);
+        this.tasks = new Tasks(this, fd.itemStorage, fd.depot, fd.supply, fd.tasksPerStep);
         this.tasks.setTaskConfiguration(fd.taskGeneration);
         this.tasks.setAddDepotAndSupply(fd.addDepotAndSupply);
         this.tasks.setTaskList(fd.taskList);
@@ -223,7 +240,7 @@ public class Warehouse extends SimState {
         finish();
     }
 
-    public ArrayList<Brain> getBrainList() {
+    public List<Brain> getBrainList() {
         return BrainList;
     }
 }

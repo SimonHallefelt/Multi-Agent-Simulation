@@ -1,20 +1,22 @@
 package simulation;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 
 import sim.util.Int2D;
 
 public class Tasks {
     private Warehouse warehouse;
-    private ArrayList<Int2D> pickup;
-    private ArrayList<Int2D> depot;
-    private ArrayList<Int2D> supply;
-    private HashMap<Agent, ArrayList<Task>> activeTasks = new HashMap<>();
-    private ArrayList<Task> taskList = new ArrayList<>();
-    private ArrayList<Task> availableTasks = new ArrayList<>();
-    private ArrayList<Task> impossibleTask = new ArrayList<>();
-    private TaskConfiguration tc = TaskConfiguration.generateTasksUsingPickupAndDelivery;
+    private List<TaskPosition> itemStorage;
+    private List<TaskPosition> depot;
+    private List<TaskPosition> supply;
+    private HashMap<Agent, List<Task>> activeTasks = new HashMap<>();
+    private List<Task> taskList = new ArrayList<>();
+    private List<Task> availableTasks = new ArrayList<>();
+    private List<Task> impossibleTask = new ArrayList<>();
+    private TaskConfiguration tc = TaskConfiguration.generateTasksUsingItemStorageAndDepot;
     private double TasksPerStep = 1.0;
     private long generatedTasks = 0;
     private long completedTasks = 0;
@@ -24,9 +26,9 @@ public class Tasks {
         this(warehouse, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 1.0);
     }
 
-    public Tasks(Warehouse warehouse, ArrayList<Int2D> pickup, ArrayList<Int2D> depot, ArrayList<Int2D> supply, double TasksPerStep) {
+    public Tasks(Warehouse warehouse, List<TaskPosition> itemStorage, List<TaskPosition> depot, List<TaskPosition> supply, double TasksPerStep) {
         this.warehouse = warehouse;
-        this.pickup = pickup;
+        this.itemStorage = itemStorage;
         this.depot = depot;
         this.supply = supply;
         this.TasksPerStep = TasksPerStep;
@@ -36,9 +38,9 @@ public class Tasks {
         this.addDeliveryAndSupply = addDeliveryAndSupply;
     }
 
-    public void setTaskList(ArrayList<ArrayList<Int2D>> taskList) {
+    public void setTaskList(List<List<TaskPosition>> taskList) {
         this.taskList = new ArrayList<>();
-        for (ArrayList<Int2D> task : taskList) {
+        for (List<TaskPosition> task : taskList) {
             this.taskList.add(makeTask(task));
         }
     }
@@ -46,7 +48,7 @@ public class Tasks {
     public void setTaskConfiguration(String s) {
         switch (s) {
             case "random":
-                tc = TaskConfiguration.generateTasksUsingPickupAndDelivery;
+                tc = TaskConfiguration.generateTasksUsingItemStorageAndDepot;
                 break;
             case "completeList":
                 tc = TaskConfiguration.completeTaskList;
@@ -62,8 +64,8 @@ public class Tasks {
     public void generateTasks() {
         while ((warehouse.schedule.getSteps() + 1) * TasksPerStep > generatedTasks) {
             switch (tc) {
-                case generateTasksUsingPickupAndDelivery:
-                    generateTasksUsingPickupAndDepot();
+                case generateTasksUsingItemStorageAndDepot:
+                    generateTasksUsingItemStorageAndDepot();
                     break;
                 case completeTaskList:
                     if (taskList.isEmpty()) return;
@@ -79,10 +81,12 @@ public class Tasks {
         }
     }
 
-    public void generateTasksUsingPickupAndDepot() {
-        Int2D[] targets = new Int2D[] {
-            pickup.get(warehouse.random.nextInt(pickup.size())),
-            depot.get(warehouse.random.nextInt(depot.size()))
+    public void generateTasksUsingItemStorageAndDepot() {
+        TaskPosition start = itemStorage.get(warehouse.random.nextInt(itemStorage.size()));
+        TaskPosition end = start.getAccessibleDepot(warehouse);
+        TaskPosition[] targets = new TaskPosition[] {
+            start,
+            end
         };
         availableTasks.add(new Task(targets));
     }
@@ -101,27 +105,26 @@ public class Tasks {
         availableTasks.add(taskList.get(warehouse.random.nextInt(taskList.size())).clone());
     }
 
-    public void assignTasks(ArrayList<Agent> AgentList) {
-        ArrayList<Agent> availableAgents = (ArrayList) AgentList.clone();
+    public void assignTasks(List<Agent> AgentList) {
         Boolean noActiveTasks = activeTasks.values().stream().map(a -> a == null || a.isEmpty()).allMatch(a -> a == true);
         if(taskList.isEmpty() && availableTasks.isEmpty() && noActiveTasks) {
             warehouse.kill();
             return;
         }
-        for (int i = 0; i < availableTasks.size(); i++) {
+        while (!availableTasks.isEmpty()) {
             Task t = availableTasks.remove(0);
             // select best agent for task
-            ArrayList<Agent> possibleAgents = (ArrayList) availableAgents.clone();
-            possibleAgents.removeIf(a -> !canPerform(a, t));
-            if (possibleAgents.isEmpty()) {
+            List<TaskPosition> tpl = new ArrayList<>();
+            TaskPosition[] tpa = t.getTargets();
+            for (int i = 0; i < tpa.length;i++) tpl.add(tpa[i]);
+            Agent a =TaskPosition.getCompatibleAgent(warehouse, tpl);
+            if (a == null) {
                 impossibleTask.add(t);
                 continue;
             }
-            possibleAgents.sort((a, b) -> timeToReach(a, t) - timeToReach(b, t));
-            Agent a = possibleAgents.get(0);
 
             // assign task to agent
-            ArrayList<Task> assigned = activeTasks.get(a);
+            List<Task> assigned = activeTasks.get(a);
             if (assigned != null) {
                 assigned.add(t);
             } else {
@@ -137,7 +140,7 @@ public class Tasks {
     }
 
     public void reachedTarget(Agent a, Int2D pos) {
-        ArrayList<Task> goals = activeTasks.get(a);
+        List<Task> goals = activeTasks.get(a);
         if (goals != null && !goals.isEmpty()) {
             Task goal = goals.get(0);
             if (goal.reached(pos, a.getAgentSize())) {
@@ -157,7 +160,7 @@ public class Tasks {
     }
 
     public void assignNextTask(Agent a) {
-        ArrayList<Task> goals = activeTasks.get(a);
+        List<Task> goals = activeTasks.get(a);
         if (goals == null || goals.isEmpty())
             return;
         Task t = goals.get(0);
@@ -165,31 +168,17 @@ public class Tasks {
         a.makeDesirePath(warehouse);
     }
 
-    public boolean canPerform(Agent a, Task t) {
-        Int2D startPos = a.pos;
-        ArrayList<Int2D> path;
-        for (Int2D target : t.getTargets()) {
-            if (!reached(startPos, a.size, target)) {
-                path = PathFinding.aStar(warehouse, target, startPos, a.size, true);
-                if (path.isEmpty())
-                    return false;
-                startPos = path.get(path.size() - 1);
-            }
-        }
-        return true;
-    }
-
     public int timeToReach(Agent a, Task t) {
         int TTR = 0;
         Int2D startPos = a.pos;
-        ArrayList<Task> agentTasks = activeTasks.get(a);
+        List<Task> agentTasks = activeTasks.get(a);
         if (agentTasks != null) {
             for (Task ts : agentTasks) {
                 TTR += ts.getCompletionDistance(startPos, a.size);
-                startPos = ts.getLastTarget();
+                startPos = ts.getLastTarget().getPosition();
             }
         }
-        TTR += PathFinding.getDistance(startPos, t.getFirstTarget(), a.size);
+        TTR += PathFinding.getDistance(startPos, t.getFirstTarget().getPosition(), a.size);
         return TTR * a.moveTime;
     }
 
@@ -197,24 +186,24 @@ public class Tasks {
         return target.x >= pos.x && target.x < pos.x + size.x && target.y >= pos.y && target.y < pos.y + size.y;
     }
 
-    private Task makeTask(ArrayList<Int2D> goals) {
+    private Task makeTask(List<TaskPosition> goals) {
         switch (addDeliveryAndSupply) {
             case "no":
-                return new Task(goals.toArray(new Int2D[0]));
-                case "addDeliveryPoint":
-                Int2D lastPos = goals.get(goals.size()-1);
+                return new Task(goals.toArray(new TaskPosition[0]));
+            case "addDeliveryPoint":
+                TaskPosition lastPos = goals.get(goals.size()-1);
                 if(!depot.contains(lastPos)) {
                     goals.add(depot.get(warehouse.random.nextInt(depot.size())));
                 }
-                return new Task(goals.toArray(new Int2D[0]));
+                return new Task(goals.toArray(new TaskPosition[0]));
             case "addSupplyPoint":
-                Int2D firstPos = goals.get(0);
+                TaskPosition firstPos = goals.get(0);
                 if(!supply.contains(firstPos)) {
                     goals.add(0, supply.get(warehouse.random.nextInt(supply.size())));
                 }
-                return new Task(goals.toArray(new Int2D[0]));
+                return new Task(goals.toArray(new TaskPosition[0]));
             default:
-                return new Task(goals.toArray(new Int2D[0]));
+                return new Task(goals.toArray(new TaskPosition[0]));
         }
     }
 
@@ -231,26 +220,26 @@ public class Tasks {
     }
 
     private class Task {
-        private Int2D[] targets;
+        private TaskPosition[] targets;
         private int targetIndex = 0;
 
-        public Task(Int2D[] targets) {
+        public Task(TaskPosition[] targets) {
             this.targets = targets;
         }
 
         public Int2D getGoal() {
-            return targets[targetIndex];
+            return targets[targetIndex].getPosition();
         }
 
-        public Int2D[] getTargets() {
+        public TaskPosition[] getTargets() {
             return targets;
         }
 
-        public Int2D getFirstTarget() {
+        public TaskPosition getFirstTarget() {
             return targets[0];
         }
 
-        public Int2D getLastTarget() {
+        public TaskPosition getLastTarget() {
             return targets[targets.length - 1];
         }
 
@@ -270,7 +259,7 @@ public class Tasks {
         public int getCompletionDistance(Int2D from, Int2D size) {
             int dist = 0;
             for (int i = targetIndex; i < targets.length; i++) {
-                Int2D target = targets[targetIndex];
+                Int2D target = targets[targetIndex].getPosition();
                 dist += PathFinding.getDistance(from, target, size);
                 from = target;
             }
@@ -285,6 +274,6 @@ public class Tasks {
     enum TaskConfiguration {
         completeTaskList,
         selectTasksFromTaskList,
-        generateTasksUsingPickupAndDelivery
+        generateTasksUsingItemStorageAndDepot
     }
 }
