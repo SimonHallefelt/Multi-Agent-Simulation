@@ -32,7 +32,7 @@ public class Warehouse extends SimState {
 
     String instance_path;
     // static String default_instance_path = "src\\main\\resources\\Conventional\\instances\\basic.json";
-    static String default_instance_path = "src\\test\\resources\\standard\\Conventional\\instances\\completeTaskList.json";
+    static String default_instance_path = "src\\test\\resources\\standard\\Conventional\\instances\\manyTasks.json";
 
     public Warehouse(long seed) {
         this(seed, default_file_path);

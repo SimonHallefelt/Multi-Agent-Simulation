@@ -45,6 +45,29 @@ public class ReadFileTest {
         assertEquals(2, fd.depot.size());
         assertEquals(2, fd.supply.size());
         assertEquals(1, fd.tasksPerStep);
+        assertEquals("no", fd.addDepotAndSupply);
         assertTrue(fd.taskList.isEmpty());
+    }
+
+    @Test void test_2_standardFormat() {
+        String warehouseLayout = "src\\test\\resources\\standard\\Conventional\\warehouseLayout.json";
+        String instance = "src\\test\\resources\\standard\\Conventional\\instances\\addSupply.json";
+        new DefaultSetup().injectAgents();
+        ReadFile rf = new ReadFile();
+        FileData fd = rf.readInput(warehouseLayout, instance);
+
+        assertEquals(4, fd.agentList.size());
+        assertEquals(0, fd.brainList.size());
+        assertEquals(70, fd.map.getHeight());
+        assertEquals(80, fd.map.getWidth());
+        assertEquals(fd.agents.getHeight(), fd.map.getHeight());
+        assertEquals(fd.agents.getWidth(), fd.map.getWidth());
+
+        assertEquals(220, fd.pickup.size());
+        assertEquals(2, fd.depot.size());
+        assertEquals(2, fd.supply.size());
+        assertEquals(0.2, fd.tasksPerStep);
+        assertEquals("addSupplyPoint", fd.addDepotAndSupply);
+        assertEquals(24, fd.taskList.size());
     }
 }

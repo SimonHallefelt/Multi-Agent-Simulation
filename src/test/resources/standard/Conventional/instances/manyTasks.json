@@ -46,21 +46,19 @@
     },
     "agent-types" : {
         "0" : {
-            "algo" : "RandomWalk",
+            "algo" : "aStarSmart",
             "size" : "1,1",
             "moveTime" : "1"
         },
         "1" : {
-            "algo" : "RandomWalk",
+            "algo" : "aStarSmart",
             "size" : "2,2",
             "moveTime" : "2"
         }
     },
-    "task_settings" : {
-        "tasksPerStep" : "1",
-        "taskGeneration" : "random"
-    },
-    "brains" : [
-        "astarBrain"
-    ]
+    "task-settings" : {
+        "tasksPerStep" : "50",
+        "taskGeneration" : "random",
+        "addDeliveryAndSupply" : "no"
+    }
 }

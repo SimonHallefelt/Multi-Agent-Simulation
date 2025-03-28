@@ -6,3 +6,5 @@ build
 
 # Individual setting should not affect others
 .vscode
+
+bin
