@@ -281,7 +281,7 @@ public class PathFinding {
     public static List<Int2D> getAccessiblePoints(Warehouse warehouse, Int2D startPos, Int2D size, List<Int2D> targets) {
         Queue<Int2D> possibleRouts = new LinkedList<>();
         HashSet<Int2D> visited = new HashSet<>();
-        List<Int2D> reached = new ArrayList<>();
+        HashSet<Int2D> reached = new HashSet<>();
         Int2D[] dirs = new Int2D[] {
             new Int2D(1, 0),
             new Int2D(-1, 0),
@@ -307,7 +307,7 @@ public class PathFinding {
             }
         }
 
-        return reached;
+        return new ArrayList<>(reached);
     }
 
     public static boolean targetReached(Int2D pos, Int2D size, Int2D target) {
