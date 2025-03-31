@@ -110,35 +110,6 @@ public class ReadFile {
             if(def.has("color")) defaultAgentType.setColor(def.getString("color"));
         }
 
-        if (obj.has("task-settings")) {
-            JSONObject def = obj.getJSONObject("task-settings");
-            if (def.has("tasksPerStep")) 
-                tasksPerStep = def.getDouble("tasksPerStep");
-            if (def.has("taskGeneration")) 
-                taskGeneration = def.getString("taskGeneration");
-            if (def.has("addDeliveryAndSupply")) 
-                addDeliveryAndSupply = def.getString("addDeliveryAndSupply");
-            if (def.has("taskList")) {
-                JSONArray JSONtasks = def.getJSONArray("taskList");
-                for (int i = 0; i < JSONtasks.length(); i++) {
-                    List<TaskPosition> goals = new ArrayList<>();
-                    for (Object o : JSONtasks.getJSONArray(i).toList()) {
-                        String[] goal = o.toString().split(",");
-                        Int2D pos = new Int2D(Integer.parseInt(goal[0]), Integer.parseInt(goal[1]));
-                        TaskPosition tp = tpMap.get(pos);
-                        if (tp == null) {
-                            tp = new TaskPosition("itemStorage", pos);
-                            positions.add(pos);
-                            itemStorage.add(tp);
-                            tpMap.put(pos, tp);
-                        }
-                        goals.add(tp);
-                    }
-                    taskList.add(goals);
-                }
-            }
-        }
-
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < jsonMap.get(y).size(); x++) {
                 String value = jsonMap.get(y).get(x);
@@ -201,6 +172,35 @@ public class ReadFile {
                         break;
                     default:
                         break;
+                }
+            }
+        }
+        
+        if (obj.has("task-settings")) {
+            JSONObject def = obj.getJSONObject("task-settings");
+            if (def.has("tasksPerStep")) 
+                tasksPerStep = def.getDouble("tasksPerStep");
+            if (def.has("taskGeneration")) 
+                taskGeneration = def.getString("taskGeneration");
+            if (def.has("addDeliveryAndSupply")) 
+                addDeliveryAndSupply = def.getString("addDeliveryAndSupply");
+            if (def.has("taskList")) {
+                JSONArray JSONtasks = def.getJSONArray("taskList");
+                for (int i = 0; i < JSONtasks.length(); i++) {
+                    List<TaskPosition> goals = new ArrayList<>();
+                    for (Object o : JSONtasks.getJSONArray(i).toList()) {
+                        String[] goal = o.toString().split(",");
+                        Int2D pos = new Int2D(Integer.parseInt(goal[0]), Integer.parseInt(goal[1]));
+                        TaskPosition tp = tpMap.get(pos);
+                        if (tp == null) {
+                            tp = new TaskPosition("itemStorage", pos);
+                            positions.add(pos);
+                            itemStorage.add(tp);
+                            tpMap.put(pos, tp);
+                        }
+                        goals.add(tp);
+                    }
+                    taskList.add(goals);
                 }
             }
         }
