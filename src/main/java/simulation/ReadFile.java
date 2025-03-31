@@ -128,6 +128,8 @@ public class ReadFile {
                         TaskPosition tp = tpMap.get(pos);
                         if (tp == null) {
                             tp = new TaskPosition("itemStorage", pos);
+                            positions.add(pos);
+                            itemStorage.add(tp);
                             tpMap.put(pos, tp);
                         }
                         goals.add(tp);
