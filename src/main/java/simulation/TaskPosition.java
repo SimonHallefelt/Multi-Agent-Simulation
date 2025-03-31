@@ -121,17 +121,12 @@ public class TaskPosition {
     }
 
     public static Agent getCompatibleAgent(Warehouse w, List<TaskPosition> tasks) {
-        System.out.println();
-        System.out.println(tasks.get(0));
         if (tasks.get(0) == null) return null;
         List<Agent> possible = new ArrayList<>(tasks.get(0).accessibleAgents);
-        System.out.println(possible);
 
         for (int i = 1; i < tasks.size(); i++) {
-            System.out.println(tasks.get(i));
             if (tasks.get(i) == null) return null;
             List<Agent> possible2 = tasks.get(i).accessibleAgents;
-            System.out.println(possible2);
             possible.removeIf(t -> !possible2.contains(t));
         }
         int size = possible.size();
