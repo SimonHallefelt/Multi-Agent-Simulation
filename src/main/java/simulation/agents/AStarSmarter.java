@@ -29,7 +29,7 @@ public class AStarSmarter extends Agent {
         ArrayList<Int2D> rawPath = PathFinding.moveOutOfWay(warehouse, pathHandler, pos, size, moveTime);
         Path path = new Path(pos);
         if (rawPath.size() > 0) path.addNewPositionPath(pos, rawPath);
-        else path.addPos(PathFinding.randomUnobstructiveWalk(warehouse, pos, size, pathHandler));
+        else path.addPos(PathFinding.randomUnobstructiveWalk(warehouse, pathHandler, pos, size));
         //path.setRemakePath(true);
         return path;
     }

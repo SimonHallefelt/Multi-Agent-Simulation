@@ -52,12 +52,12 @@ public class PathFinding {
         return viableDirections.get(s);
     }
 
-    public static Int2D randomUnobstructiveWalk(Warehouse warehouse, Int2D position, Int2D size, PathHandler ph) {
+    public static Int2D randomUnobstructiveWalk(Warehouse warehouse, PathHandler pathhandler, Int2D position, Int2D size) {
         Int2D[] directions = new Int2D[] { position.add(1, 0), position.add(0, 1), position.add(-1, 0), position.add(0, -1), position.add(0, 0) };
 
         ArrayList<Int2D> viableDirections = new ArrayList<>();
         for (Int2D d : directions) {
-            if (warehouse.canMove(position, d, size) && !ph.willTileBeClaimed(d, size, true))
+            if (warehouse.canMove(position, d, size) && !pathhandler.willTileBeClaimed(d, size, true))
                 viableDirections.add(d);
         }
         int v = viableDirections.size();

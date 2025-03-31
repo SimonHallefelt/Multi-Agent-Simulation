@@ -25,7 +25,7 @@ public class AStarAgent extends Agent {
     @Override
     public Path noTarget(Warehouse warehouse, PathHandler pathHandler) {
         Path path = new Path(pos);
-        path.addPos(PathFinding.randomUnobstructiveWalk(warehouse, pos, size, pathHandler));
+        path.addPos(PathFinding.randomUnobstructiveWalk(warehouse, pathHandler, pos, size));
         return path;
     }
 }

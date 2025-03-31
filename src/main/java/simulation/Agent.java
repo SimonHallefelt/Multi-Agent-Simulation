@@ -35,6 +35,7 @@ public abstract class Agent implements Steppable, Colorable {
 
     public void setPath(Path p) {
         path = p;
+        removeTag("stuck");
     }
 
     public void setColor(Color c) {
