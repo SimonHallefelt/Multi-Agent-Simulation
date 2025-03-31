@@ -70,7 +70,9 @@ public class WarehouseWithGui extends GUIState {
 
     public void init(Controller c) {
         super.init(c);
-        display = new Display2D(warehouse.width * 32, warehouse.height * 32, this);
+        int pixelScale = 900 / warehouse.height;
+        if (pixelScale <= 0) pixelScale = 1;
+        display = new Display2D(warehouse.width * pixelScale, warehouse.height * pixelScale, this);
         display.setClipping(false);
         displayFrame = display.createFrame();
         displayFrame.setTitle("Warehouse Display");

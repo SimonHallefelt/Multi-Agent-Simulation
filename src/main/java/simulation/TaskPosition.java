@@ -12,7 +12,8 @@ import java.util.Random;
 enum Type {
     supply,
     itemStorage,
-    depot
+    depot,
+    supplydepot
 }
 /**
  * Shared class for supply, item storage and depot
@@ -40,6 +41,30 @@ public class TaskPosition {
             case "depot":
                 this.type = Type.depot;
                 break;
+            case "supplydepot":
+                this.type = Type.supplydepot;
+                break;
+            default:
+                System.out.println("Did not give correct type, pos: " + position);
+                this.type = Type.supply;
+                break;
+        }
+    }
+
+    public void setType (String type) {
+        switch (type.toLowerCase()) {
+            case "supply":
+                this.type = Type.supply;
+                break;
+            case "itemstorage":
+                this.type = Type.itemStorage;
+                break;
+            case "depot":
+                this.type = Type.depot;
+                break;
+            case "supplydepot":
+                this.type = Type.supplydepot;
+                break;
             default:
                 System.out.println("Did not give correct type, pos: " + position);
                 this.type = Type.supply;
@@ -61,6 +86,12 @@ public class TaskPosition {
                 break;
             case depot:
                 accessibleDepot.add(tp);
+                break;
+            case supplydepot:
+                accessibleSupply.add(tp);
+                accessibleDepot.add(tp);
+                break;
+            default:
                 break;
         }
     }

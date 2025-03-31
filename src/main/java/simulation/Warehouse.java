@@ -1,16 +1,16 @@
 package simulation;
 
-import sim.engine.*;
-import sim.util.*;
-import simulation.Agent.AgentClone;
-import simulation.setup.DefaultSetup;
-import sim.field.grid.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import sim.engine.SimState;
+import sim.field.grid.IntGrid2D;
+import sim.field.grid.SparseGrid2D;
+import sim.util.Int2D;
+import simulation.Agent.AgentClone;
+import simulation.setup.DefaultSetup;
 
 public class Warehouse extends SimState {
     public int height;
@@ -30,12 +30,12 @@ public class Warehouse extends SimState {
 
     String file_path;
     // static String default_file_path = "src\\main\\resources\\Conventional\\warehouseLayout.json";
-    static String default_file_path = "src\\test\\resources\\simple\\warehouse_5_completeList.json";
+    static String default_file_path = "src\\test\\resources\\standard\\Conventional\\warehouseLayout.json";
     // static String default_file_path = "src\\main\\resources\\warehouse_5_completeList.json";
 
     String instance_path;
     // static String default_instance_path = "src\\main\\resources\\Conventional\\instances\\basic.json";
-    static String default_instance_path = "src\\test\\resources\\standard\\Conventional\\instances\\manyTasks.json";
+    static String default_instance_path = "src\\test\\resources\\standard\\Conventional\\instances\\aStarBrain.json";
 
     public Warehouse(long seed) {
         this(seed, default_file_path);

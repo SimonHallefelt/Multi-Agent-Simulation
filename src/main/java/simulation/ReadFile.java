@@ -277,11 +277,18 @@ public class ReadFile {
                 int location = Integer.parseInt(o.toString());
                 
                 Int2D pos = locations.get(location);
-                TaskPosition tp = new TaskPosition("supply", pos);
-                positions.add(pos);
-                supply.add(tp);
-                tpMap.put(pos, tp);
-                locationsUsed.add(pos);
+                if (tpMap.get(pos) == null) {
+                    TaskPosition tp = new TaskPosition("supply", pos);
+                    positions.add(pos);
+                    supply.add(tp);
+                    tpMap.put(pos, tp);
+                    locationsUsed.add(pos);
+                }
+                else {
+                    TaskPosition tp = tpMap.get(pos);
+                    tp.setType("supplydepot");
+                    supply.add(tp);
+                }
                 
                 map.set(pos.x, pos.y, 3);
             }
