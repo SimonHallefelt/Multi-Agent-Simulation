@@ -94,6 +94,14 @@ public class WarehouseWithGui extends GUIState {
         super(new Warehouse(System.currentTimeMillis()));
     }
 
+    public WarehouseWithGui(String file_path) {
+        super(new Warehouse(System.currentTimeMillis(), file_path));
+    }
+
+    public WarehouseWithGui(long seed, String file_path) {
+        super(new Warehouse(seed, file_path));
+    }
+
     public WarehouseWithGui(SimState state) {
         super(state);
     }
