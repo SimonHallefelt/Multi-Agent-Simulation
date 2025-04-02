@@ -3,6 +3,7 @@ package simulation;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -265,6 +266,10 @@ public abstract class Agent implements Steppable, Colorable {
 
     public Brain getBrain() {
         return null;
+    }
+
+    public Set<String> getTags() {
+        return tags;
     }
 
     public String toString() {
