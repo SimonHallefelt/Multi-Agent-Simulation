@@ -43,11 +43,13 @@ public class WarehouseWithGui extends GUIState {
         // tell the portrayals what to portray and how to portray them
         warehousePortrayal.setField(warehouse.map);
         // set color map
-        color = new Color[4];
+        color = new Color[6];
         color[0] = Color.WHITE;
         color[1] = Color.BLACK;
         color[2] = new Color(255,255,200);//Color.yellow;
         color[3] = new Color(200,255,200);
+        color[4] = new Color(210,240,200);
+        color[5] = new Color(190,250,220);
         simpleColorMap = new SimpleColorMap(color);
         warehousePortrayal.setMap(simpleColorMap);
 
