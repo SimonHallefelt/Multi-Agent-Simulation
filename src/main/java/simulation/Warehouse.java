@@ -161,14 +161,9 @@ public class Warehouse extends SimState {
         this.depot = fd.depot;
         this.AgentList = fd.agentList;
         this.BrainList = fd.brainList;
-        System.out.println(fd.positions);
-
 
         for (Agent a: AgentList) {
-            System.out.println(a);
             List<Int2D> accessible = PathFinding.getAccessiblePoints(this, a.pos, a.size, fd.positions);
-            System.out.println(accessible);
-
             List<TaskPosition> accessibleTP = accessible.stream().map(e -> fd.tpMap.get(e)).collect(Collectors.toList());
             for (TaskPosition tp: accessibleTP) {
                 tp.addAgent(a);

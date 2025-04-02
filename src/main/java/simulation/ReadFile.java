@@ -170,6 +170,23 @@ public class ReadFile {
                         tpMap.put(pos, tp);
                         map.set(x, y, 3);
                         break;
+                    case "S":
+                        pos = new Int2D(x, y);
+                        tp = new TaskPosition("supply", pos);
+                        positions.add(pos);
+                        supply.add(tp);
+                        tpMap.put(pos, tp);
+                        map.set(x, y, 4);
+                        break;
+                    case "DS":
+                        pos = new Int2D(x, y);
+                        tp = new TaskPosition("supplydepot", pos);
+                        positions.add(pos);
+                        depots.add(tp);
+                        supply.add(tp);
+                        tpMap.put(pos, tp);
+                        map.set(x, y, 5);
+                        break;
                     default:
                         break;
                 }
@@ -283,14 +300,15 @@ public class ReadFile {
                     supply.add(tp);
                     tpMap.put(pos, tp);
                     locationsUsed.add(pos);
+                    map.set(pos.x, pos.y, 4);
                 }
                 else {
                     TaskPosition tp = tpMap.get(pos);
                     tp.setType("supplydepot");
                     supply.add(tp);
+                    map.set(pos.x, pos.y, 5);
                 }
                 
-                map.set(pos.x, pos.y, 3);
             }
         }
         for (Int2D location : locations) { // add itemStorage
