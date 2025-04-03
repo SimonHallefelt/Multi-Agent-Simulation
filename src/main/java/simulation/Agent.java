@@ -128,12 +128,12 @@ public abstract class Agent implements Steppable, Colorable {
         PathHandler pathHandler = new PathHandler(warehouse, this);
         Path newPath = null;
         if (target == null) {
-            newPath = noTarget(warehouse, pathHandler);
+            newPath = makeNoTargetPath(warehouse, pathHandler);
         } else if (path.isEmpty()) {
             newPath = makePath(warehouse, pathHandler);
             if (newPath == null) {
                 addTag("stuck");
-                path = noTarget(warehouse, pathHandler);
+                path = makeNoTargetPath(warehouse, pathHandler);
             }
             else {
                 removeTag("stuck");
@@ -168,10 +168,7 @@ public abstract class Agent implements Steppable, Colorable {
                 checkDeadlock();
     }
 
-    public Path noTarget(Warehouse warehouse, PathHandler pathHandler) {
-        Path path = new Path(pos);
-        return path;
-    }
+    public abstract Path makeNoTargetPath(Warehouse warehouse, PathHandler pathHandler);
 
     public void makeTrail(Warehouse warehouse, Int2D pos) {
         Trail t = new Trail(this);
@@ -189,11 +186,7 @@ public abstract class Agent implements Steppable, Colorable {
         return this.timeToCompletedMovement;
     }
 
-    public Path makePath(Warehouse warehouse, PathHandler pathHandler) {
-        Path path = new Path(pos);
-        path.addPos(PathFinding.randomAccessibleWalk(warehouse, pos, size));
-        return path;
-    }
+    public abstract Path makePath(Warehouse warehouse, PathHandler pathHandler);
 
     public void makeDesirePath(Warehouse warehouse) {
         if (target == null) return;

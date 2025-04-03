@@ -25,7 +25,7 @@ public class AStarSmarter extends Agent {
     }
 
     @Override
-    public Path noTarget(Warehouse warehouse, PathHandler pathHandler) {
+    public Path makeNoTargetPath(Warehouse warehouse, PathHandler pathHandler) {
         ArrayList<Int2D> rawPath = PathFinding.moveOutOfWay(warehouse, pathHandler, pos, size, moveTime);
         Path path = new Path(pos);
         if (rawPath.size() > 0) path.addNewPositionPath(pos, rawPath);

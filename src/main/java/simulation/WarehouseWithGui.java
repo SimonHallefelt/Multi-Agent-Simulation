@@ -29,6 +29,11 @@ public class WarehouseWithGui extends GUIState {
         c.setVisible(true);
     }
 
+    public void runSimulation() {
+        Console c = new Console(this);
+        c.setVisible(true);
+    }
+
     public void start() {
         super.start();
         setupPortrayals();
@@ -104,7 +109,11 @@ public class WarehouseWithGui extends GUIState {
         super(new Warehouse(seed, file_path));
     }
 
-    public WarehouseWithGui(SimState state) {
+    public WarehouseWithGui(long seed, String file_path, String instance_path) {
+        super(new Warehouse(seed, file_path, instance_path));
+    }
+
+    public WarehouseWithGui(Warehouse state) {
         super(state);
     }
 

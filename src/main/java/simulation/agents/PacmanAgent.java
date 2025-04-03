@@ -15,7 +15,7 @@ public class PacmanAgent extends Agent {
         return path;
     }
 
-    public Path noTarget(Warehouse warehouse, PathHandler pathHandler) {
+    public Path makeNoTargetPath(Warehouse warehouse, PathHandler pathHandler) {
         Path path = new Path(pos);
         path.addPos(PathFinding.randomWalk(warehouse, pos, dir));
         return path;

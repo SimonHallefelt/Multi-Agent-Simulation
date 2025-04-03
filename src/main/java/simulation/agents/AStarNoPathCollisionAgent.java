@@ -25,7 +25,7 @@ public class AStarNoPathCollisionAgent extends Agent {
     }
 
     @Override
-    public Path noTarget(Warehouse warehouse, PathHandler pathHandler) {
+    public Path makeNoTargetPath(Warehouse warehouse, PathHandler pathHandler) {
         Path path = new Path(pos);
         path.addPos(PathFinding.randomUnobstructiveWalk(warehouse, pathHandler, pos, size));
         return path;

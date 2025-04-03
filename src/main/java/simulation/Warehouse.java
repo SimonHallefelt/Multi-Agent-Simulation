@@ -227,11 +227,15 @@ public class Warehouse extends SimState {
         return score;
     }
 
+    public void runSimulation() {
+        runSimulation(1000);
+    }
+
     public void runSimulation(int steps) {
         start();
         do
             if (!schedule.step(this)) break;
-        while (schedule.getSteps() < 1000);
+        while (schedule.getSteps() < steps);
         finish();
     }
 

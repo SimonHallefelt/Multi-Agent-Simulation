@@ -15,7 +15,7 @@ public class RandomAgent extends Agent {
         return path;
     }
 
-    public Path noTarget(Warehouse warehouse, PathHandler pathHandler) {
+    public Path makeNoTargetPath(Warehouse warehouse, PathHandler pathHandler) {
         return makePath(warehouse, pathHandler);
     }
 }
