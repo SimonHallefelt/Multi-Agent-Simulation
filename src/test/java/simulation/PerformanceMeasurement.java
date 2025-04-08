@@ -29,7 +29,7 @@ public class PerformanceMeasurement {
         while (state.schedule.getSteps() < 10000);
         state.finish();
 
-        int expected = 1171;
+        int expected = 1190;
 
         assertTrue(state.getScore() >= expected, "Warehouse3 has lower performance than expected: " + state.getScore() + "(expected " + expected + ")");
     }
