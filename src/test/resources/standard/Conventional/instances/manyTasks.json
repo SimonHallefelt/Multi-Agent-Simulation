@@ -57,7 +57,7 @@
         }
     },
     "task-settings" : {
-        "tasksPerStep" : "50",
+        "tasksPerStep" : "100",
         "taskGeneration" : "random",
         "addDeliveryAndSupply" : "no"
     }

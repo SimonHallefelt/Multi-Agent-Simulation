@@ -53,11 +53,11 @@
         "1" : {
             "algo" : "aStarSmart",
             "size" : "2,2",
-            "moveTime" : "2"
+            "moveTime" : "5"
         }
     },
-    "task_settings" : {
-        "tasksPerStep" : "1",
+    "task-settings" : {
+        "tasksPerStep" : "0.1",
         "taskGeneration" : "random",
         "addDeliveryAndSupply" : "no"
     }

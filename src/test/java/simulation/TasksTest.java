@@ -67,9 +67,9 @@ public class TasksTest {
         state.start();
         do
             if (!state.schedule.step(state)) break;
-        while (state.schedule.getSteps() < 100);
+        while (state.schedule.getSteps() < 1000);
         state.finish();
 
-        assertEquals(5000, state.tasks.getNumGeneratedTasks());
+        assertEquals(100000, state.tasks.getNumGeneratedTasks());
     }
 } 

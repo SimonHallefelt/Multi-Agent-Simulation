@@ -18,4 +18,20 @@ public class ParticleAcceleratorTest {
         assertTrue(state.getScore() >= expected, "Warehouse3 has lower performance than expected: " + state.getScore() + "(expected " + expected + ")");
     }
 
+    @Test
+    void particleAcceleratorTest2() {
+        String warehouseLayout = "src\\test\\resources\\standard\\Conventional\\warehouseLayout.json";
+        String instance = "src\\test\\resources\\standard\\Conventional\\instances\\basic.json";
+        Warehouse state = new Warehouse(-929937372, warehouseLayout, instance);
+        state.start();
+        do
+            if (!state.schedule.step(state)) break;
+        while (state.schedule.getSteps() < 10000);
+        state.finish();
+
+        int expected = 1171;
+
+        assertTrue(state.getScore() >= expected, "Warehouse3 has lower performance than expected: " + state.getScore() + "(expected " + expected + ")");
+    }
+
 }

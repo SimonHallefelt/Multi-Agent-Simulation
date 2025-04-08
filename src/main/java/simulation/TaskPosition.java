@@ -116,7 +116,7 @@ public class TaskPosition {
         return accessibleDepot.stream().skip(w.random.nextInt(size)).findFirst().orElse(null);
     }
 
-    public static Agent getCompatibleAgent(Warehouse w, List<TaskPosition> tasks) {
+    public static List<Agent> getCompatibleAgents(Warehouse w, List<TaskPosition> tasks) {
         if (tasks.get(0) == null) return null;
         List<Agent> possible = new ArrayList<>(tasks.get(0).accessibleAgents);
 
@@ -125,9 +125,7 @@ public class TaskPosition {
             List<Agent> possible2 = tasks.get(i).accessibleAgents;
             possible.removeIf(t -> !possible2.contains(t));
         }
-        int size = possible.size();
-        if (size <= 0) return null;
-        return possible.stream().skip(w.random.nextInt(size)).findFirst().orElse(null);
+        return possible;
     }
 
     public Int2D getPosition() {
