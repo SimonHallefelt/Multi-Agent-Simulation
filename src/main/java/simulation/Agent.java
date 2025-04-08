@@ -134,7 +134,7 @@ public abstract class Agent implements Steppable, Colorable {
         Int2D newPos;
         Warehouse warehouse = (Warehouse) state;
         if (path.getRemakePath())
-            path = new Path(pos);
+            path = new Path();
         PathHandler pathHandler = new PathHandler(warehouse, this);
         Path newPath = null;
         if (target == null) {

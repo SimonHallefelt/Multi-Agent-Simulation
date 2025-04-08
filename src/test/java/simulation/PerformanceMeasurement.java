@@ -3,7 +3,7 @@ package simulation;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
-public class ParticleAcceleratorTest {
+public class PerformanceMeasurement {
     @Test
     void particleAcceleratorTest() {
         Warehouse state = new Warehouse(-929937372, "src\\test\\resources\\simple\\warehouse_3.json");
@@ -19,7 +19,7 @@ public class ParticleAcceleratorTest {
     }
 
     @Test
-    void particleAcceleratorTest2() {
+    void ConventionalWarehouseTest() {
         String warehouseLayout = "src\\test\\resources\\standard\\Conventional\\warehouseLayout.json";
         String instance = "src\\test\\resources\\standard\\Conventional\\instances\\basic.json";
         Warehouse state = new Warehouse(-929937372, warehouseLayout, instance);
