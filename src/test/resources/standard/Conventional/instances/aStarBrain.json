@@ -56,7 +56,7 @@
             "moveTime" : "2"
         }
     },
-    "task_settings" : {
+    "task-settings" : {
         "tasksPerStep" : "1",
         "taskGeneration" : "random"
     },

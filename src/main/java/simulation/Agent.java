@@ -26,6 +26,7 @@ public abstract class Agent implements Steppable, Colorable {
     protected Path path = new Path(pos);
     protected Path desirePath = null;
     private int timeToCompletedMovement;
+    private int distanceBetweenAllTargets = 0;
     private String id = "Agent";
     protected Boolean moveIfBlocking = false;
     boolean debug = false;
@@ -67,8 +68,17 @@ public abstract class Agent implements Steppable, Colorable {
         return size;
     }
 
+    public int getDistanceBetweenAllTargets() {
+        if (target == null) return 0;
+        return distanceBetweenAllTargets + PathFinding.getDistance(pos,target,size);
+    }
+
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setDistanceBetweenTargets(int distanceBetweenTargets) {
+        this.distanceBetweenAllTargets = distanceBetweenTargets;
     }
 
     public void setDebug(boolean d) {

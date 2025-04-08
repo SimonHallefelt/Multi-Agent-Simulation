@@ -117,12 +117,17 @@ public class Tasks {
             List<TaskPosition> tpl = new ArrayList<>();
             TaskPosition[] tpa = t.getTargets();
             for (int i = 0; i < tpa.length;i++) tpl.add(tpa[i]);
-            Agent a =TaskPosition.getCompatibleAgent(warehouse, tpl);
-            if (a == null) {
+            // Agent a = TaskPosition.getCompatibleAgent(warehouse, tpl);
+            List<Agent> agents = TaskPosition.getCompatibleAgents(warehouse, tpl);
+            if (agents.isEmpty()) {
                 impossibleTask.add(t);
                 continue;
             }
 
+            // get fastest agent for the task
+            agents.sort((a, b) -> a.getDistanceBetweenAllTargets() - b.getDistanceBetweenAllTargets());
+            Agent a = agents.get(0);
+            
             // assign task to agent
             List<Task> assigned = activeTasks.get(a);
             if (assigned != null) {
@@ -131,6 +136,7 @@ public class Tasks {
                 assigned = new ArrayList<>();
                 assigned.add(t);
                 activeTasks.put(a, assigned);
+                setTimeBetweenAllTargets(a);
             }
             if (a.getTarget() == null) {
                 a.setTarget(t.getGoal());
@@ -155,6 +161,12 @@ public class Tasks {
                     a.setTarget(goal.getGoal());
                     a.makeDesirePath(warehouse);
                 }
+                if (a.getTarget() == null) {
+                    a.setDistanceBetweenTargets(0);
+                } else {
+                    int i = a.getDistanceBetweenAllTargets() - PathFinding.getDistance(pos, a.getTarget(), a.size);
+                    a.setDistanceBetweenTargets(i);
+                }
             }
         }
     }
@@ -168,7 +180,20 @@ public class Tasks {
         a.makeDesirePath(warehouse);
     }
 
-    public int timeToReach(Agent a, Task t) {
+    public void setTimeBetweenAllTargets(Agent a) {
+        int TTR = 0;
+        List<Task> agentTasks = activeTasks.get(a);
+        Int2D startPos = agentTasks.get(0).getGoal();
+        if (agentTasks != null) {
+            for (Task ts : agentTasks) {
+                TTR += ts.getCompletionDistance(startPos, a.size);
+                startPos = ts.getLastTarget().getPosition();
+            }
+        }
+        a.setDistanceBetweenTargets(TTR * a.moveTime);
+    }
+
+    public int timeToComplete(Agent a, Task t) {
         int TTR = 0;
         Int2D startPos = a.pos;
         List<Task> agentTasks = activeTasks.get(a);
@@ -178,7 +203,7 @@ public class Tasks {
                 startPos = ts.getLastTarget().getPosition();
             }
         }
-        TTR += PathFinding.getDistance(startPos, t.getFirstTarget().getPosition(), a.size);
+        TTR += t.getCompletionDistance(startPos, a.size);
         return TTR * a.moveTime;
     }
 
