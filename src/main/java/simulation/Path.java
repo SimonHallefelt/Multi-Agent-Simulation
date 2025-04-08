@@ -6,22 +6,30 @@ import java.util.List;
 import sim.util.Int2D;
 
 public class Path {
-    private ArrayList<Int2D> steps = new ArrayList<>();
-    private Int2D endPos;
+    private List<Int2D> steps;
     private Boolean remakePath = false;
 
-    public Path(Int2D startPos) {
-        endPos = startPos == null ? new Int2D(0, 0) : startPos;
+    public Path() {
+        steps = new ArrayList<>();
     }
 
-    public void addPos(Int2D pos) {
-        steps.add(pos);
-        endPos = pos;
+    public Path(Int2D position) {
+        steps = new ArrayList<>();
+        steps.add(position);
     }
 
-    public void addNewPositionPath(Int2D pos, ArrayList<Int2D> positionPath) {
-        this.steps = positionPath;
-        endPos = positionPath.size() != 0 ? positionPath.get(positionPath.size() - 1) : pos;
+    public Path(List<Int2D> positionPath) {
+        steps = new ArrayList<>(positionPath);
+    }
+
+    public void addStep(Int2D position) {
+        steps.add(position);
+    }
+
+    public void addSteps(List<Int2D> positionPath) {
+        for (Int2D i: positionPath) {
+            addStep(i);
+        }
     }
 
     public Int2D pop() {
@@ -35,14 +43,19 @@ public class Path {
             return null;
         return steps.get(0);
     }
+    
+    public Int2D getDestination() {
+        if (steps.isEmpty())
+            return null;
+        return steps.get(steps.size()-1);
+    }
 
     public int size() {
         return steps.size();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Int2D> getList() {
-        return (ArrayList<Int2D>) steps.clone();
+        return new ArrayList<>(steps);
     }
 
     public Boolean getRemakePath() {

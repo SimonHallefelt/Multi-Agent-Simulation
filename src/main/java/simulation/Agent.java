@@ -19,11 +19,11 @@ public abstract class Agent implements Steppable, Colorable {
     protected Int2D target = null;
     protected int moveTime = 1;
     protected Boolean isMoving = false;
-    protected ArrayList<AgentClone> agentClones = new ArrayList<>();
-    protected ArrayList<Trail> trails = new ArrayList<>();
+    protected List<AgentClone> agentClones = new ArrayList<>();
+    protected List<Trail> trails = new ArrayList<>();
     protected Int2D size = new Int2D(1, 1);
     protected Color color = Color.GRAY;
-    protected Path path = new Path(pos);
+    private Path path = new Path();
     protected Path desirePath = null;
     private int timeToCompletedMovement;
     private String id = "Agent";
@@ -190,8 +190,7 @@ public abstract class Agent implements Steppable, Colorable {
 
     public void makeDesirePath(Warehouse warehouse) {
         if (target == null) return;
-        this.desirePath = new Path(pos);
-        this.desirePath.addNewPositionPath(this.pos, PathFinding.aStar(warehouse, target, pos, size, true));
+        this.desirePath = new Path(PathFinding.aStar(warehouse, target, pos, size, true));
         if (debug)
             System.out.println("made new desire path");
 
@@ -207,7 +206,7 @@ public abstract class Agent implements Steppable, Colorable {
         return ag;
     }
 
-    public ArrayList<AgentClone> getAgentClones() {
+    public List<AgentClone> getAgentClones() {
         return this.agentClones;
     }
 
@@ -235,6 +234,10 @@ public abstract class Agent implements Steppable, Colorable {
         return this.dir;
     }
 
+    public Path getPath() {
+        return this.path;
+    }
+
     public List<Int2D> getPathList() {
         return this.path.getList();
     }
@@ -244,7 +247,7 @@ public abstract class Agent implements Steppable, Colorable {
         else return this.desirePath.getList();
     }
 
-    public ArrayList<Trail> getTrails() {
+    public List<Trail> getTrails() {
         return trails;
     }
 

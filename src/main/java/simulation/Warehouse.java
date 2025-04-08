@@ -123,8 +123,8 @@ public class Warehouse extends SimState {
         if (!canMove(oldPos, newPos, agentSize))
             return false;
         a.setPosition(newPos);
-        ArrayList<Agent.AgentClone> agentClones = a.getAgentClones();
-        ArrayList<Int2D> oldPositions = new ArrayList<>(Arrays.asList(oldPos));
+        List<Agent.AgentClone> agentClones = a.getAgentClones();
+        List<Int2D> oldPositions = new ArrayList<>(Arrays.asList(oldPos));
         for (int x = 0; x < agentSize.x; x++) {
             for (int y = 0; y < agentSize.y; y++) {
                 if (x == 0 && y == 0) {

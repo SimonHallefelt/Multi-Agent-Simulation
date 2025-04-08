@@ -5,13 +5,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import sim.util.Int2D;
 
 public class PathTest {
     @Test void test_1_addNewPositionPath() {
         Int2D pos = new Int2D(20,20);
-        ArrayList<Int2D> positionPath = new ArrayList<Int2D>( 
+        List<Int2D> positionPath = new ArrayList<Int2D>( 
             Arrays.asList(
                 new Int2D(21,20),
                 new Int2D(22,20),
@@ -23,8 +24,7 @@ public class PathTest {
                 new Int2D(20,20)
             )
         );
-        Path path = new Path(pos);
-        path.addNewPositionPath(pos, (ArrayList<Int2D>) positionPath.clone());
+        Path path = new Path(new ArrayList<Int2D>(positionPath));
 
         for (Int2D newPos : positionPath) {
             pos = path.pop();

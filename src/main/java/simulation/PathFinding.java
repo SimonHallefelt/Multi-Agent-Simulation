@@ -40,7 +40,7 @@ public class PathFinding {
 
     public static Int2D randomAccessibleWalk(Warehouse warehouse, Int2D position, Int2D size) {
         Int2D[] directions = new Int2D[] { position.add(1, 0), position.add(0, 1), position.add(-1, 0), position.add(0, -1) };
-        ArrayList<Int2D> viableDirections = new ArrayList<>();
+        List<Int2D> viableDirections = new ArrayList<>();
         for (Int2D d : directions) {
             if (warehouse.canMove(position, d, size))
                 viableDirections.add(d);
@@ -55,7 +55,7 @@ public class PathFinding {
     public static Int2D randomUnobstructiveWalk(Warehouse warehouse, PathHandler pathhandler, Int2D position, Int2D size) {
         Int2D[] directions = new Int2D[] { position.add(1, 0), position.add(0, 1), position.add(-1, 0), position.add(0, -1), position.add(0, 0) };
 
-        ArrayList<Int2D> viableDirections = new ArrayList<>();
+        List<Int2D> viableDirections = new ArrayList<>();
         for (Int2D d : directions) {
             if (warehouse.canMove(position, d, size) && !pathhandler.willTileBeClaimed(d, size, true))
                 viableDirections.add(d);
@@ -68,7 +68,7 @@ public class PathFinding {
 
     public static Int2D pacman(Warehouse warehouse, Int2D pos, Int2D target, Int2D direction, Int2D size) {
         direction = direction.x == direction.y ? new Int2D(1, 0) : direction;
-        ArrayList<Int2D> dirs = new ArrayList<>(
+        List<Int2D> dirs = new ArrayList<>(
                 Arrays.asList(direction, new Int2D(direction.y, direction.x), new Int2D(-direction.y, -direction.x)));
 
         dirs.sort((d, o) -> getDistance(pos.add(d), target, size) - getDistance(pos.add(o), target, size));
@@ -82,7 +82,7 @@ public class PathFinding {
         return new Int2D(-direction.x, -direction.y);
     }
 
-    public static ArrayList<Int2D> moveOutOfWay(Warehouse warehouse, PathHandler pathHandler, Int2D startPos,
+    public static List<Int2D> moveOutOfWay(Warehouse warehouse, PathHandler pathHandler, Int2D startPos,
             Int2D size, int moveTime) {
         Int2D endPos = startPos;
         Int2D[] dirs = new Int2D[] {
@@ -123,7 +123,7 @@ public class PathFinding {
             }
         }
 
-        ArrayList<Int2D> steps = new ArrayList<>();
+        List<Int2D> steps = new ArrayList<>();
         Int2D pos = endPos;
         while (!startPos.equals(pos)) {
             steps.add(pos);
@@ -134,7 +134,7 @@ public class PathFinding {
         return steps;
     }
 
-    public static ArrayList<Int2D> aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size,
+    public static List<Int2D> aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size,
             boolean noAgents) {
         Int2D endPos = startPos;
         Int2D[] dirs = new Int2D[] {
@@ -171,7 +171,7 @@ public class PathFinding {
             }
         }
 
-        ArrayList<Int2D> steps = new ArrayList<>();
+        List<Int2D> steps = new ArrayList<>();
         Int2D pos = endPos;
         while (!startPos.equals(pos)) {
             steps.add(pos);
@@ -182,11 +182,11 @@ public class PathFinding {
         return steps;
     }
 
-    public static ArrayList<Int2D> aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size) {
+    public static List<Int2D> aStar(Warehouse warehouse, Int2D target, Int2D startPos, Int2D size) {
         return aStar(warehouse, target, startPos, size, false);
     }
 
-    public static ArrayList<Int2D> aStarNoPathCollisions(Warehouse warehouse, PathHandler othersPaths, Int2D target,
+    public static List<Int2D> aStarNoPathCollisions(Warehouse warehouse, PathHandler othersPaths, Int2D target,
             Int2D startPos,
             Int2D size, int moveTime) {
         Int3D[] dirs = new Int3D[] {
@@ -231,7 +231,7 @@ public class PathFinding {
             }
         }
 
-        ArrayList<Int2D> steps = new ArrayList<>();
+        List<Int2D> steps = new ArrayList<>();
         AStarNodeNoPathCollision node = endNode;
         while (node.previousNode != null) {
             steps.add(node.pos);

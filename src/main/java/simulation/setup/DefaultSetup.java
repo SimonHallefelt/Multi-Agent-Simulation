@@ -1,7 +1,5 @@
 package simulation.setup;
 
-import simulation.AgentFactory;
-import simulation.BrainFactory;
 import simulation.agents.AStarAgent;
 import simulation.agents.AStarNoPathCollisionAgent;
 import simulation.agents.AStarSmarter;
@@ -10,15 +8,15 @@ import simulation.agents.RandomAgent;
 import simulation.brains.AstarBrain;
 import simulation.interfaces.FactorySetup;
 
-public class DefaultSetup implements FactorySetup {
+public class DefaultSetup extends FactorySetup {
 
     public void injectAgents() {
-        AgentFactory.registerAgent("aStarSmart", () -> new AStarNoPathCollisionAgent());
-        AgentFactory.registerAgent("aStarSmarter", () -> new AStarSmarter());
-        AgentFactory.registerAgent("astar", () -> new AStarAgent());
-        AgentFactory.registerAgent("pacman", () -> new PacmanAgent());
-        AgentFactory.registerAgent("RandomWalk", () -> new RandomAgent());
-        BrainFactory.registerBrain("astarBrain", () -> new AstarBrain());
+        registerAgent("aStarSmart", () -> new AStarNoPathCollisionAgent());
+        registerAgent("aStarSmarter", () -> new AStarSmarter());
+        registerAgent("astar", () -> new AStarAgent());
+        registerAgent("pacman", () -> new PacmanAgent());
+        registerAgent("RandomWalk", () -> new RandomAgent());
+        registerBrain("astarBrain", () -> new AstarBrain());
     }
 
 }

@@ -1,6 +1,7 @@
 package simulation.agents;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import sim.util.Int2D;
 import simulation.Agent;
@@ -13,24 +14,21 @@ public class AStarSmarter extends Agent {
 
     @Override
     public Path makePath(Warehouse warehouse, PathHandler pathHandler) {
-        ArrayList<Int2D> rawPath = PathFinding.aStarNoPathCollisions(warehouse, pathHandler, this.target, this.pos, this.size, 
+        List<Int2D> rawPath = PathFinding.aStarNoPathCollisions(warehouse, pathHandler, this.target, this.pos, this.size, 
                                                                   this.moveTime);
         
         if (rawPath.isEmpty()) {
             // super.path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, this.pos, this.size, pathHandler));
             return null;
         }
-        path.addNewPositionPath(pos, rawPath);
-        return path;
+        return new Path(rawPath);
     }
 
     @Override
     public Path makeNoTargetPath(Warehouse warehouse, PathHandler pathHandler) {
-        ArrayList<Int2D> rawPath = PathFinding.moveOutOfWay(warehouse, pathHandler, pos, size, moveTime);
-        Path path = new Path(pos);
-        if (rawPath.size() > 0) path.addNewPositionPath(pos, rawPath);
-        else path.addPos(PathFinding.randomUnobstructiveWalk(warehouse, pathHandler, pos, size));
+        List<Int2D> rawPath = PathFinding.moveOutOfWay(warehouse, pathHandler, pos, size, moveTime);
+        if (rawPath.size() > 0) return new Path(rawPath);
+        else return new Path(PathFinding.randomUnobstructiveWalk(warehouse, pathHandler, pos, size));
         //path.setRemakePath(true);
-        return path;
     }
 }

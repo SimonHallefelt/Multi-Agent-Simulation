@@ -25,8 +25,7 @@ public class WarehouseWithGui extends GUIState {
     public static void main(String[] args) {
         Warehouse warehouse = new Warehouse(System.currentTimeMillis());
         WarehouseWithGui vid = new WarehouseWithGui(warehouse);
-        Console c = new Console(vid);
-        c.setVisible(true);
+        vid.runSimulation();
     }
 
     public void runSimulation() {

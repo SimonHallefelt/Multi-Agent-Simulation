@@ -10,14 +10,14 @@ public class PacmanAgent extends Agent {
 
     @Override
     public Path makePath(Warehouse warehouse, PathHandler pathHandler) {
-        Path path = new Path(pos);
-        path.addPos(PathFinding.pacman(warehouse, this.pos, this.target, this.dir, this.size));
+        Path path = new Path();
+        path.addStep(PathFinding.pacman(warehouse, this.pos, this.target, this.dir, this.size));
         return path;
     }
 
     public Path makeNoTargetPath(Warehouse warehouse, PathHandler pathHandler) {
-        Path path = new Path(pos);
-        path.addPos(PathFinding.randomWalk(warehouse, pos, dir));
+        Path path = new Path();
+        path.addStep(PathFinding.randomWalk(warehouse, pos, dir));
         return path;
     }
 }

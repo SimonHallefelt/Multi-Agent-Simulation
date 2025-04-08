@@ -27,7 +27,7 @@ public class PathHandler {
         for (Agent a : w.getAgentList()) {
             if (a == ignore)
                 continue;
-            p = a.path;
+            p = a.getPath();
             addAgentPath(a, p);
             if (a.desirePath != null) addAgentDesire(a, a.desirePath);
         }
