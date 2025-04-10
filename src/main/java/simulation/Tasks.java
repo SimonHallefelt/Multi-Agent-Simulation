@@ -1,7 +1,9 @@
 package simulation;
 
 import java.util.List;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 
@@ -125,8 +127,22 @@ public class Tasks {
             }
 
             // get fastest agent for the task
-            agents.sort((a, b) -> a.getDistanceCompletedAllTargets() - b.getDistanceCompletedAllTargets());
             Agent a = agents.get(0);
+            int min = Integer.MAX_VALUE;
+            for (Agent aa : agents) {
+                int dist = aa.getDistanceCompletedAllTargets();
+                List<Task> assigned = activeTasks.get(aa);
+                Int2D fromPos = aa.pos;
+                if (assigned != null && !assigned.isEmpty()) {
+                    Task last = assigned.get(assigned.size()-1);
+                    fromPos = last.getLastTarget().getPosition();
+                }
+                dist += t.getCompletionDistance(fromPos, aa.size);
+                if (dist < min) {
+                    min = dist;
+                    a = aa;
+                }
+            }
             
             // assign task to agent
             List<Task> assigned = activeTasks.get(a);
@@ -167,8 +183,7 @@ public class Tasks {
                 if (a.getTarget() == null) {
                     a.setDistanceBetweenTargets(0);
                 } else {
-                    int newDist = a.getDistanceBetweenAllTargets() - (PathFinding.getDistance(goalPos, a.getTarget(), a.size)*a.moveTime);
-                    a.setDistanceBetweenTargets(newDist);
+                    a.subDistanceBetweenTargets(PathFinding.getDistance(goalPos, a.getTarget(), a.size)*a.moveTime);
                 }
             }
         }
