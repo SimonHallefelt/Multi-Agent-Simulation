@@ -18,7 +18,7 @@ public class Tasks {
     private List<Task> taskList = new ArrayList<>();
     private List<Task> availableTasks = new ArrayList<>();
     private List<Task> impossibleTask = new ArrayList<>();
-    private TaskConfiguration tc = TaskConfiguration.generateTasksUsingItemStorageAndDepot;
+    private TaskConfiguration tc = TaskConfiguration.randomItemStorageAndDepot;
     private double TasksPerStep = 1.0;
     private long generatedTasks = 0;
     private long completedTasks = 0;
@@ -50,7 +50,7 @@ public class Tasks {
     public void setTaskConfiguration(String s) {
         switch (s) {
             case "random":
-                tc = TaskConfiguration.generateTasksUsingItemStorageAndDepot;
+                tc = TaskConfiguration.randomItemStorageAndDepot;
                 break;
             case "completeList":
                 tc = TaskConfiguration.completeTaskList;
@@ -66,8 +66,8 @@ public class Tasks {
     public void generateTasks() {
         while ((warehouse.schedule.getSteps() + 1) * TasksPerStep > generatedTasks) {
             switch (tc) {
-                case generateTasksUsingItemStorageAndDepot:
-                    generateTasksUsingItemStorageAndDepot();
+                case randomItemStorageAndDepot:
+                    randomItemStorageAndDepot();
                     break;
                 case completeTaskList:
                     if (taskList.isEmpty()) return;
@@ -83,7 +83,7 @@ public class Tasks {
         }
     }
 
-    public void generateTasksUsingItemStorageAndDepot() {
+    public void randomItemStorageAndDepot() {
         TaskPosition start = itemStorage.get(warehouse.random.nextInt(itemStorage.size()));
         TaskPosition end = start.getAccessibleDepot(warehouse);
         TaskPosition[] targets = new TaskPosition[] {
@@ -290,6 +290,6 @@ public class Tasks {
     enum TaskConfiguration {
         completeTaskList,
         selectTasksFromTaskList,
-        generateTasksUsingItemStorageAndDepot
+        randomItemStorageAndDepot
     }
 }
