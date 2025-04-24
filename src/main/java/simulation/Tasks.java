@@ -22,7 +22,7 @@ public class Tasks {
     private double TasksPerStep = 1.0;
     private long generatedTasks = 0;
     private long completedTasks = 0;
-    private String addDeliveryOrSupply = "no";
+    private String addDepotOrSupply = "no";
 
     public Tasks(Warehouse warehouse) {
         this(warehouse, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 1.0);
@@ -36,8 +36,8 @@ public class Tasks {
         this.TasksPerStep = TasksPerStep;
     }
 
-    public void setAddDepotOrSupply(String addDeliveryOrSupply) {
-        this.addDeliveryOrSupply = addDeliveryOrSupply;
+    public void setAddDepotOrSupply(String addDepotOrSupply) {
+        this.addDepotOrSupply = addDepotOrSupply;
     }
 
     public void setTaskList(List<List<TaskPosition>> taskList) {
@@ -203,7 +203,7 @@ public class Tasks {
     }
 
     private Task makeTask(List<TaskPosition> goals) {
-        switch (addDeliveryOrSupply) {
+        switch (addDepotOrSupply) {
             case "no":
                 return new Task(goals.toArray(new TaskPosition[0]));
             case "addDeliveryPoint":
