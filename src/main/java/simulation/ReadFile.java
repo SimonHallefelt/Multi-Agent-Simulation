@@ -88,7 +88,7 @@ public class ReadFile {
         // task settings
         double tasksPerStep = 1.0;
         String taskGeneration = "random";
-        String addDeliveryAndSupply = "no";
+        String addDepotOrSupply = "no";
         List<List<TaskPosition>> taskList = new ArrayList<>();
 
         if (obj.has("brains")) {
@@ -199,8 +199,8 @@ public class ReadFile {
                 tasksPerStep = def.getDouble("tasksPerStep");
             if (def.has("taskGeneration")) 
                 taskGeneration = def.getString("taskGeneration");
-            if (def.has("addDeliveryAndSupply")) 
-                addDeliveryAndSupply = def.getString("addDeliveryAndSupply");
+            if (def.has("addDepotOrSupply")) 
+                addDepotOrSupply = def.getString("addDepotOrSupply");
             if (def.has("taskList")) {
                 JSONArray JSONtasks = def.getJSONArray("taskList");
                 for (int i = 0; i < JSONtasks.length(); i++) {
@@ -223,7 +223,7 @@ public class ReadFile {
         }
 
         FileData fd = new FileData(map, agents, AgentList, itemStorage, depots, supply, positions, tpMap);
-        fd.addTaskSettings(tasksPerStep, taskGeneration, addDeliveryAndSupply, taskList);
+        fd.addTaskSettings(tasksPerStep, taskGeneration, addDepotOrSupply, taskList);
         fd.addBrains(BrainList);
         return fd;
     }
@@ -373,7 +373,7 @@ public class ReadFile {
         // task-settings
         double tasksPerStep = 1.0;
         String taskGeneration = "random";
-        String addDeliveryAndSupply = "no";
+        String addDepotOrSupply = "no";
         List<List<TaskPosition>> taskList = new ArrayList<>();
         if (obj.has("task-settings")) {
             JSONObject def = obj.getJSONObject("task-settings");
@@ -381,8 +381,8 @@ public class ReadFile {
                 tasksPerStep = def.getDouble("tasksPerStep");
             if (def.has("taskGeneration")) 
                 taskGeneration = def.getString("taskGeneration");
-            if (def.has("addDeliveryAndSupply")) 
-                addDeliveryAndSupply = def.getString("addDeliveryAndSupply");
+            if (def.has("addDepotOrSupply")) 
+                addDepotOrSupply = def.getString("addDepotOrSupply");
             if (def.has("taskList")) {
                 JSONArray JSONtasks = def.getJSONArray("taskList");
                 for (int i = 0; i < JSONtasks.length(); i++) {
@@ -420,7 +420,7 @@ public class ReadFile {
         }
 
         FileData fd = new FileData(map, agents, agentList, itemStorage, depots, supply, positions, tpMap);
-        fd.addTaskSettings(tasksPerStep, taskGeneration, addDeliveryAndSupply, taskList);
+        fd.addTaskSettings(tasksPerStep, taskGeneration, addDepotOrSupply, taskList);
         fd.addBrains(brainList);
 
         return fd;
@@ -495,7 +495,7 @@ public class ReadFile {
         Map<Int2D, TaskPosition> tpMap;
         double tasksPerStep;
         String taskGeneration;
-        String addDepotAndSupply;
+        String addDepotOrSupply;
         List<List<TaskPosition>> taskList;
         List<Brain> brainList;
         long seed;
@@ -514,17 +514,17 @@ public class ReadFile {
 
             this.tasksPerStep = 1;
             this.taskGeneration = "random";
-            this.addDepotAndSupply = "no";
+            this.addDepotOrSupply = "no";
             this.taskList = new ArrayList<>();
             this.brainList = new ArrayList<>();
             this.seed = System.currentTimeMillis();
         }
 
         public void addTaskSettings(double tasksPerStep, String taskGeneration,
-        String addDeliveryAndSupply, List<List<TaskPosition>> taskList) {
+        String addDepotOrSupply, List<List<TaskPosition>> taskList) {
             this.tasksPerStep = tasksPerStep;
             this.taskGeneration = taskGeneration;
-            this.addDepotAndSupply = addDeliveryAndSupply;
+            this.addDepotOrSupply = addDepotOrSupply;
             this.taskList = taskList;
         }
 

@@ -35,7 +35,7 @@
     "task-settings" : {
         "tasksPerStep" : "0.2",
         "taskGeneration" : "completeList",
-        "addDeliveryAndSupply" : "addSupplyPoint",
+        "addDepotOrSupply" : "addSupplyPoint",
         "taskList" : [
             [2, 3, 4],
             [2, 3, 4, 5],
