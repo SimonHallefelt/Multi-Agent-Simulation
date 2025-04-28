@@ -117,11 +117,11 @@ public class TaskPosition {
     }
 
     public static List<Agent> getCompatibleAgents(Warehouse w, List<TaskPosition> tasks) {
-        if (tasks.get(0) == null) return null;
+        if (tasks.get(0) == null) return new ArrayList<>();
         List<Agent> possible = new ArrayList<>(tasks.get(0).accessibleAgents);
 
         for (int i = 1; i < tasks.size(); i++) {
-            if (tasks.get(i) == null) return null;
+            if (tasks.get(i) == null) return new ArrayList<>();
             List<Agent> possible2 = tasks.get(i).accessibleAgents;
             possible.removeIf(t -> !possible2.contains(t));
         }

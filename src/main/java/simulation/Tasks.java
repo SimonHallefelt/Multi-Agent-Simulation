@@ -1,7 +1,10 @@
 package simulation;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 
@@ -16,11 +19,11 @@ public class Tasks {
     private List<Task> taskList = new ArrayList<>();
     private List<Task> availableTasks = new ArrayList<>();
     private List<Task> impossibleTask = new ArrayList<>();
-    private TaskConfiguration tc = TaskConfiguration.generateTasksUsingItemStorageAndDepot;
+    private TaskConfiguration tc = TaskConfiguration.randomTask;
     private double TasksPerStep = 1.0;
     private long generatedTasks = 0;
     private long completedTasks = 0;
-    private String addDeliveryAndSupply = "no";
+    private String addDepotOrSupply = "no";
 
     public Tasks(Warehouse warehouse) {
         this(warehouse, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 1.0);
@@ -34,8 +37,8 @@ public class Tasks {
         this.TasksPerStep = TasksPerStep;
     }
 
-    public void setAddDepotAndSupply(String addDeliveryAndSupply) {
-        this.addDeliveryAndSupply = addDeliveryAndSupply;
+    public void setAddDepotOrSupply(String addDepotOrSupply) {
+        this.addDepotOrSupply = addDepotOrSupply;
     }
 
     public void setTaskList(List<List<TaskPosition>> taskList) {
@@ -48,7 +51,7 @@ public class Tasks {
     public void setTaskConfiguration(String s) {
         switch (s) {
             case "random":
-                tc = TaskConfiguration.generateTasksUsingItemStorageAndDepot;
+                tc = TaskConfiguration.randomTask;
                 break;
             case "completeList":
                 tc = TaskConfiguration.completeTaskList;
@@ -64,8 +67,8 @@ public class Tasks {
     public void generateTasks() {
         while ((warehouse.schedule.getSteps() + 1) * TasksPerStep > generatedTasks) {
             switch (tc) {
-                case generateTasksUsingItemStorageAndDepot:
-                    generateTasksUsingItemStorageAndDepot();
+                case randomTask:
+                    randomTask();
                     break;
                 case completeTaskList:
                     if (taskList.isEmpty()) return;
@@ -81,10 +84,28 @@ public class Tasks {
         }
     }
 
-    public void generateTasksUsingItemStorageAndDepot() {
-        TaskPosition start = itemStorage.get(warehouse.random.nextInt(itemStorage.size()));
-        TaskPosition end = start.getAccessibleDepot(warehouse);
-        TaskPosition[] targets = new TaskPosition[] {
+    public void randomTask() {
+        TaskPosition[] targets;
+        TaskPosition start = null;
+        TaskPosition end = null;
+        List<TaskPosition> possibleItemStorages = itemStorage.stream().filter(is -> is.getAccessibleDepot(warehouse) != null).collect(Collectors.toList());
+        List<TaskPosition> possibleSupply = supply.stream().filter(is -> is.getAccessibleItemStorage(warehouse) != null).collect(Collectors.toList());
+        if ((warehouse.random.nextBoolean() || possibleSupply.isEmpty()) && !possibleItemStorages.isEmpty()) {
+            if (possibleItemStorages.isEmpty()) {
+                System.out.println("no itemStorage can reach a depot");
+                System.exit(2);
+            }
+            start = possibleItemStorages.get(warehouse.random.nextInt(possibleItemStorages.size()));
+            end = start.getAccessibleDepot(warehouse);
+        } else if (!possibleSupply.isEmpty()) {
+
+            start = supply.get(warehouse.random.nextInt(possibleSupply.size()));
+            end = start.getAccessibleItemStorage(warehouse);
+        } else {
+            System.out.println("cant generate tasks, depot and supply cant reach itemStorage");
+            System.exit(2);
+        }
+        targets = new TaskPosition[] {
             start,
             end
         };
@@ -120,13 +141,28 @@ public class Tasks {
             // Agent a = TaskPosition.getCompatibleAgent(warehouse, tpl);
             List<Agent> agents = TaskPosition.getCompatibleAgents(warehouse, tpl);
             if (agents.isEmpty()) {
+                System.out.println("impossible task: " + t.getFirstTarget() + " " + t.getLastTarget());
                 impossibleTask.add(t);
                 continue;
             }
 
             // get fastest agent for the task
-            agents.sort((a, b) -> a.getDistanceBetweenAllTargets() - b.getDistanceBetweenAllTargets());
             Agent a = agents.get(0);
+            int min = Integer.MAX_VALUE;
+            for (Agent aa : agents) {
+                int dist = aa.getDistanceCompletedAllTargets();
+                List<Task> assigned = activeTasks.get(aa);
+                Int2D fromPos = aa.pos;
+                if (assigned != null && !assigned.isEmpty()) {
+                    Task last = assigned.get(assigned.size()-1);
+                    fromPos = last.getLastTarget().getPosition();
+                }
+                dist += t.getCompletionDistance(fromPos, aa.size);
+                if (dist < min) {
+                    min = dist;
+                    a = aa;
+                }
+            }
             
             // assign task to agent
             List<Task> assigned = activeTasks.get(a);
@@ -136,8 +172,10 @@ public class Tasks {
                 assigned = new ArrayList<>();
                 assigned.add(t);
                 activeTasks.put(a, assigned);
-                setTimeBetweenAllTargets(a);
             }
+            int newDist = t.getCompletionDistance(t.getFirstTarget().getPosition(), a.size);
+            if (assigned.size() >= 2) newDist += PathFinding.getDistance(assigned.get(assigned.size()-2).getLastTarget().getPosition(), t.getFirstTarget().getPosition(), a.size);
+            a.addDistanceBetweenTargets(newDist * a.moveTime);
             if (a.getTarget() == null) {
                 a.setTarget(t.getGoal());
                 a.makeDesirePath(warehouse);
@@ -149,6 +187,7 @@ public class Tasks {
         List<Task> goals = activeTasks.get(a);
         if (goals != null && !goals.isEmpty()) {
             Task goal = goals.get(0);
+            Int2D goalPos = goal.getGoal();
             if (goal.reached(pos, a.getAgentSize())) {
                 a.increaseScore();
                 warehouse.increaseScore();
@@ -164,8 +203,7 @@ public class Tasks {
                 if (a.getTarget() == null) {
                     a.setDistanceBetweenTargets(0);
                 } else {
-                    int i = a.getDistanceBetweenAllTargets() - PathFinding.getDistance(pos, a.getTarget(), a.size);
-                    a.setDistanceBetweenTargets(i);
+                    a.subDistanceBetweenTargets(PathFinding.getDistance(goalPos, a.getTarget(), a.size)*a.moveTime);
                 }
             }
         }
@@ -180,39 +218,12 @@ public class Tasks {
         a.makeDesirePath(warehouse);
     }
 
-    public void setTimeBetweenAllTargets(Agent a) {
-        int TTR = 0;
-        List<Task> agentTasks = activeTasks.get(a);
-        Int2D startPos = agentTasks.get(0).getGoal();
-        if (agentTasks != null) {
-            for (Task ts : agentTasks) {
-                TTR += ts.getCompletionDistance(startPos, a.size);
-                startPos = ts.getLastTarget().getPosition();
-            }
-        }
-        a.setDistanceBetweenTargets(TTR * a.moveTime);
-    }
-
-    public int timeToComplete(Agent a, Task t) {
-        int TTR = 0;
-        Int2D startPos = a.pos;
-        List<Task> agentTasks = activeTasks.get(a);
-        if (agentTasks != null) {
-            for (Task ts : agentTasks) {
-                TTR += ts.getCompletionDistance(startPos, a.size);
-                startPos = ts.getLastTarget().getPosition();
-            }
-        }
-        TTR += t.getCompletionDistance(startPos, a.size);
-        return TTR * a.moveTime;
-    }
-
     public boolean reached(Int2D pos, Int2D size, Int2D target) {
         return target.x >= pos.x && target.x < pos.x + size.x && target.y >= pos.y && target.y < pos.y + size.y;
     }
 
     private Task makeTask(List<TaskPosition> goals) {
-        switch (addDeliveryAndSupply) {
+        switch (addDepotOrSupply) {
             case "no":
                 return new Task(goals.toArray(new TaskPosition[0]));
             case "addDeliveryPoint":
@@ -284,7 +295,7 @@ public class Tasks {
         public int getCompletionDistance(Int2D from, Int2D size) {
             int dist = 0;
             for (int i = targetIndex; i < targets.length; i++) {
-                Int2D target = targets[targetIndex].getPosition();
+                Int2D target = targets[i].getPosition();
                 dist += PathFinding.getDistance(from, target, size);
                 from = target;
             }
@@ -299,6 +310,6 @@ public class Tasks {
     enum TaskConfiguration {
         completeTaskList,
         selectTasksFromTaskList,
-        generateTasksUsingItemStorageAndDepot
+        randomTask
     }
 }

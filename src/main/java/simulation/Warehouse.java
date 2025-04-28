@@ -30,8 +30,8 @@ public class Warehouse extends SimState {
 
     String file_path;
     // static String default_file_path = "src\\main\\resources\\Conventional\\warehouseLayout.json";
-    static String default_file_path = "src\\test\\resources\\standard\\Conventional\\warehouseLayout.json";
-    // static String default_file_path = "src\\main\\resources\\warehouse_5_completeList.json";
+    // static String default_file_path = "src\\test\\resources\\standard\\Conventional\\warehouseLayout.json";
+    static String default_file_path = "src\\main\\resources\\warehouse_maze.json";
 
     String instance_path;
     // static String default_instance_path = "src\\main\\resources\\Conventional\\instances\\basic.json";
@@ -176,7 +176,7 @@ public class Warehouse extends SimState {
 
         this.tasks = new Tasks(this, fd.itemStorage, fd.depot, fd.supply, fd.tasksPerStep);
         this.tasks.setTaskConfiguration(fd.taskGeneration);
-        this.tasks.setAddDepotAndSupply(fd.addDepotAndSupply);
+        this.tasks.setAddDepotOrSupply(fd.addDepotOrSupply);
         this.tasks.setTaskList(fd.taskList);
 
         this.score = 0;

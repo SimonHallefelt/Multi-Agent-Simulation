@@ -45,7 +45,7 @@ public class ReadFileTest {
         assertEquals(2, fd.depot.size());
         assertEquals(2, fd.supply.size());
         assertEquals(0.1, fd.tasksPerStep);
-        assertEquals("no", fd.addDepotAndSupply);
+        assertEquals("no", fd.addDepotOrSupply);
         assertTrue(fd.taskList.isEmpty());
     }
 
@@ -67,7 +67,7 @@ public class ReadFileTest {
         assertEquals(2, fd.depot.size());
         assertEquals(2, fd.supply.size());
         assertEquals(0.2, fd.tasksPerStep);
-        assertEquals("addSupplyPoint", fd.addDepotAndSupply);
+        assertEquals("addSupplyPoint", fd.addDepotOrSupply);
         assertEquals(24, fd.taskList.size());
     }
 }

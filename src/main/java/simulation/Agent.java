@@ -69,6 +69,10 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
     public int getDistanceBetweenAllTargets() {
+        return distanceBetweenAllTargets;
+    }
+
+    public int getDistanceCompletedAllTargets() {
         if (target == null) return 0;
         return distanceBetweenAllTargets + PathFinding.getDistance(pos,target,size);
     }
@@ -79,6 +83,13 @@ public abstract class Agent implements Steppable, Colorable {
 
     public void setDistanceBetweenTargets(int distanceBetweenTargets) {
         this.distanceBetweenAllTargets = distanceBetweenTargets;
+    }
+
+    public void subDistanceBetweenTargets(int distanceBetweenTargets) {
+        this.distanceBetweenAllTargets -= distanceBetweenTargets;
+    }
+    public void addDistanceBetweenTargets(int distanceBetweenTargets) {
+        this.distanceBetweenAllTargets += distanceBetweenTargets;
     }
 
     public void setDebug(boolean d) {
