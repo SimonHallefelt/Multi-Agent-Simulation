@@ -1,6 +1,7 @@
 package simulation;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +19,7 @@ public class Tasks {
     private List<Task> taskList = new ArrayList<>();
     private List<Task> availableTasks = new ArrayList<>();
     private List<Task> impossibleTask = new ArrayList<>();
-    private TaskConfiguration tc = TaskConfiguration.randomItemStorageAndDepot;
+    private TaskConfiguration tc = TaskConfiguration.randomTask;
     private double TasksPerStep = 1.0;
     private long generatedTasks = 0;
     private long completedTasks = 0;
@@ -50,7 +51,7 @@ public class Tasks {
     public void setTaskConfiguration(String s) {
         switch (s) {
             case "random":
-                tc = TaskConfiguration.randomItemStorageAndDepot;
+                tc = TaskConfiguration.randomTask;
                 break;
             case "completeList":
                 tc = TaskConfiguration.completeTaskList;
@@ -66,8 +67,8 @@ public class Tasks {
     public void generateTasks() {
         while ((warehouse.schedule.getSteps() + 1) * TasksPerStep > generatedTasks) {
             switch (tc) {
-                case randomItemStorageAndDepot:
-                    randomItemStorageAndDepot();
+                case randomTask:
+                    randomTask();
                     break;
                 case completeTaskList:
                     if (taskList.isEmpty()) return;
@@ -83,10 +84,28 @@ public class Tasks {
         }
     }
 
-    public void randomItemStorageAndDepot() {
-        TaskPosition start = itemStorage.get(warehouse.random.nextInt(itemStorage.size()));
-        TaskPosition end = start.getAccessibleDepot(warehouse);
-        TaskPosition[] targets = new TaskPosition[] {
+    public void randomTask() {
+        TaskPosition[] targets;
+        TaskPosition start = null;
+        TaskPosition end = null;
+        List<TaskPosition> possibleItemStorages = itemStorage.stream().filter(is -> is.getAccessibleDepot(warehouse) != null).collect(Collectors.toList());
+        List<TaskPosition> possibleSupply = supply.stream().filter(is -> is.getAccessibleItemStorage(warehouse) != null).collect(Collectors.toList());
+        if ((warehouse.random.nextBoolean() || possibleSupply.isEmpty()) && !possibleItemStorages.isEmpty()) {
+            if (possibleItemStorages.isEmpty()) {
+                System.out.println("no itemStorage can reach a depot");
+                System.exit(2);
+            }
+            start = possibleItemStorages.get(warehouse.random.nextInt(possibleItemStorages.size()));
+            end = start.getAccessibleDepot(warehouse);
+        } else if (!possibleSupply.isEmpty()) {
+
+            start = supply.get(warehouse.random.nextInt(possibleSupply.size()));
+            end = start.getAccessibleItemStorage(warehouse);
+        } else {
+            System.out.println("cant generate tasks, depot and supply cant reach itemStorage");
+            System.exit(2);
+        }
+        targets = new TaskPosition[] {
             start,
             end
         };
@@ -122,6 +141,7 @@ public class Tasks {
             // Agent a = TaskPosition.getCompatibleAgent(warehouse, tpl);
             List<Agent> agents = TaskPosition.getCompatibleAgents(warehouse, tpl);
             if (agents.isEmpty()) {
+                System.out.println("impossible task: " + t.getFirstTarget() + " " + t.getLastTarget());
                 impossibleTask.add(t);
                 continue;
             }
@@ -290,6 +310,6 @@ public class Tasks {
     enum TaskConfiguration {
         completeTaskList,
         selectTasksFromTaskList,
-        randomItemStorageAndDepot
+        randomTask
     }
 }

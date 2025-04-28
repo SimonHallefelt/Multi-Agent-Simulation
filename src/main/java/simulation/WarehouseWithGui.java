@@ -4,7 +4,6 @@ import sim.portrayal.grid.ValueGridPortrayal2D;
 import sim.portrayal.DrawInfo2D;
 import sim.portrayal.grid.SparseGridPortrayal2D;
 import sim.portrayal.simple.*;
-import sim.engine.*;
 import sim.display.*;
 import javax.swing.*;
 import java.awt.Color;

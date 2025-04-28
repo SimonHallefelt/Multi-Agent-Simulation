@@ -72,4 +72,19 @@ public class TasksTest {
 
         assertEquals(100000, state.tasks.getNumGeneratedTasks());
     }
+
+    @Test void test_1_randomTask() {
+        String warehouseLayout = "src\\test\\resources\\simple\\warehouse_3_supply_and_depot.json";
+        Warehouse state = new Warehouse(0, warehouseLayout);
+        state.start();
+        do
+            if (!state.schedule.step(state)) break;
+        while (state.schedule.getSteps() < 1000);
+        state.finish();
+
+        assertEquals(1000, state.tasks.getNumGeneratedTasks());
+        assertEquals(112, state.tasks.getNumCompletedTasks());
+        assertEquals(0, state.tasks.getNumImpossibleTasks());
+        assertEquals(228, state.getScore());
+    }
 } 
