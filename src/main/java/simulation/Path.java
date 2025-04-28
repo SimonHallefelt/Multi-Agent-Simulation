@@ -22,12 +22,22 @@ public class Path {
         steps = new ArrayList<>(positionPath);
     }
 
+    /**
+     * Adds a position to the end of the path
+     * 
+     * @param position - the position to be added
+     */
     public void addStep(Int2D position) {
         steps.add(position);
     }
 
-    public void addSteps(List<Int2D> positionPath) {
-        for (Int2D i: positionPath) {
+    /**
+     * Adds a list of elements to the path in order
+     * 
+     * @param positionList - the list of positions to be added.
+     */
+    public void addSteps(List<Int2D> positionList) {
+        for (Int2D i: positionList) {
             addStep(i);
         }
     }

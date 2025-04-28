@@ -95,8 +95,13 @@ public abstract class Agent implements Steppable, Colorable {
 
     public void setTarget(Int2D i) {
         target = i;
+        onSetTarget();
         if (debug)
             System.out.println(id + ": new target " + i);
+    }
+
+    public void onSetTarget() {
+        return;
     }
 
     public boolean getRemakePath() {
