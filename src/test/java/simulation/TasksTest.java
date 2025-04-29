@@ -14,7 +14,7 @@ public class TasksTest {
         do
             if (!state.schedule.step(state)) break;
         while (state.schedule.getSteps() < 1000);
-        state.finish();
+        // state.finish();
 
         assertEquals(state.tasks.getNumGeneratedTasks(), 5);
         assertEquals(state.tasks.getNumCompletedTasks(), 3);

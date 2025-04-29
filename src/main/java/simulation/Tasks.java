@@ -189,7 +189,7 @@ public class Tasks {
             Task goal = goals.get(0);
             Int2D goalPos = goal.getGoal();
             if (goal.reached(pos, a.getAgentSize())) {
-                a.increaseScore();
+                a.increaseScore(warehouse.schedule.getSteps());
                 warehouse.increaseScore();
                 if (goal.complete()) {
                     completedTasks++;

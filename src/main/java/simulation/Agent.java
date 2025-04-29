@@ -13,7 +13,7 @@ import sim.util.Int2D;
 import simulation.interfaces.Colorable;
 
 public abstract class Agent implements Steppable, Colorable {
-    protected int score = 0;
+    protected List<Long> score = new ArrayList<>();
     protected Int2D pos = new Int2D(0, 0);
     protected Int2D dir = new Int2D(1, 0);
     protected Int2D target = null;
@@ -119,8 +119,8 @@ public abstract class Agent implements Steppable, Colorable {
         return path.getRemakePath();
     }
 
-    public void increaseScore() {
-        score++;
+    public void increaseScore(Long step) {
+        score.add(step);
         visited.clear();
     }
 
@@ -249,7 +249,7 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
     public int getScore() {
-        return score;
+        return score.size();
     }
 
     public int getDelay() {

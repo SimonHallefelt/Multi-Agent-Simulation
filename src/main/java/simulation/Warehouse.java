@@ -2,6 +2,7 @@ package simulation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -202,9 +203,20 @@ public class Warehouse extends SimState {
     public void finish() {
         AgentList.sort((a1, a2) -> a1.getId().compareTo(a2.getId()));
         for (Agent a : AgentList) {
-            System.out.println(a + ", score " + a.score);
-            // System.out.println ("pos: " + a.pos + ", delta: " + a.delta + ", target: " +
-            // a.target + "\n");
+            List<Long> scoreTimes = new ArrayList<>();
+            if (!a.score.isEmpty()) {
+                for (int i = 1; i < a.score.size(); i++) {
+                    scoreTimes.add(a.score.get(i) - a.score.get(i-1));
+                }
+                scoreTimes.add(this.schedule.getSteps() - a.score.get(a.score.size()-1));
+                Collections.sort(scoreTimes);
+            }
+            Long minTime = a.score.isEmpty() ? null : scoreTimes.get(0);
+            Long maxTime = a.score.isEmpty() ? null : scoreTimes.get(scoreTimes.size()-1);
+            Long medianTime = a.score.isEmpty() ? null : scoreTimes.get(scoreTimes.size()/2);
+
+            System.out.println(a + ", score: " + a.score.size() + ", time between points min/max/median: " + minTime + "/" + maxTime + "/" + medianTime);
+
         }
         System.out.println("\nFinal score: " + score);
         long elapsedTime = System.currentTimeMillis() - startTime;
