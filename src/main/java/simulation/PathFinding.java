@@ -68,18 +68,18 @@ public class PathFinding {
 
     public static Int2D pacman(Warehouse warehouse, Int2D pos, Int2D target, Int2D direction, Int2D size) {
         direction = direction.x == direction.y ? new Int2D(1, 0) : direction;
-        List<Int2D> dirs = new ArrayList<>(
-                Arrays.asList(direction, new Int2D(direction.y, direction.x), new Int2D(-direction.y, -direction.x)));
+        List<Int2D> newPos = new ArrayList<>(
+                Arrays.asList(pos.add(direction), pos.add(new Int2D(direction.y, direction.x)), pos.add(new Int2D(-direction.y, -direction.x))));
 
-        dirs.sort((d, o) -> getDistance(pos.add(d), target, size) - getDistance(pos.add(o), target, size));
+        newPos.sort((d, o) -> getDistance(d, target, size) - getDistance(o, target, size));
 
-        for (Int2D dir : dirs) {
-            if (warehouse.canMove(pos.add(dir), dir, size)) {
-                return dir;
+        for (Int2D np : newPos) {
+            if (warehouse.canMove(pos, np, size)) {
+                return np;
             }
         }
 
-        return new Int2D(-direction.x, -direction.y);
+        return pos.add(-direction.x, -direction.y);
     }
 
     public static List<Int2D> moveOutOfWay(Warehouse warehouse, PathHandler pathHandler, Int2D startPos,
