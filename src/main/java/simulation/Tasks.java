@@ -19,7 +19,7 @@ public class Tasks {
     private List<Task> taskList = new ArrayList<>();
     private List<Task> availableTasks = new ArrayList<>();
     private List<Task> impossibleTask = new ArrayList<>();
-    private TaskConfiguration tc = TaskConfiguration.randomTask;
+    private String tc = "randomTask";
     private double TasksPerStep = 1.0;
     private long generatedTasks = 0;
     private long completedTasks = 0;
@@ -51,15 +51,17 @@ public class Tasks {
     public void setTaskConfiguration(String s) {
         switch (s) {
             case "random":
-                tc = TaskConfiguration.randomTask;
+                tc = "randomTask";
                 break;
             case "completeList":
-                tc = TaskConfiguration.completeTaskList;
+                tc = "completeTaskList";
                 break;
             case "selectTasksFromList":
-                tc = TaskConfiguration.selectTasksFromTaskList;
+                tc = "selectTasksFromTaskList";
                 break;
             default:
+                System.out.println("warning, setTaskConfiguration got: " + s + ", configuration does not exists, set random instead");
+                tc = "randomTask";
                 break;
         }
     }
@@ -67,14 +69,14 @@ public class Tasks {
     public void generateTasks() {
         while ((warehouse.schedule.getSteps() + 1) * TasksPerStep > generatedTasks) {
             switch (tc) {
-                case randomTask:
+                case "randomTask":
                     randomTask();
                     break;
-                case completeTaskList:
+                case "completeTaskList":
                     if (taskList.isEmpty()) return;
                     getFirstInTaskList();
                     break;
-                case selectTasksFromTaskList:
+                case "selectTasksFromTaskList":
                     copyTaskFromTaskList();
                     break;
                 default:
@@ -307,9 +309,4 @@ public class Tasks {
         }
     }
 
-    enum TaskConfiguration {
-        completeTaskList,
-        selectTasksFromTaskList,
-        randomTask
-    }
 }
