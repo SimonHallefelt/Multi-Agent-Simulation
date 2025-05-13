@@ -13,13 +13,21 @@ import sim.util.Int2D;
 import simulation.Agent.AgentClone;
 import simulation.setup.DefaultSetup;
 
+/*
+ * Warehouse is a class that extends SimState and represents a simulation of a warehouse.
+ * It initializes the simulation with a given seed and file paths,
+ * reads the warehouse configuration from a file,
+ * and manages the agents, tasks, and the warehouse environment.
+ * It also provides methods for moving agents, and checking for walls or occupied spaces.
+ * The class also includes methods for scoring and running the simulation.
+ * It uses the MASON simulation library for agent-based modeling.
+ */
 public class Warehouse extends SimState {
     public int height;
     public int width;
     public int num_agents;
     public IntGrid2D map; // = new IntGrid2D(width, height);
     public SparseGrid2D agents; // = new SparseGrid2D(width, height);
-
     private List<Agent> AgentList;
     private List<Brain> BrainList;
     private List<TaskPosition> itemStorage;
@@ -30,22 +38,25 @@ public class Warehouse extends SimState {
     Tasks tasks;
 
     String file_path;
-    // static String default_file_path = "src\\main\\resources\\Conventional\\warehouseLayout.json";
-    // static String default_file_path = "src\\test\\resources\\standard\\Conventional\\warehouseLayout.json";
     static String default_file_path = "src\\test\\resources\\simple\\warehouse_3_supply_and_depot.json";
 
-    String instance_path;
-    // static String default_instance_path = "src\\main\\resources\\Conventional\\instances\\basic.json";
-    static String default_instance_path = "src\\test\\resources\\standard\\Conventional\\instances\\basic.json";
+    String instance_path;static String default_instance_path = "src\\test\\resources\\standard\\Conventional\\instances\\basic.json";
 
+    // Constructor for the Warehouse class
+    // It initializes the simulation with a given seed and default file paths.
     public Warehouse(long seed) {
         this(seed, default_file_path);
     }
 
+    // Constructor for the Warehouse class
+    // It initializes the simulation with a given seed and file path.
     public Warehouse(long seed, String file_path) {
         this(seed, file_path, default_instance_path);
     }
 
+    // Constructor for the Warehouse class
+    // It initializes the simulation with a given seed, file path, and instance path.
+    // It also injects agents using the DefaultSetup class.
     public Warehouse(long seed, String file_path, String instance_path) {
         super(seed);
         this.file_path = file_path;
@@ -54,12 +65,15 @@ public class Warehouse extends SimState {
         this.readFile(file_path, instance_path);
     }
 
+    // This method adds a trail to the agent at the specified position.
+    // It checks if the position is occupied by another agent before adding the trail.
     public void addTrail(Agent.Trail t, Int2D pos) {
         if (agents.numObjectsAtLocation(pos) > 0)
             return;
         agents.setObjectLocation(t, pos);
     }
 
+    // This method clears the trails of all agents that have completed their movement.
     public void clearTrails() {
         for (Agent a : AgentList) {
             if (a.TimeToCompletedMovement() > 0)
@@ -71,24 +85,28 @@ public class Warehouse extends SimState {
         }
     }
 
+    // This method checks if the specified position is a wall in the warehouse.
+    // It returns true if the position is out of bounds or if it is occupied by a wall.
     public boolean isWall(Int2D pos) {
         if (pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height)
             return true;
         return map.get(pos.x, pos.y) == 1;
     }
 
+    // This method checks if the specified position is occupied by an agent.
+    // It returns true if there is one or more agents at the position.
     public boolean isAgentPresent(Int2D pos) {
         return agents.numObjectsAtLocation(pos) > 0;
     }
 
-    public List<Agent> getAgentList() {
-        return AgentList;
-    }
-
+    // This method checks if the specified position is occupied by an agent or a wall.
+    // It takes a boolean parameter to specify whether to ignore agents.
     public boolean isOccupied(Int2D pos, boolean noAgents) {
         return isWall(pos) || (!noAgents && isAgentPresent(pos));
     }
 
+    // This method checks if the specified positions is occupied by an agent or a wall.
+    // It takes a boolean parameter to specify whether to ignore agents.
     public boolean canMove(Int2D oldPos, Int2D newPos, Int2D agentSize, boolean noAgents) {
         Int2D delta = newPos.subtract(oldPos);
         if (delta.x == 0 && delta.y == 0)
@@ -114,10 +132,13 @@ public class Warehouse extends SimState {
         return true;
     }
 
+    // This method calls the canMove method with noAgents set to false.
+    // It checks if the agent can move from the old position to the new position.
     public boolean canMove(Int2D oldPos, Int2D newPos, Int2D agentSize) {
         return canMove(oldPos, newPos, agentSize, false);
     }
 
+    // This method checks if an agent can move to a new position.
     public boolean move(Agent a, Int2D newPos) {
         Int2D oldPos = agents.getObjectLocation(a);
         Int2D agentSize = a.getAgentSize();
@@ -144,14 +165,20 @@ public class Warehouse extends SimState {
         return true;
     }
 
+    // This method calls generateTasks method of the Tasks class. 
     public void generateTasks() {
         tasks.generateTasks();
     }
 
+    // This method calls assignTasks method of the Tasks class.
+    // It assigns tasks to the agents based on their positions and capabilities.
     public void assignTasks() {
         tasks.assignTasks(AgentList);
     }
 
+    // readFile method reads the warehouse configuration from a file or files.
+    // It initializes the map, agents, item storage, depot, and task positions.
+    // It also sets up the tasks and agent schedules.
     public void readFile(String path, String instance) {
         ReadFile rf = new ReadFile();
         ReadFile.FileData fd = rf.readInput(path, instance);;
@@ -190,16 +217,23 @@ public class Warehouse extends SimState {
         schedule.scheduleRepeating(new AfterEveryStep(), 100, 1);
     }
 
+    // increaseScore method increments the score of the simulation.
+    // It is called when an agent completes a task or reaches a target.
     public void increaseScore() {
         this.score++;
     }
 
+    // This method is called to start the simulation.
     public void start() {
         super.start();
         this.readFile(this.file_path, this.instance_path);
         startTime = System.currentTimeMillis();
     }
 
+    // This method is called to finish the simulation.
+    // It sorts the agents by their IDs and prints their scores and times.
+    // It also prints the final score, elapsed time, number of steps, and task statistics.
+    // It prints the seed, number of brains, and warehouse file path.
     public void finish() {
         AgentList.sort((a1, a2) -> a1.getId().compareTo(a2.getId()));
         for (Agent a : AgentList) {
@@ -230,19 +264,18 @@ public class Warehouse extends SimState {
         System.out.println("--------------------------");
     }
 
+    // This method is called to run the simulation without a GUI.
     public static void main(String[] args) {
         doLoop(Warehouse.class, args);
         System.exit(0);
     }
 
-    public int getScore() {
-        return score;
-    }
-
+    // runSimulation method runs the simulation for 1000 steps.
     public void runSimulation() {
         runSimulation(1000);
     }
 
+    // This method runs the simulation for a specified number of steps.
     public void runSimulation(int steps) {
         start();
         do
@@ -250,8 +283,19 @@ public class Warehouse extends SimState {
         while (schedule.getSteps() < steps);
         finish();
     }
+    
+    // getScore method returns the current score of the simulation.
+    public int getScore() {
+        return score;
+    }
 
+    // getBrainList method returns the list of brains used in the simulation.
     public List<Brain> getBrainList() {
         return BrainList;
+    }
+
+    // getAgentList method returns the list of agents in the simulation.
+    public List<Agent> getAgentList() {
+        return AgentList;
     }
 }
