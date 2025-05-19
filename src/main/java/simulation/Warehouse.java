@@ -35,12 +35,14 @@ public class Warehouse extends SimState {
     private int score;
     public AgentFactory factory = new AgentFactory();
     long startTime;
+    long endTime;
     Tasks tasks;
 
     String file_path;
     static String default_file_path = "src\\test\\resources\\simple\\warehouse_3_supply_and_depot.json";
 
-    String instance_path;static String default_instance_path = "src\\test\\resources\\standard\\Conventional\\instances\\basic.json";
+    String instance_path;
+    static String default_instance_path = "src\\test\\resources\\standard\\Conventional\\instances\\basic.json";
 
     // Constructor for the Warehouse class
     // It initializes the simulation with a given seed and default file paths.
@@ -235,6 +237,9 @@ public class Warehouse extends SimState {
     // It also prints the final score, elapsed time, number of steps, and task statistics.
     // It prints the seed, number of brains, and warehouse file path.
     public void finish() {
+        endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+
         AgentList.sort((a1, a2) -> a1.getId().compareTo(a2.getId()));
         for (Agent a : AgentList) {
             List<Long> scoreTimes = new ArrayList<>();
@@ -253,13 +258,13 @@ public class Warehouse extends SimState {
 
         }
         System.out.println("\nFinal score: " + score);
-        long elapsedTime = System.currentTimeMillis() - startTime;
         System.out.println("Elapsed time in milliseconds: " + elapsedTime);
         System.out.println("Number of steps: " + this.schedule.getSteps());
         System.out.println("Number of tasks generated/completed/impossible: " + this.tasks.getNumGeneratedTasks() + "/"
                 + this.tasks.getNumCompletedTasks() + "/" + this.tasks.getNumImpossibleTasks());
         System.out.println("Seed: " + this.seed());
-        System.out.println("Brains: " + this.BrainList.size());
+        System.out.println("Brains: " + this.BrainList.size() + " ("
+                + this.BrainList.stream().map(b -> b.getClass().getSimpleName()).collect(Collectors.joining(", ")) + ")");
         System.out.println("warehouse: " + this.file_path);
         System.out.println("--------------------------");
     }
@@ -297,5 +302,18 @@ public class Warehouse extends SimState {
     // getAgentList method returns the list of agents in the simulation.
     public List<Agent> getAgentList() {
         return AgentList;
+    }
+
+    // getTasks method returns the tasks object used in the simulation.
+    public Tasks getTasks() {
+        return tasks;
+    }
+
+    // getStartTime and getEndTime methods return the start and end times of the simulation.
+    public long getStartTime() {
+        return startTime;
+    }
+    public long getEndTime() {
+        return endTime;
     }
 }

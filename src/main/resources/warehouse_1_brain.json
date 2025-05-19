@@ -31,7 +31,7 @@
     "3" : {
         "moveTime" : "3",
         "color" : "0,255,255"
-    }
+    },
     "task-settings" : {
         "tasksPerStep" : "1"
     }
