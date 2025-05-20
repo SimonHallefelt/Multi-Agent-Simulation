@@ -32,7 +32,6 @@ public abstract class Agent implements Steppable, Colorable {
     boolean debug = false;
 
     private HashSet<String> tags = new HashSet<>();
-
     private HashMap<Int2D, Integer> visited = new HashMap<>();
 
     public void setPath(Path p) {
@@ -120,6 +119,7 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
     public void onSetTarget() {
+        path.setRemakePath(true);
         return;
     }
 

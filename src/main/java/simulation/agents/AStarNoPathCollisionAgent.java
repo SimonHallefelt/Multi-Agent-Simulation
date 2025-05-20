@@ -1,6 +1,5 @@
 package simulation.agents;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import sim.util.Int2D;
@@ -18,7 +17,6 @@ public class AStarNoPathCollisionAgent extends Agent {
                                                                   this.moveTime);
         
         if (rawPath.isEmpty()) {
-            // super.path.addStep(PathFinding.randomUnobstructiveWalk(warehouse, this.pos, this.size, pathHandler));
             return null;
         }
         return new Path(rawPath);
