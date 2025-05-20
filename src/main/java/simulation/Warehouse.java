@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import sim.engine.SimState;
 import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
+import sim.util.Bag;
 import sim.util.Int2D;
 import simulation.Agent.AgentClone;
 import simulation.setup.DefaultSetup;
@@ -288,6 +289,21 @@ public class Warehouse extends SimState {
             if (!schedule.step(this)) break;
         while (schedule.getSteps() < steps);
         finish();
+    }
+
+    // getAgentAt method returns the agent occupying the specified position.
+    public Agent getAgentAt(Int2D pos) {
+        Bag bag = agents.getObjectsAtLocation(pos);
+        if (bag.size() == 0)
+            return null;
+        for (Object object : bag) {
+            if (object instanceof Agent) {
+                return (Agent) object;
+            } else if (object instanceof Agent.AgentClone) {
+                return ((Agent.AgentClone) object).getAgent();
+            } 
+        }
+        return null;
     }
     
     // getScore method returns the current score of the simulation.
