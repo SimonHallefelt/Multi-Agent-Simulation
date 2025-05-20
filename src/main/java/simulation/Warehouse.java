@@ -243,18 +243,19 @@ public class Warehouse extends SimState {
         AgentList.sort((a1, a2) -> a1.getId().compareTo(a2.getId()));
         for (Agent a : AgentList) {
             List<Long> scoreTimes = new ArrayList<>();
-            if (!a.score.isEmpty()) {
-                for (int i = 1; i < a.score.size(); i++) {
-                    scoreTimes.add(a.score.get(i) - a.score.get(i-1));
+            List<Long> score = a.getScores();
+            if (!score.isEmpty()) {
+                for (int i = 1; i < score.size(); i++) {
+                    scoreTimes.add(score.get(i) - score.get(i-1));
                 }
-                scoreTimes.add(this.schedule.getSteps() - a.score.get(a.score.size()-1));
+                scoreTimes.add(this.schedule.getSteps() - score.get(score.size()-1));
                 Collections.sort(scoreTimes);
             }
-            Long minTime = a.score.isEmpty() ? null : scoreTimes.get(0);
-            Long maxTime = a.score.isEmpty() ? null : scoreTimes.get(scoreTimes.size()-1);
-            Long medianTime = a.score.isEmpty() ? null : scoreTimes.get(scoreTimes.size()/2);
+            Long minTime = score.isEmpty() ? null : scoreTimes.get(0);
+            Long maxTime = score.isEmpty() ? null : scoreTimes.get(scoreTimes.size()-1);
+            Long medianTime = score.isEmpty() ? null : scoreTimes.get(scoreTimes.size()/2);
 
-            System.out.println(a + ", score: " + a.score.size() + ", time between points min/max/median: " + minTime + "/" + maxTime + "/" + medianTime);
+            System.out.println(a + ", score: " + score.size() + ", time between points min/max/median: " + minTime + "/" + maxTime + "/" + medianTime);
 
         }
         System.out.println("\nFinal score: " + score);
