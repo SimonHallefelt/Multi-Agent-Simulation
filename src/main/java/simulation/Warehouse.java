@@ -301,7 +301,9 @@ public class Warehouse extends SimState {
                 return (Agent) object;
             } else if (object instanceof Agent.AgentClone) {
                 return ((Agent.AgentClone) object).getAgent();
-            } 
+            } else if (object instanceof Agent.Trail) {
+                return ((Agent.Trail) object).getAgent();
+            }
         }
         return null;
     }
