@@ -77,6 +77,14 @@ public abstract class Agent implements Steppable, Colorable {
         return distanceBetweenAllTargets + PathFinding.getDistance(pos,target,size);
     }
 
+    public HashMap<Int2D, Integer> getVisited() {
+        return visited;
+    }
+
+    public int getCurrentVisited() {
+        return visited.getOrDefault(pos, 0);
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -127,7 +135,6 @@ public abstract class Agent implements Steppable, Colorable {
     private void checkDeadlock() {
         if (visited.containsKey(pos)) {
             int n = visited.get(pos);
-            n++;
             if (n == 100)
                 System.out.println(this + ": What have you done " + pos);
             if (n == 20)
@@ -136,10 +143,13 @@ public abstract class Agent implements Steppable, Colorable {
                 System.out.println(this + ": Probable deadlock at " + pos);
             if (n == 5)
                 System.out.println(this + ": Possible deadlock at " + pos);
-            visited.put(pos, n);
-        } else {
-            visited.put(pos, 1);
         }
+    }
+
+    private void increaseVisited() {
+        int n = visited.getOrDefault(pos, 0);
+        n++;
+        visited.put(pos, n);
     }
 
     @Override
@@ -189,6 +199,7 @@ public abstract class Agent implements Steppable, Colorable {
             if (debug) System.out.println(id + ": agent could not move to " + newPos + "(" + pos + ")");
             timeToCompletedMovement = 1;
         }
+        increaseVisited();
         if (debug)
             if (this.target != null)
                 checkDeadlock();

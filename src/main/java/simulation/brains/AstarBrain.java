@@ -1,6 +1,5 @@
 package simulation.brains;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import sim.util.Int2D;
