@@ -228,7 +228,7 @@ public abstract class Agent implements Steppable, Colorable {
 
     }
 
-    public void moveComplete() {
+    private void moveComplete() {
         this.isMoving = false;
     }
 
