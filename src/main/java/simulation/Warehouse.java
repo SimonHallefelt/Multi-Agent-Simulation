@@ -79,7 +79,8 @@ public class Warehouse extends SimState {
     // This method clears the trails of all agents that have completed their movement.
     public void clearTrails() {
         for (Agent a : AgentList) {
-            if (a.TimeToCompletedMovement() > 0)
+            a.reduceDelay();
+            if (a.getDelay() > 0)
                 continue;
             for (Agent.Trail t : a.getTrails()) {
                 agents.remove(t);

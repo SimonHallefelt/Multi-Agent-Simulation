@@ -25,7 +25,7 @@ public abstract class Agent implements Steppable, Colorable {
     protected Color color = Color.GRAY;
     private Path path = new Path();
     protected Path desirePath = null;
-    private int timeToCompletedMovement;
+    private int delay;
     private int distanceBetweenAllTargets = 0;
     private String id = "Agent";
     protected Boolean moveIfBlocking = false;
@@ -188,8 +188,8 @@ public abstract class Agent implements Steppable, Colorable {
         dir = newPos.subtract(pos);
         if (warehouse.move(this, newPos)) {
             isMoving = true;
-            if (dir.x != 0 || dir.y != 0) timeToCompletedMovement = this.moveTime;
-            else timeToCompletedMovement = 1;
+            if (dir.x != 0 || dir.y != 0) delay = this.moveTime;
+            else delay = 1;
             // path.setRemakePath(false);
         } else {
             path.setRemakePath(true);
@@ -197,7 +197,7 @@ public abstract class Agent implements Steppable, Colorable {
             addTag("stuck");
             // path = new Path(pos);
             if (debug) System.out.println(id + ": agent could not move to " + newPos + "(" + pos + ")");
-            timeToCompletedMovement = 1;
+            delay = 1;
         }
         increaseVisited();
         if (debug)
@@ -216,11 +216,6 @@ public abstract class Agent implements Steppable, Colorable {
     public void removeTrails() {
         moveComplete();
         trails = new ArrayList<>();
-    }
-
-    public int TimeToCompletedMovement() {
-        this.timeToCompletedMovement = Math.max(0, this.timeToCompletedMovement - 1);
-        return this.timeToCompletedMovement;
     }
 
     public abstract Path makePath(Warehouse warehouse, PathHandler pathHandler);
@@ -268,7 +263,7 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
     public int getDelay() {
-        return this.timeToCompletedMovement;
+        return this.delay;
     }
 
     public Int2D getDirection() {
@@ -361,5 +356,9 @@ public abstract class Agent implements Steppable, Colorable {
         public Color getColor() {
             return agent.getColor();
         }
+    }
+
+    public void reduceDelay() {
+        delay = Math.max(0, delay - 1);
     }
 }
