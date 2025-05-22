@@ -81,7 +81,7 @@ public abstract class Agent implements Steppable, Colorable {
     }
 
     public int getCurrentVisited() {
-        return visited.getOrDefault(pos, 0);
+        return visited.getOrDefault(pos, 1);
     }
 
     public void setId(String id) {

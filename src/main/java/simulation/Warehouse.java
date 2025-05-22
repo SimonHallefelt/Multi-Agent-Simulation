@@ -257,7 +257,7 @@ public class Warehouse extends SimState {
             Long maxTime = score.isEmpty() ? null : scoreTimes.get(scoreTimes.size()-1);
             Long medianTime = score.isEmpty() ? null : scoreTimes.get(scoreTimes.size()/2);
 
-            System.out.println(a + ", score: " + score.size() + ", time between points min/max/median: " + minTime + "/" + maxTime + "/" + medianTime);
+            System.out.println(a + ", score: " + score.size() + ", steps between points min/max/median: " + minTime + "/" + maxTime + "/" + medianTime);
 
         }
         System.out.println("\nFinal score: " + score);
