@@ -120,6 +120,7 @@ public abstract class Agent implements Steppable, Colorable {
 
     public void onSetTarget() {
         path.setRemakePath(true);
+        visited.clear();
         return;
     }
 
@@ -129,7 +130,6 @@ public abstract class Agent implements Steppable, Colorable {
 
     public void increaseScore(Long step) {
         scores.add(step);
-        visited.clear();
     }
 
     private void checkDeadlock() {
