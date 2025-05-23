@@ -10,7 +10,7 @@ import simulation.interfaces.FactorySetup;
 
 public class DefaultSetup extends FactorySetup {
 
-    public void injectAgents() {
+    public void inject() {
         registerAgent("aStarSmart", () -> new AStarNoPathCollisionAgent());
         registerAgent("aStarSmarter", () -> new AStarSmarter());
         registerAgent("astar", () -> new AStarAgent());

@@ -4,7 +4,7 @@ import simulation.AgentFactory;
 import simulation.BrainFactory;
 
 public abstract class FactorySetup {
-    public abstract void injectAgents();
+    public abstract void inject();
 
     public void registerAgent(String name, AgentConstructor constructor) {
         AgentFactory.registerAgent(name, constructor);

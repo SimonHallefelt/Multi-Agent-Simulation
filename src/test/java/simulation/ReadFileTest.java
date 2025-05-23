@@ -10,7 +10,7 @@ import simulation.setup.DefaultSetup;
 public class ReadFileTest {
 
     @Test void test_1_simpleFormat() {
-        new DefaultSetup().injectAgents();
+        new DefaultSetup().inject();
         ReadFile rf = new ReadFile();
         FileData fd = rf.readInput("src\\test\\resources\\simple\\warehouse_3.json");
 
@@ -30,7 +30,7 @@ public class ReadFileTest {
     @Test void test_1_standardFormat() {
         String warehouseLayout = "src\\test\\resources\\standard\\Conventional\\warehouseLayout.json";
         String instance = "src\\test\\resources\\standard\\Conventional\\instances\\basic.json";
-        new DefaultSetup().injectAgents();
+        new DefaultSetup().inject();
         ReadFile rf = new ReadFile();
         FileData fd = rf.readInput(warehouseLayout, instance);
 
@@ -52,7 +52,7 @@ public class ReadFileTest {
     @Test void test_2_standardFormat() {
         String warehouseLayout = "src\\test\\resources\\standard\\Conventional\\warehouseLayout.json";
         String instance = "src\\test\\resources\\standard\\Conventional\\instances\\addSupply.json";
-        new DefaultSetup().injectAgents();
+        new DefaultSetup().inject();
         ReadFile rf = new ReadFile();
         FileData fd = rf.readInput(warehouseLayout, instance);
 

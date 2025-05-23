@@ -11,7 +11,7 @@ public class BrainTest {
     @Test public void test_1_astarBrain(){
         String warehouseLayout = "src\\test\\resources\\standard\\Conventional\\warehouseLayout.json";
         String instance = "src\\test\\resources\\standard\\Conventional\\instances\\aStarBrain.json";
-        new DefaultSetup().injectAgents();
+        new DefaultSetup().inject();
         Warehouse state = new Warehouse(0, warehouseLayout, instance);
         state.start();
         do

@@ -64,7 +64,7 @@ public class Warehouse extends SimState {
         super(seed);
         this.file_path = file_path;
         this.instance_path = instance_path;
-        new DefaultSetup().injectAgents();
+        new DefaultSetup().inject();
         this.readFile(file_path, instance_path);
     }
 
