@@ -99,8 +99,8 @@ public abstract class Agent implements Steppable, Colorable {
         this.distanceBetweenAllTargets += distanceBetweenTargets;
     }
 
-    public void setDebug(boolean d) {
-        debug = d;
+    public void setDebug(boolean enable) {
+        debug = enable;
     }
 
     public boolean getDebug() {
