@@ -111,11 +111,11 @@ public abstract class Agent implements Steppable, Colorable {
         setTarget(new Int2D(x, y));
     }
 
-    public void setTarget(Int2D i) {
-        target = i;
+    public void setTarget(Int2D t) {
+        target = t;
         onSetTarget();
         if (debug)
-            System.out.println(id + ": new target " + i);
+            System.out.println(id + ": new target " + t);
     }
 
     public void onSetTarget() {
@@ -128,8 +128,8 @@ public abstract class Agent implements Steppable, Colorable {
         return path.getRemakePath();
     }
 
-    public void increaseScore(Long step) {
-        scores.add(step);
+    public void increaseScore(Long currentStep) {
+        scores.add(currentStep);
     }
 
     private void checkDeadlock() {
